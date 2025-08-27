@@ -1,7 +1,7 @@
-# 🎮 RPGStack - Master Development Plan
+# 🎮 RPGStack - Clean Architecture Master Plan
 
 ## 📋 **Executive Summary**
-RPGStack é um framework completo e modular para desenvolvimento de jogos RPG multi-plataforma (web + mobile). Sistema com foco em exploração de mapas, progressão baseada em conquistas, e otimização moderna seguindo arquitetura modular.
+RPGStack is a professionally-architected, modular framework for cross-platform RPG development, built on clean code principles and modern development standards. The framework demonstrates industry best practices while remaining accessible to indie developers, serving as both a functional tool and educational reference for clean architecture implementation.
 
 ---
 
@@ -25,7 +25,7 @@ RPGStack é um framework completo e modular para desenvolvimento de jogos RPG mu
 
 ### **Implementation Status**
 **Version 3.1.2** - Production Ready and Operational  
-**Implementation Date:** Completed August 2024  
+**Implementation Date:** August 2025 - Clean Architecture Implementation  
 **Status:** First module of larger RPG project complete
 
 ### **Core Principles Achieved**
@@ -126,75 +126,234 @@ The system is successful when a developer can:
 }
 ```
 
-### **Phase 4: Game Engine Development** ⏳
-**Status**: PLANNED  
+### **Phase 4: Game Engine - React.js Runtime Architecture** ⏳
+**Status**: PLANNED (Q2-Q3 2026)  
+**Estimated Duration**: 10 weeks  
+**Architecture Focus**: Component-based game engine with clean separation
+
+#### **Clean Architecture Game Engine Design**
+```javascript
+// Game Engine Domain Layer
+export class GameEngine {
+  constructor({ battleSystem, mapSystem, progressionSystem, saveSystem }) {
+    this.battleSystem = new BattleSystem();
+    this.mapSystem = new MapSystem();
+    this.progressionSystem = new ProgressionSystem();
+    this.saveSystem = new SaveSystem();
+    this.state = new GameState();
+  }
+  
+  async initializeGame(saveData = null) {
+    if (saveData) {
+      this.state = GameState.fromSaveData(saveData);
+    }
+    await this.loadAssets();
+    this.startGameLoop();
+  }
+}
+
+// Component-Based Rendering System
+export const GameRenderer = ({ gameState, onAction }) => {
+  return (
+    <div className="game-engine">
+      <MapRenderer 
+        currentMap={gameState.currentMap}
+        character={gameState.character}
+        onMove={onAction}
+      />
+      <UIOverlay 
+        character={gameState.character}
+        inventory={gameState.inventory}
+        onAction={onAction}
+      />
+      <BattleInterface
+        visible={gameState.inBattle}
+        battle={gameState.currentBattle}
+        onAction={onAction}
+      />
+    </div>
+  );
+};
+```
+
+#### **Core Systems Implementation**
+**Sprint 1: Engine Foundation**
+- Game state management with immutable updates
+- Component-based rendering architecture
+- Event-driven action system
+- Asset loading and caching
+
+**Sprint 2: Battle System**
+- Turn-based combat engine
+- Skill execution system
+- Damage calculation with items
+- Battle UI components
+
+**Sprint 3: Map & Navigation**
+- 2D map rendering with React
+- Character movement system
+- Collision detection
+- Map transition handling
+
+**Sprint 4: Progression Systems**
+- Experience and leveling
+- Skill point allocation
+- Achievement tracking
+- Statistics collection
+
+**Sprint 5: Save & Persistence**
+- Game state serialization
+- Cloud save integration
+- Offline mode support
+- Progress recovery
+
+**Sprint 6-10: Advanced Features**
+- Performance optimization
+- Mobile responsiveness
+- Audio integration
+- Testing and polish
+
+### **Phase 5: Mobile App - React Native Deployment** ⏳
+**Status**: PLANNED (Q4 2026)  
 **Estimated Duration**: 8 weeks  
-**Core Systems**:
-- **Battle System**: Turn-based combat with skills/items
-- **Map Navigation**: 2D exploration with collision detection
-- **Character Progression**: Level up, stat increases, skill unlocks
-- **Save System**: Progress persistence across sessions
-- **Achievement Engine**: Unlock tracking and rewards
+**Architecture Focus**: Shared business logic with platform-specific presentation
 
-**Technology Integration**:
-- **React.js**: Web game interface
-- **Canvas/WebGL**: Game rendering
-- **State Management**: Redux/Zustand for game state
-- **Asset Loading**: Optimized sprite/audio management
+#### **Cross-Platform Architecture Strategy**
+```javascript
+// Shared Business Logic (works on web and mobile)
+export class GameLogic {
+  // All game rules, calculations, state management
+  // Platform-agnostic implementation
+}
 
-### **Phase 5: Mobile App Development** ⏳
-**Status**: PLANNED  
-**Estimated Duration**: 6 weeks  
-**Mobile-Specific Features**:
-- **React Native**: Cross-platform mobile development
-- **Touch Controls**: Optimized mobile interface
-- **Performance Optimization**: Mobile-specific rendering
-- **App Store Deployment**: iOS + Android distribution
-- **Offline Mode**: Local data storage and sync
+// Platform-Specific Presentation
+// Web: React.js components
+// Mobile: React Native components
+// Shared: Business logic and state management
+```
+
+#### **Mobile-Specific Implementation**
+**Sprint 1: React Native Setup**
+- Expo managed workflow setup
+- Shared code architecture
+- Platform-specific component abstraction
+- Development tooling configuration
+
+**Sprint 2: Mobile UI Adaptation**
+- Touch-optimized interface components
+- Gesture-based navigation
+- Mobile-specific UX patterns
+- Responsive layout system
+
+**Sprint 3: Performance Optimization**
+- Mobile rendering optimization
+- Memory management
+- Battery usage optimization
+- Offline-first architecture
+
+**Sprint 4: Platform Features**
+- Push notifications
+- Deep linking
+- App state management
+- Background processing
+
+**Sprint 5: Testing & Distribution**
+- Device testing across platforms
+- App store optimization
+- Beta testing deployment
+- Production release pipeline
+
+**Sprint 6-8: Platform Polish**
+- iOS/Android specific optimizations
+- Platform design guideline compliance
+- Performance monitoring
+- User feedback integration
 
 ---
 
 ## 🛠️ **Technology Stack Details**
 
-### **Frontend Technologies**
-- **Web**: React.js 18+, Modern JavaScript (ES2023)
-- **Mobile**: React Native with Expo for rapid development
-- **UI Framework**: Custom components + CSS-in-JS
-- **State Management**: Context API + useReducer (scaling to Redux if needed)
+### **Clean Architecture Technology Stack**
 
-### **Backend & Data**
-- **Server**: Node.js with Express.js
-- **Database**: JSON-based with structured backup system
-- **File Management**: Local storage with cloud backup options
-- **API Design**: RESTful endpoints with proper error handling
+#### **Core Architecture Standards**
+- **Clean Code Principles**: SOLID, DRY, KISS throughout all layers
+- **Layer Separation**: Strict boundaries between presentation, application, domain, infrastructure
+- **Dependency Inversion**: All dependencies point toward domain layer
+- **ES Modules**: Modern import/export syntax, no CommonJS
+- **BEM CSS**: Block-Element-Modifier naming for scalable styling
 
-### **Development Tools**
-- **Version Control**: Git with GitHub for portfolio visibility
-- **Code Quality**: ESLint, Prettier, Husky pre-commit hooks
-- **Testing**: Jest for unit tests, Cypress for E2E
-- **Deployment**: Netlify/Vercel for web, App stores for mobile
+#### **Frontend Technologies (Clean Architecture)**
+- **Web Presentation**: Separated HTML5, BEM CSS, ES6+ JavaScript modules
+- **Mobile Presentation**: React Native with shared business logic
+- **CSS Architecture**: Atomic design with component-specific stylesheets
+- **State Management**: Domain-driven state with service layer abstraction
+- **Component Design**: Atomic design principles (atoms → molecules → organisms)
 
-### **Game Development Libraries**
-- **Canvas Rendering**: Konva.js or Fabric.js for 2D graphics
-- **Animation**: Framer Motion for smooth transitions
-- **Audio**: Howler.js for cross-platform audio management
-- **Performance**: React DevTools, Lighthouse optimization
+#### **Backend Architecture (Layered)**
+- **Presentation Layer**: Express.js routes with clean error handling
+- **Application Layer**: Services, use cases, input validation
+- **Domain Layer**: Entities, value objects, business rules
+- **Infrastructure Layer**: JSON repositories, file system, external services
+- **API Design**: RESTful with OpenAPI documentation and versioning
+
+#### **Quality Assurance Tools (Automated)**
+- **Code Quality**: ESLint (strict rules), Prettier (consistent formatting)
+- **Testing**: Jest (unit), Playwright (E2E), >90% coverage target
+- **Git Hooks**: Pre-commit linting, test validation, commit message standards
+- **Performance**: Lighthouse CI, Core Web Vitals monitoring
+- **Security**: Automated dependency scanning, input validation
+
+#### **Development Experience (Modern)**
+- **Hot Reload**: Instant feedback for all code changes
+- **Type Safety**: JSDoc comments with IDE IntelliSense support
+- **Error Handling**: Comprehensive error boundaries with clear user feedback
+- **Build Pipeline**: Automated testing, linting, and deployment
+- **Documentation**: Self-documenting code with minimal external dependencies
+
+### **Game Development Architecture (Component-Based)**
+- **Rendering Strategy**: React components for UI, Canvas for game world
+- **Animation System**: CSS transitions + JavaScript for complex animations
+- **Audio Architecture**: Web Audio API with service layer abstraction
+- **Performance Monitoring**: Real User Monitoring with Core Web Vitals
+- **Asset Pipeline**: Optimized loading with service workers for caching
+- **State Management**: Immutable updates with proper event sourcing
+- **Game Loop**: RequestAnimationFrame with clean separation from React rendering
 
 ---
 
 ## 🎨 **Design & UX Strategy**
 
-### **Visual Design Language**
-- **Theme**: Modern dark/light mode support
-- **Color Palette**: Consistent across all modules (#6c757d primary)
-- **Typography**: Readable fonts optimized for gaming
-- **Iconography**: Minimal, functional icon system
+### **Design System Architecture (Atomic Design)**
 
-### **UX Principles**
-- **Mobile-First**: Responsive design starting from mobile
-- **Accessibility**: WCAG 2.1 AA compliance
-- **Performance**: 60fps target, <3s load times
-- **User Feedback**: Clear success/error states, loading indicators
+#### **Component Hierarchy**
+- **Atoms**: Basic UI elements (buttons, inputs, labels)
+- **Molecules**: Simple component combinations (form fields, cards)
+- **Organisms**: Complex UI sections (character forms, data tables)
+- **Templates**: Page layouts with placeholder content
+- **Pages**: Specific instances of templates with real data
+
+#### **BEM CSS Methodology**
+```css
+/* Block: Independent component */
+.character-card { }
+
+/* Elements: Parts of the component */
+.character-card__header { }
+.character-card__title { }
+.character-card__stats { }
+
+/* Modifiers: Component variations */
+.character-card--featured { }
+.character-card--loading { }
+```
+
+#### **Modern UX Standards**
+- **Accessibility First**: WCAG 2.1 AA compliance, semantic HTML
+- **Performance**: Core Web Vitals (LCP <2.5s, FID <100ms, CLS <0.1)
+- **Progressive Enhancement**: Mobile-first, responsive scaling
+- **User Feedback**: Loading states, error recovery, success confirmation
+- **Offline Support**: Service worker with cache-first strategy
+- **Keyboard Navigation**: Full keyboard accessibility support
 
 ### **Game UX Specific**
 - **Intuitive Controls**: Touch-friendly with keyboard shortcuts

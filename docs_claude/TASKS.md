@@ -1,20 +1,23 @@
 # 📋 RPGStack - Development Tasks & Milestones
 
 ## 🎯 **Current Status Overview**
-- **Active Phase**: Character Database (COMPLETED)
-- **Next Phase**: Maps Database System
-- **Overall Progress**: 20% of total project
-- **Priority**: GitHub Portfolio Preparation + Phase 2 Planning
+- **Active Phase**: Clean Architecture Migration (IN PROGRESS)
+- **Previous Phase**: Character Database Legacy v3.1.2 (COMPLETED)
+- **Next Phase**: Maps Database System (Clean Architecture)
+- **Overall Progress**: 25% of total project (Legacy functional + Migration initiated)
+- **Priority**: Clean Code Implementation + Legacy Preservation
 
 ---
 
-## ✅ **PHASE 1: CHARACTER DATABASE - COMPLETED**
+## ✅ **PHASE 1: CHARACTER DATABASE LEGACY - COMPLETED**
 
-### **Project Status: FULLY IMPLEMENTED** ✅
-- **Version**: 3.1.2 (Interface Simplificada)
-- **Status**: Production Ready and Operational  
-- **Completion Date**: August 2024
-- **Role**: First module of larger RPG game project
+### **Project Status: PRODUCTION LEGACY** ✅
+- **Version**: 3.1.2-legacy (Fully Functional)
+- **Status**: Production Ready - Legacy Branch Preserved  
+- **Completion Date**: August 2025
+- **Migration Status**: Clean Architecture Refactor In Progress
+- **Data Integrity**: 61 characters with immutable IDs preserved
+- **Role**: Foundation for clean architecture implementation
 
 ### **Completed Milestones Summary**
 
@@ -81,28 +84,120 @@
 
 ---
 
-## 🔄 **PHASE 2: MAPS DATABASE SYSTEM - NEXT PHASE**
+## 🔄 **PHASE 1.5: CLEAN ARCHITECTURE MIGRATION - ACTIVE**
 
-### **Priority Tasks (Next 2 Weeks)**
+### **Migration Objective**
+Transition from functional legacy system to professionally-architected clean code implementation while preserving 100% of existing functionality and data.
 
-#### **🗺️ High Priority - Core Map System**
-- [ ] **Map Entity Structure Design**
-  - [ ] Define map data schema (ID, name, description, difficulty)
-  - [ ] Boss integration with character database
-  - [ ] Unlock conditions and prerequisites system
-  - [ ] Map assets structure (backgrounds, music, tilesets)
+### **Migration Strategy: Option A - Gradual Migration**
+- **Approach**: Incremental refactor maintaining system functionality
+- **Data Safety**: Zero risk to existing 61 characters with immutable IDs
+- **Timeline**: 6 weeks structured implementation
+- **Risk Level**: LOW (comprehensive mitigation strategies)
 
-- [ ] **Database Integration**
-  - [ ] Create maps.json storage system
-  - [ ] Implement CRUD operations for maps
-  - [ ] Link maps with existing character database
-  - [ ] Add foreign key relationships (boss → character)
+### **🏗️ Current Migration Phase: Week 1 - Legacy Preservation**
 
-- [ ] **Basic UI Implementation**
-  - [ ] Map creation form interface
-  - [ ] Map list display (similar to character database)
-  - [ ] Search and filter maps functionality
-  - [ ] Dual view support (cards/table for maps)
+#### **Sprint 1: Documentation and Baseline (In Progress)**
+- [x] **System Analysis**: Complete functional verification performed
+- [x] **Migration Strategy**: Comprehensive analysis documented
+- [x] **Current State**: MIGRATION_ANALYSIS.md created with full assessment
+- [ ] **TASKS.md Update**: Migration roadmap integration (current task)
+- [ ] **Legacy Branch**: Create v3.1.2-legacy preservation branch
+- [ ] **Version Tags**: Tag current state as production legacy
+
+#### **📊 Migration Milestones Overview**
+
+### **🏃‍♂️ Week 1: Legacy Preservation & Setup**
+- [ ] **Milestone M1.1**: Legacy branch created and tagged
+- [ ] **Milestone M1.2**: Development environment prepared for clean architecture
+- [ ] **Milestone M1.3**: Project structure analysis completed
+- [ ] **Milestone M1.4**: Migration tooling setup (ESLint, Prettier, Jest)
+
+### **🏗️ Week 2: Infrastructure Layer Refactor**
+- [ ] **Milestone M2.1**: Repository pattern interface designed
+- [ ] **Milestone M2.2**: JsonCharacterRepository implementation
+- [ ] **Milestone M2.3**: Data access abstraction layer complete
+- [ ] **Milestone M2.4**: API compatibility maintained during transition
+
+### **🧠 Week 3: Domain Layer Implementation**
+- [ ] **Milestone M3.1**: Character entity with business rules
+- [ ] **Milestone M3.2**: Value objects (CharacterId, Stats, Combat)
+- [ ] **Milestone M3.3**: Domain validation with ID preservation
+- [ ] **Milestone M3.4**: Business logic separation from infrastructure
+
+### **⚙️ Week 4: Application Layer Services**
+- [ ] **Milestone M4.1**: CharacterService with use cases
+- [ ] **Milestone M4.2**: Comprehensive error handling system
+- [ ] **Milestone M4.3**: Input validation and sanitization
+- [ ] **Milestone M4.4**: Service layer integration testing
+
+### **🎨 Week 5: Presentation Layer Modernization**
+- [ ] **Milestone M5.1**: CSS extraction to BEM methodology files
+- [ ] **Milestone M5.2**: JavaScript modularization with ES6+ syntax
+- [ ] **Milestone M5.3**: Component-based UI architecture
+- [ ] **Milestone M5.4**: Responsive design preservation and enhancement
+
+### **🧪 Week 6: Quality Assurance & Testing**
+- [ ] **Milestone M6.1**: Jest test suite with 90%+ coverage
+- [ ] **Milestone M6.2**: ESLint + Prettier + pre-commit hooks
+- [ ] **Milestone M6.3**: Performance optimization and Core Web Vitals
+- [ ] **Milestone M6.4**: Documentation completion and deployment
+
+### **🎯 Clean Architecture Success Criteria**
+
+#### **Technical Requirements**
+- **SOLID Compliance**: All code follows clean architecture principles
+- **Test Coverage**: Minimum 90% unit and integration coverage
+- **Performance**: API responses <200ms, UI interactions <100ms
+- **Code Quality**: ESLint strict rules, SonarQube rating A
+- **Modern Standards**: ES Modules, BEM CSS, atomic design
+
+#### **Functional Requirements**
+- **Data Preservation**: All 61 characters with unchanged IDs
+- **API Compatibility**: Existing endpoints maintain contracts
+- **UI Consistency**: Interface functionality preserved
+- **Export Systems**: JavaScript/JSON generation maintained
+- **Asset Management**: Sprite upload/display working correctly
+
+#### **Quality Requirements**
+- **Developer Experience**: Hot reload, clear errors, fast setup
+- **Maintainability**: Self-documenting code, clear separation
+- **Extensibility**: Easy to add new features without refactoring
+- **Team Collaboration**: Clear patterns for multi-developer work
+- **Educational Value**: Demonstrates clean architecture principles
+
+---
+
+## 🗺️ **PHASE 2: MAPS DATABASE SYSTEM - NEXT PHASE (Clean Architecture)**
+
+### **Post-Migration Tasks (After Clean Architecture Complete)**
+
+#### **🗺️ Maps Module - Clean Architecture Implementation**
+**Prerequisites**: Character Database clean architecture migration completed
+
+- [ ] **Map Domain Entity Design**
+  - [ ] Map entity following clean architecture patterns
+  - [ ] Boss integration using Character repository
+  - [ ] Unlock conditions as domain business rules
+  - [ ] Asset management following established patterns
+
+- [ ] **Maps Repository Pattern**
+  - [ ] MapRepository interface design
+  - [ ] JsonMapRepository implementation
+  - [ ] Integration with existing Character module
+  - [ ] Cross-module relationship management
+
+- [ ] **Service Layer Integration**
+  - [ ] MapService with business logic separation
+  - [ ] Character-Map relationship management
+  - [ ] Unlock progression business rules
+  - [ ] Export system for maps database
+
+- [ ] **Presentation Layer (BEM + ES6+)**
+  - [ ] Map creation form with BEM CSS methodology
+  - [ ] Component-based map list display
+  - [ ] ES6 modules for map management
+  - [ ] Modern search/filter with clean architecture patterns
 
 #### **🎨 Medium Priority - Visual Features**
 - [ ] **Map Visual Editor**
@@ -130,11 +225,20 @@
   - [ ] Progress persistence
   - [ ] Linear progression validation
 
-### **Technical Milestones**
-- [ ] **Week 1**: Core map database + CRUD operations
-- [ ] **Week 2**: Basic UI + character integration
-- [ ] **Week 3**: Visual editor + asset management
-- [ ] **Week 4**: Achievement system + progression logic
+### **Clean Architecture Technical Milestones**
+- [ ] **Week 1**: Domain entities and repository patterns
+- [ ] **Week 2**: Service layer and business logic implementation
+- [ ] **Week 3**: Presentation layer with BEM CSS and ES6+ modules
+- [ ] **Week 4**: Testing suite (90%+ coverage) and quality assurance
+- [ ] **Week 5**: Integration testing with Character module
+- [ ] **Week 6**: Performance optimization and deployment
+
+### **Architecture Validation Gates**
+- [ ] **Domain Review**: Business rules properly encapsulated
+- [ ] **SOLID Compliance**: All principles correctly implemented
+- [ ] **Testing Gate**: Comprehensive coverage achieved
+- [ ] **Performance Gate**: Core Web Vitals standards met
+- [ ] **Integration Gate**: Clean interfaces with existing modules
 
 ---
 
