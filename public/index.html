@@ -1,0 +1,3114 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPGStack - Character Database Manager v3.1.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            min-height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .version-badge {
+                top: 10px;
+                left: 10px;
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+        }
+
+        .server-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .server-status {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+        }
+
+        .server-status.online {
+            background: #28a745;
+            color: white;
+        }
+
+        .server-status.offline {
+            background: #dc3545;
+            color: white;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-right: 1px solid #dee2e6;
+            flex: 0 0 420px;
+            min-width: 380px;
+            max-width: 500px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .form-section {
+                flex: none;
+                border-right: none;
+                border-bottom: 1px solid #dee2e6;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-section {
+                padding: 15px;
+            }
+        }
+
+        .database-section {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .database-section {
+                padding: 15px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .sprite-file-container {
+            border: 2px dashed #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .sprite-file-container:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .sprite-file-container.dragover {
+            border-color: #667eea;
+            background: #e7f3ff;
+        }
+
+        .sprite-file-container.has-upload {
+            border-color: #17a2b8;
+            background: #e6f3ff;
+        }
+
+        .sprite-file-container.uploaded {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .image-preview {
+            max-width: 64px;
+            max-height: 64px;
+            border-radius: 8px;
+            margin: 10px auto;
+            display: none;
+            image-rendering: pixelated;
+            border: 2px solid #dee2e6;
+        }
+
+        .sprite-preview {
+            display: none;
+            margin: 10px auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 2px solid #dee2e6;
+            font-family: monospace;
+            color: #495057;
+            font-size: 12px;
+        }
+
+        .sprite-preview.show {
+            display: block;
+        }
+
+        .file-icon {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .file-text {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .remove-file-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                margin: 3px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 8px 16px;
+                font-size: 12px;
+                margin: 2px;
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .database-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            width: 250px;
+        }
+
+        .characters-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        /* Layout de Cards para Personagens */
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .character-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .character-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .character-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .character-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .character-id-card {
+            font-family: 'Courier New', monospace;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .character-id-card:hover {
+            background: #bbdefb;
+        }
+        
+        .character-sprite-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .character-sprite-card {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+        }
+        
+        .character-sprite-card img {
+            max-width: 50px;
+            max-height: 50px;
+            object-fit: contain;
+        }
+        
+        .sprite-placeholder {
+            font-size: 24px;
+        }
+        
+        .character-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .character-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .character-actions .btn {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        /* Responsividade para Cards */
+        @media (max-width: 768px) {
+            .characters-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .character-card {
+                padding: 15px;
+            }
+            
+            .character-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .character-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Estado vazio */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        /* NOVO: Estilos para ID hexadecimal */
+        .character-id {
+            font-family: 'Courier New', monospace;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid #bbdefb;
+            display: inline-block;
+            white-space: nowrap;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .character-id:hover {
+            background: #bbdefb;
+            cursor: pointer;
+            transform: scale(1.05);
+            transition: all 0.2s ease;
+        }
+
+        .character-sprite {
+            text-align: center;
+            width: 80px;
+            padding: 8px;
+        }
+
+        .character-sprite img {
+            max-width: 48px;
+            max-height: 48px;
+            border-radius: 6px;
+            image-rendering: pixelated;
+            border: 2px solid #dee2e6;
+            background: #f8f9fa;
+            transition: transform 0.2s ease;
+        }
+
+        .character-sprite img:hover {
+            transform: scale(2);
+            z-index: 10;
+            position: relative;
+            border-color: #667eea;
+        }
+
+        .sprite-path-text {
+            font-size: 10px;
+            color: #6c757d;
+            margin-top: 2px;
+            word-break: break-all;
+            font-family: monospace;
+        }
+
+        .sprite-error {
+            color: #dc3545;
+            font-size: 10px;
+            font-style: italic;
+        }
+
+        .sprite-placeholder {
+            width: 48px;
+            height: 48px;
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #6c757d;
+            margin: 0 auto;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .level-1-10 { background: #28a745; }
+        .level-11-20 { background: #ffc107; color: #000; }
+        .level-21-30 { background: #fd7e14; }
+        .level-31-plus { background: #dc3545; }
+
+        .ai-type {
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .ai-aggressive { background: #ffebee; color: #c62828; }
+        .ai-passive { background: #e8f5e8; color: #2e7d32; }
+        .ai-pack { background: #fff3e0; color: #ef6c00; }
+        .ai-ambush { background: #f3e5f5; color: #7b1fa2; }
+        .ai-guardian { background: #e3f2fd; color: #1565c0; }
+        .ai-caster { background: #fce4ec; color: #ad1457; }
+        .ai-tank { background: #efebe9; color: #5d4037; }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1100;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.info {
+            background: #17a2b8;
+        }
+
+        .drops-container, .skills-container {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            background: white;
+        }
+
+        .drop-item, .skill-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .drop-item input, .skill-item input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .file-info {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .auto-save-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
+        .auto-save-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* NOVO: Sistema HEX ID Info */
+        .hex-id-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .hex-id-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .hex-example {
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        /* Tooltip para IDs - REMOVIDO */
+        .tooltip {
+            position: relative;
+            cursor: pointer;
+        }
+
+        /* Modal para edição de personagens */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+                width: 95%;
+                max-height: 95vh;
+                border-radius: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 15px;
+                width: 98%;
+                border-radius: 8px;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #dc3545;
+        }
+
+        /* Melhorias para telas muito pequenas */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                border-radius: 10px;
+                min-height: calc(100vh - 10px);
+            }
+
+            .characters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .character-id-card {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+        }
+
+        /* Estilos para Tabela (layout original) */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .character-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 800px;
+        }
+        
+        .character-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 12px; /* Reduzido de 12px 15px */
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .character-table td {
+            padding: 6px 10px; /* Reduzido de 8px 12px */
+            border-bottom: 1px solid #e9ecef;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        
+        .character-table td:nth-child(1) {
+            min-width: 100px;
+            max-width: 100px;
+            overflow: hidden;
+        }
+        
+        /* Otimização de espaço: colunas Nome e Sprite */
+        .character-table th:nth-child(2), /* Nome */
+        .character-table td:nth-child(2) {
+            padding-left: 8px;
+            padding-right: 6px;
+            max-width: 120px;
+        }
+        
+        .character-table th:nth-child(3), /* Sprite */
+        .character-table td:nth-child(3) {
+            padding-left: 6px;
+            padding-right: 8px;
+            max-width: 100px;
+            text-align: center;
+        }
+        
+        .character-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        @media (max-width: 768px) {
+            .character-table th {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .character-table td {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            
+            .character-table {
+                min-width: 600px;
+            }
+        }
+
+        /* Scroll personalizado para webkit */
+        .characters-container::-webkit-scrollbar,
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .characters-container::-webkit-scrollbar-track,
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .characters-container::-webkit-scrollbar-thumb,
+        .table-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .characters-container::-webkit-scrollbar-thumb:hover,
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="version-badge">v3.1.0</div>
+            <div class="server-status" id="serverStatus">Verificando...</div>
+            <h1>RPGStack</h1>
+            <p>Sistema de gerenciamento com IDs hexadecimais únicos</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Cadastrar Novo Personagem</h2>
+                
+                <div class="hex-id-info">
+                    <strong>🔒 Sistema de ID IMUTÁVEL</strong>
+                    • IDs existentes: PRESERVADOS (nunca alterados)<br>
+                    • Novos personagens: ID hexadecimal único<br>
+                    • <strong>GARANTIA:</strong> IDs são permanentes para referências futuras
+                </div>
+
+                <div class="auto-save-info">
+                    <strong>🚀 Auto-Save Ativo:</strong>
+                    • Sprites salvam em: <code>assets/sprites/</code><br>
+                    • Dados salvam em: <code>data/characters.json</code><br>
+                    • Export automático: <code>exports/character_database.js</code>
+                </div>
+
+                <form id="characterForm">
+                    <div class="form-group">
+                        <label for="name">Nome do Personagem</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="level">Nível</label>
+                            <input type="number" id="level" name="level" min="1" max="50" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sprite do Personagem</label>
+                            <div class="sprite-file-container" id="spriteContainer" onclick="triggerImageUpload()">
+                                <div class="file-icon" id="fileIcon">🖼️</div>
+                                <div class="file-text" id="fileText">
+                                    <strong>Clique para fazer upload</strong><br>
+                                    ou arraste uma imagem aqui<br>
+                                    <small>Auto-save em assets/sprites/</small>
+                                </div>
+                                <img class="image-preview" id="imagePreview" alt="Preview">
+                                <input type="text" id="spriteFilename" name="spriteFilename" 
+                                       placeholder="Nome do arquivo (auto-sugerido)" 
+                                       style="margin-top: 10px; width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <div class="sprite-preview" id="spritePreview"></div>
+                                <div class="file-info" id="fileInfo"></div>
+                                <button type="button" class="remove-file-btn" id="removeFileBtn" onclick="clearSpriteFile(event)">Remover</button>
+                            </div>
+                            <input type="file" id="spriteInput" name="sprite" accept=".png,.jpg,.jpeg,.gif,.webp" style="display: none;" onchange="handleImageUpload(event)">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hp">HP</label>
+                            <input type="number" id="hp" name="hp" min="1" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="attack">Ataque</label>
+                            <input type="number" id="attack" name="attack" min="1" value="10" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="defense">Defesa</label>
+                            <input type="number" id="defense" name="defense" min="0" value="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="experience">Experiência</label>
+                            <input type="number" id="experience" name="experience" min="1" value="25" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="goldMin">Gold Mínimo</label>
+                            <input type="number" id="goldMin" name="goldMin" min="0" value="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="goldMax">Gold Máximo</label>
+                            <input type="number" id="goldMax" name="goldMax" min="0" value="15" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aiType">Tipo de IA</label>
+                        <select id="aiType" name="aiType" required>
+                            <option value="aggressive">Agressiva</option>
+                            <option value="passive">Passiva</option>
+                            <option value="pack">Matilha</option>
+                            <option value="ambush">Emboscada</option>
+                            <option value="guardian">Guardião</option>
+                            <option value="caster">Conjurador</option>
+                            <option value="tank">Tanque</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="spawnWeight">Peso de Spawn</label>
+                        <input type="number" id="spawnWeight" name="spawnWeight" min="1" max="20" value="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Descrição</label>
+                        <textarea id="description" name="description" rows="3" placeholder="Descrição do personagem..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Drops</label>
+                        <div class="drops-container" id="dropsContainer">
+                            <button type="button" class="add-btn" onclick="addDrop()">+ Adicionar Drop</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Skills</label>
+                        <div class="skills-container" id="skillsContainer">
+                            <button type="button" class="add-btn" onclick="addSkill()">+ Adicionar Skill</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 30px;">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Salvar com ID Único</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">Limpar Formulário</button>
+                    </div>
+
+                    <div class="loading" id="loadingIndicator">
+                        <p>💾 Gerando ID único e salvando...</p>
+                    </div>
+                </form>
+            </div>
+
+            <div class="database-section">
+                <div class="database-controls">
+                    <h2>Banco de Dados</h2>
+                    <div style="display: flex; justify-content: center;">
+                        <input type="text" class="search-box" placeholder="Buscar por nome ou ID..." id="searchBox" onkeyup="filterCharacters()">
+                    </div>
+                </div>
+
+                <div class="action-buttons" style="display: flex; gap: 15px; align-items: center; justify-content: flex-end; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <button class="btn btn-small" style="background: #6c757d; color: white;" onclick="downloadExport('js')">Download JS</button>
+                    <button class="btn btn-small" style="background: #6c757d; color: white;" onclick="refreshTable()">Atualizar</button>
+                    <button class="btn btn-small" style="background: #6c757d; color: white;" onclick="openBulkImportModal()">Importação</button>
+                    <button class="btn btn-small" style="background: #6c757d; color: white;" onclick="bulkExportCharacters()">Exportação</button>
+                    <button class="btn btn-small" style="background: #6c757d; color: white;" onclick="openBackupModal()">Backup</button>
+                </div>
+
+                <!-- Informações da Paginação -->
+                <div class="pagination-info" id="paginationInfo" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px 15px; background: #f8f9fa; border-radius: 6px; font-size: 14px; color: #6c757d;">
+                    <span id="itemsInfo">Carregando...</span>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span id="pageInfo"></span>
+                        <button class="btn btn-small" id="viewToggleBtn" style="background: #6c757d; color: white;" onclick="toggleViewMode()">Ver Tabela</button>
+                    </div>
+                </div>
+
+                <!-- Layout Cards -->
+                <div class="characters-container" id="cardsContainer">
+                    <div class="characters-grid" id="charactersGrid">
+                        <div class="empty-state">
+                            <h3>Carregando personagens...</h3>
+                            <p>Por favor, aguarde enquanto os dados são carregados.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Layout Tabela -->
+                <div class="table-container" id="tableContainer" style="display: none;">
+                    <table class="character-table">
+                        <thead>
+                            <tr>
+                                <th>ID (Hex)</th>
+                                <th>Nome</th>
+                                <th>Sprite</th>
+                                <th>Level</th>
+                                <th>HP</th>
+                                <th>ATK</th>
+                                <th>DEF</th>
+                                <th>EXP</th>
+                                <th>Gold</th>
+                                <th>IA</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="charactersTableBody">
+                            <tr>
+                                <td colspan="11" style="text-align: center; padding: 20px; color: #6c757d;">
+                                    Carregando personagens...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Controles de Paginação -->
+                <div class="pagination-controls" id="paginationControls" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Editar Personagem</h2>
+                <button class="close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            <form id="editCharacterForm">
+                <input type="hidden" id="editCharacterId" name="id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editName">Nome do Personagem</label>
+                        <input type="text" id="editName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLevel">Level</label>
+                        <input type="number" id="editLevel" name="level" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editSprite">🖼️ Sprite (Opcional)</label>
+                    <div class="upload-area" id="editSpriteContainer" onclick="triggerEditImageUpload()" style="cursor: pointer; border: 2px dashed #dee2e6; padding: 15px; border-radius: 8px; text-align: center; background: #f8f9fa;">
+                        <div class="file-icon" id="editFileIcon">📥</div>
+                        <div class="file-text" id="editFileText">
+                            <strong>Clique para alterar sprite</strong><br>
+                            ou arraste uma nova imagem aqui<br>
+                        </div>
+                        <div id="editSpritePreview" class="sprite-preview" style="display: none;">
+                            <!-- Preview será mostrado aqui -->
+                        </div>
+                        <input type="file" id="editSpriteInput" name="sprite" accept=".png,.jpg,.jpeg,.gif,.webp" style="display: none;" onchange="handleEditImageUpload(event)">
+                        <button type="button" id="editRemoveFileBtn" class="remove-file-btn" onclick="clearEditSpriteFile(event)" style="display: none;">Remover</button>
+                    </div>
+                    
+                    <!-- Campo para nome do arquivo de sprite -->
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label for="editSpriteFilename">📝 Nome do arquivo sprite</label>
+                        <input type="text" id="editSpriteFilename" name="spriteFilename" placeholder="Ex: goblin_warrior.png">
+                        <div style="font-size: 11px; color: #6c757d; margin-top: 2px;">
+                            ✏️ <strong>Edite apenas o nome</strong> para renomear o arquivo atual<br>
+                            🔄 <strong>Faça upload</strong> para substituir por nova sprite<br>
+                            💡 Deixe vazio para gerar automaticamente
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 11px; color: #17a2b8; margin-top: 5px; padding: 8px; background: #e6f3ff; border-radius: 4px; border-left: 3px solid #17a2b8;">
+                        <strong>💡 Dica:</strong> Você pode renomear a sprite existente alterando apenas o campo "Nome do arquivo sprite" acima, sem precisar fazer upload de nova imagem.
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editHp">HP</label>
+                        <input type="number" id="editHp" name="hp" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAttack">Ataque</label>
+                        <input type="number" id="editAttack" name="attack" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editDefense">Defesa</label>
+                        <input type="number" id="editDefense" name="defense" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editExperience">Experiência</label>
+                        <input type="number" id="editExperience" name="experience" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editGoldMin">Gold Mínimo</label>
+                        <input type="number" id="editGoldMin" name="goldMin" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editGoldMax">Gold Máximo</label>
+                        <input type="number" id="editGoldMax" name="goldMax" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editAiType">Tipo de IA</label>
+                        <select id="editAiType" name="aiType" required>
+                            <option value="aggressive">Agressiva</option>
+                            <option value="passive">Passiva</option>
+                            <option value="pack">Bando</option>
+                            <option value="ambush">Emboscada</option>
+                            <option value="guardian">Guardião</option>
+                            <option value="caster">Conjurador</option>
+                            <option value="tank">Tanque</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSpawnWeight">Peso de Spawn</label>
+                        <input type="number" id="editSpawnWeight" name="spawnWeight" min="1" max="20" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescription">Descrição (Opcional)</label>
+                    <textarea id="editDescription" name="description" rows="3" placeholder="Descrição do personagem..."></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Importação em Massa -->
+    <div class="modal-overlay" id="bulkImportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📥 Importação em Massa</h2>
+                <button class="close-btn" onclick="closeBulkImportModal()">×</button>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <p><strong>📋 Instruções:</strong></p>
+                <ul style="margin-left: 20px; color: #666;">
+                    <li>Selecione um arquivo JSON com a estrutura: <code>{"characters": {...}}</code></li>
+                    <li>IDs conflitantes receberão novos IDs hexadecimais automaticamente</li>
+                    <li>Personagens com dados inválidos serão ignorados</li>
+                    <li>Tamanho máximo do arquivo: 10MB</li>
+                </ul>
+            </div>
+
+            <form id="bulkImportForm">
+                <div class="form-group">
+                    <label for="bulkImportFile">Arquivo JSON</label>
+                    <div class="upload-area" onclick="document.getElementById('bulkImportFile').click()">
+                        <div id="bulkImportPreview" class="sprite-preview">📁 Clique para selecionar arquivo JSON</div>
+                        <input type="file" id="bulkImportFile" name="bulkData" accept=".json,application/json" style="display: none;" onchange="handleBulkImportFileSelect(event)">
+                    </div>
+                </div>
+
+                <div id="bulkImportProgress" style="display: none; margin: 20px 0;">
+                    <div style="background: #e9ecef; border-radius: 10px; overflow: hidden;">
+                        <div id="bulkImportProgressBar" style="background: #28a745; height: 20px; width: 0%; transition: width 0.3s;"></div>
+                    </div>
+                    <p id="bulkImportProgressText" style="text-align: center; margin-top: 5px;">Processando...</p>
+                </div>
+
+                <div id="bulkImportResults" style="display: none; margin: 20px 0; max-height: 300px; overflow-y: auto;">
+                    <h4>📊 Resultados da Importação:</h4>
+                    <div id="bulkImportSummary"></div>
+                    <div id="bulkImportDetails"></div>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeBulkImportModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="bulkImportSubmitBtn" disabled>📥 Importar Personagens</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Backup e Restauração -->
+    <div class="modal-overlay" id="backupModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>💾 Sistema de Backup</h2>
+                <button class="close-btn" onclick="closeBackupModal()">×</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <!-- Seção de Criar Backup -->
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h3>📦 Criar Backup</h3>
+                    <p style="margin: 10px 0; font-size: 14px; color: #6c757d;">
+                        Crie um backup manual dos seus personagens
+                    </p>
+                    <button class="btn btn-primary" onclick="createManualBackup()" id="createBackupBtn">
+                        📦 Criar Backup Agora
+                    </button>
+                </div>
+                
+                <!-- Informações do Sistema -->
+                <div style="padding: 20px; background: #e8f5e8; border-radius: 8px;">
+                    <h3>🤖 Backups Automáticos</h3>
+                    <p style="margin: 10px 0; font-size: 14px; color: #2e7d32;">
+                        • Backup automático antes de deletar<br>
+                        • Backup antes de importação em massa<br>
+                        • Mantém últimos 10 backups automáticos
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Lista de Backups -->
+            <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px;">
+                <h3>📋 Backups Disponíveis</h3>
+                <div id="backupList" style="margin-top: 15px;">
+                    <div style="text-align: center; color: #6c757d; padding: 20px;">
+                        Carregando backups...
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeBackupModal()">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="loadBackupList()">🔄 Atualizar Lista</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração da API
+        const API_BASE = 'http://localhost:3002/api';
+        let serverOnline = false;
+        let currentImageData = null;
+        
+        // Variáveis para edição de sprite
+        let editCurrentImageData = null;
+        let originalSpriteFilename = null;
+
+
+        // **FUNÇÃO ATUALIZADA**: Copiar ID para clipboard
+        function copyIdToClipboard(id, element) {
+            navigator.clipboard.writeText(id).then(() => {
+                element.style.background = '#28a745';
+                element.style.color = 'white';
+                element.textContent = 'COPIADO!';
+                
+                setTimeout(() => {
+                    element.style.background = '#e3f2fd';
+                    element.style.color = '#1565c0';
+                    element.textContent = id;
+                }, 1000);
+                
+                showNotification(`📋 ID copiado: ${id}`, 'info');
+            }).catch(() => {
+                showNotification('❌ Erro ao copiar ID', 'error');
+            });
+        }
+
+        // Verificar status do servidor
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/test`);
+                const result = await response.json();
+                serverOnline = response.ok;
+                updateServerStatus(true, result.idSystem || 'Hexadecimal');
+                loadCharacters();
+                
+                // Não gerar ID exemplo automaticamente - apenas quando solicitado
+            } catch (error) {
+                serverOnline = false;
+                updateServerStatus(false);
+                showNotification('⚠️ Servidor offline! Inicie o backend primeiro.', 'error');
+            }
+        }
+
+        // **FUNÇÃO ATUALIZADA**: Atualizar indicador de status
+        function updateServerStatus(online, idSystem = '') {
+            const statusEl = document.getElementById('serverStatus');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (online) {
+                statusEl.textContent = `🟢 Online (ID Preservado)`;
+                statusEl.className = 'server-status online';
+                submitBtn.disabled = false;
+            } else {
+                statusEl.textContent = '🔴 Offline';
+                statusEl.className = 'server-status offline';
+                submitBtn.disabled = true;
+            }
+        }
+
+        // Carregar personagens do servidor
+        // **FUNÇÃO ATUALIZADA**: Carregar personagens do servidor com paginação
+        async function loadCharacters(retries = 3) {
+            if (!serverOnline) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/characters`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                allCharacters = data.characters || data || {};
+                filteredCharacters = allCharacters;
+                currentPage = 1;
+                renderTable(filteredCharacters, currentPage);
+            } catch (error) {
+                console.error('Erro ao carregar personagens:', error);
+                
+                // Tentar novamente se ainda temos tentativas
+                if (retries > 0) {
+                    console.log(`Tentando novamente... (${retries} tentativas restantes)`);
+                    setTimeout(() => loadCharacters(retries - 1), 500);
+                } else {
+                    showNotification('Erro ao carregar dados do servidor', 'error');
+                }
+            }
+        }
+
+        // Trigger upload de imagem
+        function triggerImageUpload() {
+            if (serverOnline) {
+                document.getElementById('spriteInput').click();
+            } else {
+                showNotification('Servidor offline! Não é possível fazer upload.', 'error');
+            }
+        }
+
+        // Manipular upload de imagem
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Verificar tipo de arquivo
+            const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                showNotification('Formato de arquivo não suportado!', 'error');
+                return;
+            }
+
+            // Verificar tamanho (máx 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showNotification('Arquivo muito grande! Máximo 2MB.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageData = e.target.result;
+                updateImagePreview(file);
+                
+                // Upload automático da sprite
+                if (serverOnline) {
+                    uploadSprite(e.target.result, file.name);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Upload da sprite para o servidor
+        async function uploadSprite(imageData, originalName) {
+            const nameInput = document.getElementById('name').value.trim();
+            const filenameInput = document.getElementById('spriteFilename');
+            
+            if (!nameInput) {
+                showNotification('Digite o nome do personagem primeiro!', 'error');
+                return;
+            }
+
+            const extension = originalName.split('.').pop().toLowerCase();
+            const suggestedName = `${nameInput.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}.${extension}`;
+            
+            if (!filenameInput.value.trim()) {
+                filenameInput.value = suggestedName;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/upload-sprite`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        imageData: imageData,
+                        filename: filenameInput.value || suggestedName
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`✅ Sprite salva automaticamente em: ${result.path}`, 'success');
+                    document.getElementById('spriteContainer').classList.add('uploaded');
+                    updateSpritePreview();
+                } else {
+                    showNotification('Erro ao salvar sprite: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Erro de conexão ao salvar sprite', 'error');
+            }
+        }
+
+        // Atualizar preview da imagem
+        function updateImagePreview(file) {
+            const preview = document.getElementById('imagePreview');
+            const fileInfo = document.getElementById('fileInfo');
+            const removeBtn = document.getElementById('removeFileBtn');
+            const uploadText = document.getElementById('fileText');
+            const uploadIcon = document.getElementById('fileIcon');
+            const container = document.getElementById('spriteContainer');
+
+            preview.src = currentImageData;
+            preview.style.display = 'block';
+            removeBtn.style.display = 'inline-block';
+            
+            uploadText.style.display = 'none';
+            uploadIcon.style.display = 'none';
+            container.classList.add('has-upload');
+
+            const sizeKB = Math.round(file.size / 1024);
+            fileInfo.textContent = `Upload: ${file.name} (${sizeKB}KB)`;
+
+            updateSpritePreview();
+        }
+
+        // Atualizar preview do caminho
+        function updateSpritePreview() {
+            const nameInput = document.getElementById('name');
+            const filenameInput = document.getElementById('spriteFilename');
+            const preview = document.getElementById('spritePreview');
+            
+            const filename = filenameInput.value.trim();
+            
+            if (filename) {
+                const spritePath = `assets/sprites/${filename}`;
+                preview.innerHTML = `📁 Salvo em: <strong>${spritePath}</strong>`;
+                preview.classList.add('show');
+            } else {
+                preview.classList.remove('show');
+            }
+        }
+
+        // Limpar arquivo sprite
+        function clearSpriteFile(event) {
+            event.stopPropagation();
+            
+            currentImageData = null;
+            const preview = document.getElementById('imagePreview');
+            const fileInfo = document.getElementById('fileInfo');
+            const removeBtn = document.getElementById('removeFileBtn');
+            const uploadText = document.getElementById('fileText');
+            const uploadIcon = document.getElementById('fileIcon');
+            const input = document.getElementById('spriteInput');
+            const container = document.getElementById('spriteContainer');
+            const filenameInput = document.getElementById('spriteFilename');
+            const spritePreview = document.getElementById('spritePreview');
+
+            preview.style.display = 'none';
+            removeBtn.style.display = 'none';
+            uploadText.style.display = 'block';
+            uploadIcon.style.display = 'block';
+            fileInfo.textContent = '';
+            input.value = '';
+            filenameInput.value = '';
+            
+            container.classList.remove('has-upload', 'uploaded');
+            spritePreview.classList.remove('show');
+        }
+
+        // Event listeners
+        document.getElementById('name').addEventListener('input', updateSpritePreview);
+        document.getElementById('spriteFilename').addEventListener('input', updateSpritePreview);
+
+        // Drag and Drop
+        const uploadContainer = document.getElementById('spriteContainer');
+        
+        uploadContainer.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (serverOnline) {
+                uploadContainer.classList.add('dragover');
+            }
+        });
+
+        uploadContainer.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadContainer.classList.remove('dragover');
+        });
+
+        uploadContainer.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadContainer.classList.remove('dragover');
+            
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const input = document.getElementById('spriteInput');
+                
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+                
+                handleImageUpload({ target: { files: [file] } });
+            }
+        });
+
+        // Adicionar drop
+        function addDrop() {
+            const container = document.getElementById('dropsContainer');
+            const dropDiv = document.createElement('div');
+            dropDiv.className = 'drop-item';
+            dropDiv.innerHTML = `
+                <input type="text" placeholder="Nome do item" name="dropName[]">
+                <input type="number" placeholder="Chance (0-1)" step="0.01" min="0" max="1" name="dropChance[]">
+                <input type="text" placeholder="Tipo" name="dropType[]">
+                <input type="number" placeholder="Valor" name="dropValue[]">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(dropDiv);
+        }
+
+        // Adicionar skill
+        function addSkill() {
+            const container = document.getElementById('skillsContainer');
+            const skillDiv = document.createElement('div');
+            skillDiv.className = 'skill-item';
+            skillDiv.innerHTML = `
+                <input type="text" placeholder="Nome da skill" name="skillName[]">
+                <input type="number" placeholder="Dano" name="skillDamage[]">
+                <input type="number" placeholder="Custo stamina" name="skillCost[]">
+                <input type="number" placeholder="Chance (0-1)" step="0.01" min="0" max="1" name="skillChance[]">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(skillDiv);
+        }
+
+        // **FUNÇÃO ATUALIZADA**: Processar formulário com IDs hexadecimais
+        document.getElementById('characterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!serverOnline) {
+                showNotification('Servidor offline! Não é possível salvar.', 'error');
+                return;
+            }
+
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            loadingIndicator.classList.add('show');
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                
+                // Dados básicos
+                formData.append('name', document.getElementById('name').value);
+                formData.append('level', document.getElementById('level').value);
+                formData.append('hp', document.getElementById('hp').value);
+                formData.append('attack', document.getElementById('attack').value);
+                formData.append('defense', document.getElementById('defense').value);
+                formData.append('experience', document.getElementById('experience').value);
+                formData.append('goldMin', document.getElementById('goldMin').value);
+                formData.append('goldMax', document.getElementById('goldMax').value);
+                formData.append('aiType', document.getElementById('aiType').value);
+                formData.append('spawnWeight', document.getElementById('spawnWeight').value);
+                formData.append('description', document.getElementById('description').value);
+                formData.append('spriteFilename', document.getElementById('spriteFilename').value);
+
+                // Sprite file (se houver)
+                const spriteInput = document.getElementById('spriteInput');
+                if (spriteInput.files[0]) {
+                    formData.append('sprite', spriteInput.files[0]);
+                }
+
+                // Coletar drops
+                const drops = [];
+                const dropNames = document.getElementsByName('dropName[]');
+                const dropChances = document.getElementsByName('dropChance[]');
+                const dropTypes = document.getElementsByName('dropType[]');
+                const dropValues = document.getElementsByName('dropValue[]');
+                
+                for (let i = 0; i < dropNames.length; i++) {
+                    if (dropNames[i].value.trim()) {
+                        drops.push({
+                            item: dropNames[i].value,
+                            chance: parseFloat(dropChances[i].value) || 0.1,
+                            type: dropTypes[i].value || 'material',
+                            value: parseInt(dropValues[i].value) || 5
+                        });
+                    }
+                }
+                formData.append('drops', JSON.stringify(drops));
+
+                // Coletar skills
+                const skills = [];
+                const skillNames = document.getElementsByName('skillName[]');
+                const skillDamages = document.getElementsByName('skillDamage[]');
+                const skillCosts = document.getElementsByName('skillCost[]');
+                const skillChances = document.getElementsByName('skillChance[]');
+                
+                for (let i = 0; i < skillNames.length; i++) {
+                    if (skillNames[i].value.trim()) {
+                        skills.push({
+                            name: skillNames[i].value,
+                            damage: parseInt(skillDamages[i].value) || 10,
+                            stamina_cost: parseInt(skillCosts[i].value) || 5,
+                            chance: parseFloat(skillChances[i].value) || 0.3
+                        });
+                    }
+                }
+                formData.append('skills', JSON.stringify(skills));
+
+                // Enviar para o servidor
+                const response = await fetch(`${API_BASE}/characters`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`✅ Personagem salvo com ID IMUTÁVEL: ${result.character.id}!
+🔒 Este ID nunca será alterado
+📁 Sprite: ${result.files.sprite || 'Nenhuma'}
+📄 Banco: ${result.files.database}  
+🚀 Export: ${result.files.export}`, 'success');
+                    
+                    clearForm();
+                    // Aguardar um momento para garantir que o servidor terminou de salvar
+                    setTimeout(() => loadCharacters(), 300);
+                } else {
+                    showNotification('Erro ao salvar: ' + result.error, 'error');
+                }
+
+            } catch (error) {
+                console.error('Erro:', error);
+                showNotification('Erro de conexão com o servidor', 'error');
+            } finally {
+                loadingIndicator.classList.remove('show');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Limpar formulário
+        function clearForm() {
+            document.getElementById('characterForm').reset();
+            document.getElementById('dropsContainer').innerHTML = '<button type="button" class="add-btn" onclick="addDrop()">+ Adicionar Drop</button>';
+            document.getElementById('skillsContainer').innerHTML = '<button type="button" class="add-btn" onclick="addSkill()">+ Adicionar Skill</button>';
+            clearSpriteFile(new Event('click'));
+        }
+
+        // **VARIÁVEIS DE PAGINAÇÃO E LAYOUT**
+        let currentPage = 1;
+        let itemsPerPage = 20;
+        let allCharacters = {};
+        let filteredCharacters = {};
+        let viewMode = 'cards'; // 'cards' ou 'table'
+
+        // **FUNÇÃO ATUALIZADA**: Renderizar tabela com paginação
+        // **FUNÇÃO UNIFICADA**: Renderizar cards ou tabela baseado no viewMode
+        function renderTable(characters, page = 1) {
+            if (viewMode === 'cards') {
+                renderCards(characters, page);
+            } else {
+                renderTableView(characters, page);
+            }
+        }
+        
+        // Renderizar layout de cards
+        function renderCards(characters, page = 1) {
+            const container = document.getElementById('charactersGrid');
+            container.innerHTML = '';
+
+            if (!characters || Object.keys(characters).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Nenhum personagem encontrado</h3>
+                        <p>Nenhum personagem foi cadastrado ainda ou corresponde à sua pesquisa.</p>
+                    </div>
+                `;
+                updatePaginationInfo(0, 0);
+                renderPaginationControls(0);
+                return;
+            }
+
+            // Calcular paginação
+            const charactersArray = Object.values(characters);
+            const totalItems = charactersArray.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageCharacters = charactersArray.slice(startIndex, endIndex);
+
+            // Atualizar informações da paginação
+            updatePaginationInfo(totalItems, totalPages);
+            renderPaginationControls(totalPages);
+
+            // Renderizar personagens como cards
+            pageCharacters.forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                
+                const levelClass = char.level <= 10 ? 'level-1-10' : 
+                                 char.level <= 20 ? 'level-11-20' : 
+                                 char.level <= 30 ? 'level-21-30' : 'level-31-plus';
+
+                // Criar seção da sprite
+                let spriteSection = `<div class="sprite-placeholder">🎭</div>`;
+                if (char.sprite) {
+                    const timestamp = new Date().getTime();
+                    const spriteUrl = `http://localhost:3002/${char.sprite}?v=${timestamp}`;
+                    spriteSection = `
+                        <img src="${spriteUrl}" 
+                             alt="${char.name}" 
+                             title="Sprite: ${char.name}"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="sprite-error" style="display: none;">❌</div>
+                    `;
+                }
+
+                // ID com estilo
+                const isHexId = /^[A-F0-9]{10}$/i.test(char.id);
+                const idType = isHexId ? 'HEX' : 'LEGACY';
+                const idColor = isHexId ? '#1565c0' : '#f57c00';
+                const idBg = isHexId ? '#e3f2fd' : '#fff3e0';
+
+                card.innerHTML = `
+                    <div class="character-header">
+                        <h3 class="character-name">${char.name}</h3>
+                        <span class="character-id-card" 
+                              onclick="copyIdToClipboard('${char.id}', this)"
+                              title="Clique para copiar: ${char.id} (${idType})"
+                              style="background: ${idBg}; color: ${idColor};">
+                            ${char.id}
+                        </span>
+                    </div>
+                    
+                    <div class="character-sprite-section">
+                        <div class="character-sprite-card">
+                            ${spriteSection}
+                        </div>
+                        <div>
+                            <div class="stat-item" style="display: inline-block; margin-right: 10px;">
+                                <div class="stat-label">Level</div>
+                                <div class="stat-value level-badge ${levelClass}">${char.level}</div>
+                            </div>
+                            <div class="stat-item" style="display: inline-block;">
+                                <div class="stat-label">IA</div>
+                                <div class="stat-value ai-type ai-${char.ai_type}">${char.ai_type || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="character-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">HP</div>
+                            <div class="stat-value">${char.hp}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">ATK</div>
+                            <div class="stat-value">${char.attack}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">DEF</div>
+                            <div class="stat-value">${char.defense}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">EXP</div>
+                            <div class="stat-value">${char.experience || 'N/A'}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Gold</div>
+                            <div class="stat-value">${char.goldRange ? `${char.goldRange[0]}-${char.goldRange[1]}` : 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="character-actions">
+                        <button class="btn btn-primary btn-small" onclick="editCharacter('${char.id}')">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteCharacter('${char.id}')">
+                            🗑️ Excluir
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        // Renderizar layout de tabela
+        function renderTableView(characters, page = 1) {
+            const tbody = document.getElementById('charactersTableBody');
+            tbody.innerHTML = '';
+
+            if (!characters || Object.keys(characters).length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 20px; color: #6c757d;">
+                            Nenhum personagem cadastrado ainda.
+                        </td>
+                    </tr>
+                `;
+                updatePaginationInfo(0, 0);
+                renderPaginationControls(0);
+                return;
+            }
+
+            // Calcular paginação
+            const charactersArray = Object.values(characters);
+            const totalItems = charactersArray.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageCharacters = charactersArray.slice(startIndex, endIndex);
+
+            // Atualizar informações da paginação
+            updatePaginationInfo(totalItems, totalPages);
+            renderPaginationControls(totalPages);
+
+            // Renderizar personagens da página atual
+            pageCharacters.forEach(char => {
+                const row = document.createElement('tr');
+                
+                const levelClass = char.level <= 10 ? 'level-1-10' : 
+                                 char.level <= 20 ? 'level-11-20' : 
+                                 char.level <= 30 ? 'level-21-30' : 'level-31-plus';
+
+                // Criar célula da sprite com imagem real + cache busting
+                let spriteCell = `<div class="sprite-placeholder">🎭</div>`;
+                if (char.sprite) {
+                    const timestamp = new Date().getTime();
+                    const spriteUrl = `http://localhost:3002/${char.sprite}?v=${timestamp}`;
+                    spriteCell = `
+                        <img src="${spriteUrl}" 
+                             alt="${char.name}" 
+                             title="Sprite: ${char.name}"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="sprite-error" style="display: none;">❌ Erro ao carregar</div>
+                        <div class="sprite-path-text">${char.sprite.split('/').pop()}</div>
+                    `;
+                }
+
+                // **NOVO**: Célula do ID com indicação de tipo apenas no tooltip
+                let hexIdCell;
+                const isHexId = /^[A-F0-9]{10}$/i.test(char.id);
+                const idType = isHexId ? 'HEX' : 'LEGACY';
+                const idColor = isHexId ? '#1565c0' : '#f57c00';
+                const idBg = isHexId ? '#e3f2fd' : '#fff3e0';
+                
+                hexIdCell = `
+                    <span class="character-id tooltip" 
+                          onclick="copyIdToClipboard('${char.id}', this)"
+                          title="Clique para copiar: ${char.id} (${idType})"
+                          style="background: ${idBg}; color: ${idColor}; border-color: ${idColor}40;">
+                        ${char.id}
+                    </span>
+                `;
+
+                // Truncar nome para a tabela
+                const truncatedName = truncateText(char.name, 10);
+                
+                row.innerHTML = `
+                    <td>${hexIdCell}</td>
+                    <td><strong title="${char.name}">${truncatedName}</strong></td>
+                    <td class="character-sprite">${spriteCell}</td>
+                    <td><span class="level-badge ${levelClass}">${char.level}</span></td>
+                    <td>${char.hp}</td>
+                    <td>${char.attack}</td>
+                    <td>${char.defense}</td>
+                    <td>${char.experience || 'N/A'}</td>
+                    <td>${char.goldRange ? `${char.goldRange[0]}-${char.goldRange[1]}` : 'N/A'}</td>
+                    <td><span class="ai-type ai-${char.ai_type}">${char.ai_type || 'N/A'}</span></td>
+                    <td>
+                        <button class="btn btn-primary btn-small" onclick="editCharacter('${char.id}')" style="margin-right: 5px;">✏️ Editar</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteCharacter('${char.id}')">🗑️ Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // **FUNÇÕES DE PAGINAÇÃO**
+        
+        // Atualizar informações da paginação
+        function updatePaginationInfo(totalItems, totalPages) {
+            const itemsInfo = document.getElementById('itemsInfo');
+            const pageInfo = document.getElementById('pageInfo');
+            
+            if (totalItems === 0) {
+                itemsInfo.textContent = 'Nenhum personagem encontrado';
+                pageInfo.textContent = '';
+            } else {
+                const startItem = ((currentPage - 1) * itemsPerPage) + 1;
+                const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+                itemsInfo.textContent = `Mostrando ${startItem}-${endItem} de ${totalItems} personagens`;
+                pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+            }
+        }
+        
+        // Renderizar controles de paginação
+        function renderPaginationControls(totalPages) {
+            const container = document.getElementById('paginationControls');
+            container.innerHTML = '';
+            
+            if (totalPages <= 1) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            
+            // Botão Primeira Página
+            if (currentPage > 1) {
+                const firstBtn = createPaginationButton('❮❮', 1, 'Primeira página');
+                container.appendChild(firstBtn);
+            }
+            
+            // Botão Página Anterior
+            if (currentPage > 1) {
+                const prevBtn = createPaginationButton('❮', currentPage - 1, 'Página anterior');
+                container.appendChild(prevBtn);
+            }
+            
+            // Números das páginas
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = createPaginationButton(i, i, `Página ${i}`, i === currentPage);
+                container.appendChild(pageBtn);
+            }
+            
+            // Botão Próxima Página
+            if (currentPage < totalPages) {
+                const nextBtn = createPaginationButton('❯', currentPage + 1, 'Próxima página');
+                container.appendChild(nextBtn);
+            }
+            
+            // Botão Última Página
+            if (currentPage < totalPages) {
+                const lastBtn = createPaginationButton('❯❯', totalPages, 'Última página');
+                container.appendChild(lastBtn);
+            }
+        }
+        
+        // Criar botão de paginação
+        function createPaginationButton(text, page, title, isActive = false) {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.title = title;
+            button.onclick = () => goToPage(page);
+            
+            button.style.cssText = `
+                padding: 8px 12px;
+                margin: 0 2px;
+                border: 1px solid #dee2e6;
+                background: ${isActive ? '#007bff' : 'white'};
+                color: ${isActive ? 'white' : '#495057'};
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                min-width: 40px;
+                transition: all 0.2s;
+            `;
+            
+            if (!isActive) {
+                button.addEventListener('mouseenter', function() {
+                    this.style.background = '#e9ecef';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.background = 'white';
+                });
+            }
+            
+            return button;
+        }
+        
+        // Navegar para página específica
+        function goToPage(page) {
+            const totalPages = Math.ceil(Object.keys(filteredCharacters).length / itemsPerPage);
+            
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderTable(filteredCharacters, currentPage);
+        }
+        
+        // **FUNÇÃO AUXILIAR**
+        
+        // Truncar texto com limite de caracteres
+        function truncateText(text, maxLength = 10) {
+            if (!text || text.length <= maxLength) {
+                return text || 'N/A';
+            }
+            return text.substring(0, maxLength) + '...';
+        }
+        
+        // **FUNÇÕES DE ALTERNAÇÃO DE LAYOUT**
+        
+        // Alternar entre visualização de cards e tabela
+        function toggleViewMode() {
+            const btn = document.getElementById('viewToggleBtn');
+            const cardsContainer = document.getElementById('cardsContainer');
+            const tableContainer = document.getElementById('tableContainer');
+            
+            if (viewMode === 'cards') {
+                // Trocar para tabela
+                viewMode = 'table';
+                btn.innerHTML = 'Ver Cards';
+                btn.style.background = '#6c757d'; // Cor padrão
+                cardsContainer.style.display = 'none';
+                tableContainer.style.display = 'block';
+            } else {
+                // Trocar para cards
+                viewMode = 'cards';
+                btn.innerHTML = 'Ver Tabela';
+                btn.style.background = '#6c757d'; // Cor padrão
+                cardsContainer.style.display = 'block';
+                tableContainer.style.display = 'none';
+            }
+            
+            // Re-renderizar com o novo layout
+            renderTable(filteredCharacters, currentPage);
+        }
+
+        // **FUNÇÃO ATUALIZADA**: Excluir personagem (agora com ID string)
+        async function deleteCharacter(id) {
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            if (confirm(`Tem certeza que deseja excluir o personagem com ID: ${id}?`)) {
+                try {
+                    const response = await fetch(`${API_BASE}/characters/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification(`✅ Personagem excluído automaticamente! (ID: ${id})`, 'success');
+                        // Aguardar um momento para garantir que o backup e exclusão terminaram
+                        setTimeout(() => loadCharacters(), 300);
+                    } else {
+                        showNotification('Erro ao excluir: ' + result.error, 'error');
+                    }
+                } catch (error) {
+                    showNotification('Erro de conexão', 'error');
+                }
+            }
+        }
+
+        // **FUNÇÃO ATUALIZADA**: Filtrar personagens (incluindo busca por ID)
+        // **FUNÇÃO ATUALIZADA**: Filtrar personagens com paginação
+        function filterCharacters() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            
+            if (!searchTerm) {
+                // Se não há filtro, mostrar todos os personagens
+                filteredCharacters = allCharacters;
+            } else {
+                // Filtrar personagens
+                const filtered = {};
+                
+                Object.entries(allCharacters).forEach(([key, char]) => {
+                    const matchesName = char.name.toLowerCase().includes(searchTerm);
+                    const matchesId = char.id.toLowerCase().includes(searchTerm);
+                    const matchesLevel = char.level.toString().includes(searchTerm);
+                    
+                    if (matchesName || matchesId || matchesLevel) {
+                        filtered[key] = char;
+                    }
+                });
+                
+                filteredCharacters = filtered;
+            }
+            
+            // Resetar para primeira página após filtrar
+            currentPage = 1;
+            renderTable(filteredCharacters, currentPage);
+        }
+
+        // Download JS export
+        async function downloadExport(type) {
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            try {
+                const url = `${API_BASE}/export/${type}`;
+                const link = document.createElement('a');
+                link.href = url;
+                link.click();
+                
+                showNotification(`📥 Download iniciado: ${type.toUpperCase()} (com IDs HEX)`, 'info');
+            } catch (error) {
+                showNotification('Erro no download', 'error');
+            }
+        }
+
+        // Atualizar tabela
+        async function refreshTable() {
+            showNotification('Atualizando dados...', 'info');
+            await loadCharacters();
+            showNotification('Dados atualizados!', 'success');
+        }
+
+
+
+        // Mostrar notificação
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Quebrar linhas se necessário
+            notification.innerHTML = message.replace(/\n/g, '<br>');
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // **NOVAS FUNÇÕES DE EDIÇÃO**
+        
+        // Abrir modal de edição
+        async function editCharacter(id) {
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            try {
+                // Buscar dados do personagem
+                const response = await fetch(`${API_BASE}/characters`);
+                const data = await response.json();
+                const character = data.characters[id];
+                
+                if (!character) {
+                    showNotification('Personagem não encontrado!', 'error');
+                    return;
+                }
+
+                // Preencher formulário de edição
+                document.getElementById('editCharacterId').value = character.id;
+                document.getElementById('editName').value = character.name;
+                document.getElementById('editLevel').value = character.level;
+                document.getElementById('editHp').value = character.hp;
+                document.getElementById('editAttack').value = character.attack;
+                document.getElementById('editDefense').value = character.defense;
+                document.getElementById('editExperience').value = character.experience;
+                document.getElementById('editGoldMin').value = character.goldRange[0];
+                document.getElementById('editGoldMax').value = character.goldRange[1];
+                document.getElementById('editAiType').value = character.ai_type;
+                document.getElementById('editSpawnWeight').value = character.spawn_weight;
+                document.getElementById('editDescription').value = character.description || '';
+
+                // Armazenar informações da sprite original
+                originalSpriteFilename = character.sprite ? character.sprite.split('/').pop() : null;
+                
+                // Preencher campo do nome do arquivo sprite
+                document.getElementById('editSpriteFilename').value = originalSpriteFilename || '';
+                
+                // Mostrar sprite atual se existir
+                const editSpritePreview = document.getElementById('editSpritePreview');
+                const editFileText = document.getElementById('editFileText');
+                const editFileIcon = document.getElementById('editFileIcon');
+                
+                if (character.sprite) {
+                    const timestamp = new Date().getTime();
+                    const spriteUrl = `http://localhost:3002/${character.sprite}?v=${timestamp}`;
+                    
+                    // Mostrar preview da sprite atual
+                    editSpritePreview.innerHTML = `
+                        <img src="${spriteUrl}" alt="Sprite atual" style="max-width: 100px; max-height: 100px; border-radius: 6px; image-rendering: pixelated;">
+                        <div style="font-size: 12px; margin-top: 5px; font-weight: bold;">Sprite atual: ${originalSpriteFilename}</div>
+                        <div style="font-size: 11px; color: #6c757d;">Clique para alterar ou manter a atual</div>
+                    `;
+                    editSpritePreview.style.display = 'block';
+                    editFileText.style.display = 'none';
+                    editFileIcon.style.display = 'none';
+                } else {
+                    editSpritePreview.style.display = 'none';
+                    editFileText.style.display = 'block';
+                    editFileIcon.style.display = 'block';
+                    editFileText.innerHTML = `
+                        <strong>Clique para fazer upload</strong><br>
+                        ou arraste uma imagem aqui<br>
+                        <small style="color: #666;">Nenhuma sprite atual</small>
+                    `;
+                }
+
+                // Mostrar modal
+                document.getElementById('editModal').classList.add('show');
+                
+            } catch (error) {
+                console.error('Erro ao carregar personagem para edição:', error);
+                showNotification('Erro ao carregar dados do personagem', 'error');
+            }
+        }
+
+        // Trigger upload de imagem na edição
+        function triggerEditImageUpload() {
+            if (serverOnline) {
+                document.getElementById('editSpriteInput').click();
+            } else {
+                showNotification('Servidor offline! Não é possível fazer upload.', 'error');
+            }
+        }
+
+        // Fechar modal de edição
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            // Limpar variáveis de edição
+            editCurrentImageData = null;
+            originalSpriteFilename = null;
+            
+            // Limpar formulário
+            document.getElementById('editCharacterForm').reset();
+            
+            // Resetar área de upload
+            const editSpritePreview = document.getElementById('editSpritePreview');
+            const editFileText = document.getElementById('editFileText');
+            const editFileIcon = document.getElementById('editFileIcon');
+            const editRemoveBtn = document.getElementById('editRemoveFileBtn');
+            
+            editSpritePreview.style.display = 'none';
+            editFileText.style.display = 'block';
+            editFileIcon.style.display = 'block';
+            editRemoveBtn.style.display = 'none';
+            
+            editFileText.innerHTML = `
+                <strong>Clique para alterar sprite</strong><br>
+                ou arraste uma nova imagem aqui<br>
+            `;
+        }
+
+        // Manipular upload de imagem na edição
+        function handleEditImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Verificar tipo de arquivo
+            const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                showNotification('Formato de arquivo não suportado!', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            // Verificar tamanho do arquivo (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showNotification('❌ Arquivo muito grande! Máximo: 2MB', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                editCurrentImageData = e.target.result;
+                updateEditImagePreview(file);
+                
+                // Determinar nome do arquivo
+                const spriteFilenameInput = document.getElementById('editSpriteFilename');
+                let newFilename;
+                
+                if (originalSpriteFilename) {
+                    // Manter o nome original se não foi especificado um novo
+                    const originalExtension = originalSpriteFilename.split('.').pop().toLowerCase();
+                    const newExtension = file.name.split('.').pop().toLowerCase();
+                    
+                    // Se usuario não especificou um nome, usar o original com a nova extensão
+                    if (!spriteFilenameInput.value.trim() || spriteFilenameInput.value.trim() === originalSpriteFilename) {
+                        const baseName = originalSpriteFilename.replace(`.${originalExtension}`, '');
+                        newFilename = `${baseName}.${newExtension}`;
+                        spriteFilenameInput.value = newFilename;
+                    }
+                } else {
+                    // Gerar nome baseado no nome do personagem se não existe sprite original
+                    const characterName = document.getElementById('editName').value.trim();
+                    if (characterName && !spriteFilenameInput.value.trim()) {
+                        const extension = file.name.split('.').pop().toLowerCase();
+                        const suggestedName = `${characterName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}.${extension}`;
+                        spriteFilenameInput.value = suggestedName;
+                    }
+                }
+                
+                showNotification('🖼️ Nova sprite selecionada! Será aplicada ao salvar.', 'info');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Atualizar preview da imagem na edição
+        function updateEditImagePreview(file) {
+            const editSpritePreview = document.getElementById('editSpritePreview');
+            const editFileText = document.getElementById('editFileText');
+            const editFileIcon = document.getElementById('editFileIcon');
+            const editRemoveBtn = document.getElementById('editRemoveFileBtn');
+            
+            const sizeKB = Math.round(file.size / 1024);
+            
+            editSpritePreview.innerHTML = `
+                <img src="${editCurrentImageData}" alt="Nova sprite" style="max-width: 100px; max-height: 100px; border-radius: 6px; image-rendering: pixelated;">
+                <div style="font-size: 12px; margin-top: 5px; font-weight: bold; color: #28a745;">Nova sprite: ${file.name} (${sizeKB}KB)</div>
+                <div style="font-size: 11px; color: #28a745; font-weight: bold;">✅ Pronta para substituir a anterior</div>
+            `;
+            
+            editSpritePreview.style.display = 'block';
+            editFileText.style.display = 'none';
+            editFileIcon.style.display = 'none';
+            editRemoveBtn.style.display = 'inline-block';
+        }
+
+        // Limpar arquivo sprite na edição
+        function clearEditSpriteFile(event) {
+            event.stopPropagation();
+            
+            editCurrentImageData = null;
+            const editSpritePreview = document.getElementById('editSpritePreview');
+            const editFileText = document.getElementById('editFileText');
+            const editFileIcon = document.getElementById('editFileIcon');
+            const editRemoveBtn = document.getElementById('editRemoveFileBtn');
+            const input = document.getElementById('editSpriteInput');
+            const spriteFilenameInput = document.getElementById('editSpriteFilename');
+            
+            input.value = '';
+            
+            // Resetar para mostrar sprite original se existir
+            if (originalSpriteFilename) {
+                const timestamp = new Date().getTime();
+                const spriteUrl = `http://localhost:3002/assets/sprites/${originalSpriteFilename}?v=${timestamp}`;
+                
+                editSpritePreview.innerHTML = `
+                    <img src="${spriteUrl}" alt="Sprite atual" style="max-width: 100px; max-height: 100px; border-radius: 6px; image-rendering: pixelated;">
+                    <div style="font-size: 12px; margin-top: 5px; font-weight: bold;">Sprite atual: ${originalSpriteFilename}</div>
+                    <div style="font-size: 11px; color: #6c757d;">Clique para alterar ou manter a atual</div>
+                `;
+                editSpritePreview.style.display = 'block';
+                editFileText.style.display = 'none';
+                editFileIcon.style.display = 'none';
+                spriteFilenameInput.value = originalSpriteFilename;
+            } else {
+                editSpritePreview.style.display = 'none';
+                editFileText.style.display = 'block';
+                editFileIcon.style.display = 'block';
+                editFileText.innerHTML = `
+                    <strong>Clique para fazer upload</strong><br>
+                    ou arraste uma imagem aqui<br>
+                    <small style="color: #666;">Nenhuma sprite atual</small>
+                `;
+                spriteFilenameInput.value = '';
+            }
+            
+            editRemoveBtn.style.display = 'none';
+        }
+
+        // Submeter edição de personagem
+        document.getElementById('editCharacterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const characterId = formData.get('id');
+            
+            // Adicionar dados da sprite se uma nova foi selecionada
+            if (editCurrentImageData) {
+                // Upload da nova sprite primeiro
+                try {
+                    showNotification('🖼️ Fazendo upload da nova sprite...', 'info');
+                    
+                    const spriteFilenameInput = document.getElementById('editSpriteFilename');
+                    let spriteFilename = spriteFilenameInput.value.trim();
+                    
+                    // Se não especificado, usar nome original ou gerar baseado no nome do personagem
+                    if (!spriteFilename) {
+                        if (originalSpriteFilename) {
+                            const newExtension = editCurrentImageData.split(',')[0].match(/data:image\/(\w+)/)[1];
+                            const baseName = originalSpriteFilename.replace(/\.[^.]+$/, '');
+                            spriteFilename = `${baseName}.${newExtension}`;
+                        } else {
+                            const characterName = document.getElementById('editName').value.trim();
+                            const newExtension = editCurrentImageData.split(',')[0].match(/data:image\/(\w+)/)[1];
+                            spriteFilename = `${characterName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}.${newExtension}`;
+                        }
+                    }
+
+                    const spriteResponse = await fetch(`${API_BASE}/upload-sprite`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            imageData: editCurrentImageData,
+                            filename: spriteFilename,
+                            replaceExisting: true // Flag para substituir arquivo existente
+                        })
+                    });
+
+                    const spriteResult = await spriteResponse.json();
+                    
+                    if (!spriteResult.success) {
+                        showNotification('❌ Erro ao fazer upload da sprite: ' + spriteResult.error, 'error');
+                        return;
+                    }
+                    
+                    // Adicionar caminho da sprite ao formData
+                    formData.set('spriteFilename', spriteFilename);
+                    showNotification('✅ Sprite enviada com sucesso!', 'success');
+                    
+                } catch (error) {
+                    showNotification('❌ Erro ao fazer upload da sprite', 'error');
+                    console.error('Erro no upload da sprite:', error);
+                    return;
+                }
+            } else {
+                // Se não há nova sprite, mas o nome foi alterado, renomear o arquivo existente
+                const spriteFilenameInput = document.getElementById('editSpriteFilename');
+                const newFilename = spriteFilenameInput.value.trim();
+                
+                if (newFilename && originalSpriteFilename && newFilename !== originalSpriteFilename) {
+                    try {
+                        showNotification('📝 Renomeando arquivo sprite...', 'info');
+                        
+                        const renameResponse = await fetch(`${API_BASE}/rename-sprite`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                oldFilename: originalSpriteFilename,
+                                newFilename: newFilename
+                            })
+                        });
+
+                        const renameResult = await renameResponse.json();
+                        
+                        if (!renameResult.success) {
+                            showNotification('❌ Erro ao renomear sprite: ' + renameResult.error, 'error');
+                            return;
+                        }
+                        
+                        // Adicionar o novo nome ao formData para atualizar o personagem
+                        formData.set('spriteFilename', newFilename);
+                        showNotification('✅ Sprite renomeada com sucesso!', 'success');
+                        
+                    } catch (error) {
+                        showNotification('❌ Erro ao renomear sprite', 'error');
+                        console.error('Erro no renomeamento da sprite:', error);
+                        return;
+                    }
+                } else if (newFilename && originalSpriteFilename && newFilename === originalSpriteFilename) {
+                    // Nome não foi alterado, apenas manter
+                    formData.set('spriteFilename', newFilename);
+                }
+            }
+
+            try {
+                showNotification('💾 Atualizando personagem...', 'info');
+
+                const response = await fetch(`${API_BASE}/characters/${characterId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    let message = `✅ ${result.message}`;
+                    if (result.sprite_updated) {
+                        message += `\n🖼️ Sprite atualizada: ${result.sprite_path || 'mantida'}`;
+                    }
+                    showNotification(message, 'success');
+                    closeEditModal();
+                    // Aguardar um momento para garantir que o servidor terminou de salvar
+                    setTimeout(() => loadCharacters(), 300);
+                } else {
+                    showNotification('❌ Erro ao atualizar: ' + result.error, 'error');
+                }
+
+            } catch (error) {
+                console.error('Erro ao atualizar personagem:', error);
+                showNotification('❌ Erro de conexão ao atualizar personagem', 'error');
+            }
+        });
+
+        // Fechar modal clicando no overlay
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // **FUNÇÕES DE IMPORTAÇÃO/EXPORTAÇÃO EM MASSA**
+
+        // Abrir modal de importação em massa
+        function openBulkImportModal() {
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+            document.getElementById('bulkImportModal').classList.add('show');
+        }
+
+        // Fechar modal de importação em massa
+        function closeBulkImportModal() {
+            document.getElementById('bulkImportModal').classList.remove('show');
+            // Reset form
+            document.getElementById('bulkImportForm').reset();
+            document.getElementById('bulkImportPreview').innerHTML = '📁 Clique para selecionar arquivo JSON';
+            document.getElementById('bulkImportSubmitBtn').disabled = true;
+            document.getElementById('bulkImportProgress').style.display = 'none';
+            document.getElementById('bulkImportResults').style.display = 'none';
+        }
+
+        // Manipular seleção de arquivo para importação em massa
+        function handleBulkImportFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Verificar se é JSON
+            if (!file.name.endsWith('.json')) {
+                showNotification('❌ Apenas arquivos JSON são aceitos!', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            // Verificar tamanho (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('❌ Arquivo muito grande! Máximo: 10MB', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            // Mostrar preview do arquivo
+            const preview = document.getElementById('bulkImportPreview');
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            preview.innerHTML = `
+                <div style="text-align: center;">
+                    📄 <strong>${file.name}</strong><br>
+                    <small>Tamanho: ${fileSize} MB</small>
+                </div>
+            `;
+
+            // Habilitar botão de importar
+            document.getElementById('bulkImportSubmitBtn').disabled = false;
+            showNotification('✅ Arquivo JSON selecionado!', 'success');
+        }
+
+        // Exportação em massa
+        async function bulkExportCharacters() {
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            try {
+                showNotification('📤 Iniciando exportação em massa...', 'info');
+                
+                // Fazer download direto
+                const link = document.createElement('a');
+                link.href = `${API_BASE}/bulk-export`;
+                link.download = 'bulk_characters_export.json';
+                link.click();
+                
+                showNotification('✅ Exportação em massa iniciada! Verifique os downloads.', 'success');
+                
+            } catch (error) {
+                showNotification('❌ Erro na exportação em massa', 'error');
+                console.error('Erro na exportação:', error);
+            }
+        }
+
+        // Submeter importação em massa
+        document.getElementById('bulkImportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            const fileInput = document.getElementById('bulkImportFile');
+            if (!fileInput.files[0]) {
+                showNotification('❌ Selecione um arquivo JSON primeiro!', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('bulkData', fileInput.files[0]);
+
+            // Mostrar progresso
+            const progressDiv = document.getElementById('bulkImportProgress');
+            const progressBar = document.getElementById('bulkImportProgressBar');
+            const progressText = document.getElementById('bulkImportProgressText');
+            const resultsDiv = document.getElementById('bulkImportResults');
+            
+            progressDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressText.textContent = 'Enviando arquivo...';
+
+            try {
+                // Simular progresso durante upload
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 10;
+                    if (progress <= 90) {
+                        progressBar.style.width = progress + '%';
+                        progressText.textContent = `Processando... ${progress}%`;
+                    }
+                }, 200);
+
+                const response = await fetch(`${API_BASE}/bulk-import`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Processamento concluído!';
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Mostrar resultados
+                    displayBulkImportResults(result.summary);
+                    // Aguardar um momento para garantir que o backup e importação terminaram
+                    setTimeout(() => loadCharacters(), 500);
+                    showNotification(`✅ ${result.message}`, 'success');
+                } else {
+                    showNotification('❌ Erro na importação: ' + result.error, 'error');
+                    progressDiv.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Erro na importação:', error);
+                showNotification('❌ Erro de conexão na importação em massa', 'error');
+                progressDiv.style.display = 'none';
+            }
+        });
+
+        // Exibir resultados da importação
+        function displayBulkImportResults(summary) {
+            const resultsDiv = document.getElementById('bulkImportResults');
+            const summaryDiv = document.getElementById('bulkImportSummary');
+            const detailsDiv = document.getElementById('bulkImportDetails');
+
+            // Resumo
+            summaryDiv.innerHTML = `
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <strong>📋 Resumo:</strong><br>
+                    • Total no arquivo: <span style="color: #1565c0;">${summary.total}</span><br>
+                    • Importados: <span style="color: #28a745;">${summary.imported}</span><br>
+                    • Conflitos resolvidos: <span style="color: #f57c00;">${summary.conflicts}</span><br>
+                    • Ignorados: <span style="color: #dc3545;">${summary.skipped}</span>
+                </div>
+            `;
+
+            // Detalhes por personagem
+            let detailsHtml = '<h5>📝 Detalhes por Personagem:</h5><div style="max-height: 200px; overflow-y: auto;">';
+            summary.results.forEach(result => {
+                let statusColor = '#28a745'; // green
+                let statusIcon = '✅';
+                
+                if (result.status === 'conflict_resolved') {
+                    statusColor = '#f57c00'; // orange
+                    statusIcon = '🔄';
+                } else if (result.status === 'skipped' || result.status === 'error') {
+                    statusColor = '#dc3545'; // red  
+                    statusIcon = '❌';
+                }
+
+                detailsHtml += `
+                    <div style="padding: 5px; border-bottom: 1px solid #eee;">
+                        ${statusIcon} <strong>${result.name}</strong> (ID: ${result.id}${result.newId ? ' → ' + result.newId : ''})<br>
+                        <small style="color: ${statusColor};">${result.reason}</small>
+                    </div>
+                `;
+            });
+            detailsHtml += '</div>';
+            
+            detailsDiv.innerHTML = detailsHtml;
+            resultsDiv.style.display = 'block';
+        }
+
+        // Fechar modal clicando no overlay
+        document.getElementById('bulkImportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBulkImportModal();
+            }
+        });
+
+        // Inicializar aplicação
+        // **NOVO**: Sistema de Backup - Funções JavaScript
+
+        // Abrir modal de backup
+        function openBackupModal() {
+            document.getElementById('backupModal').classList.add('show');
+            loadBackupList();
+        }
+
+        // Fechar modal de backup
+        function closeBackupModal() {
+            document.getElementById('backupModal').classList.remove('show');
+        }
+
+        // Criar backup manual
+        async function createManualBackup() {
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('createBackupBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Criando backup...';
+
+            try {
+                const response = await fetch(`${API_BASE}/backup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(`✅ Backup criado: ${data.filename} (${data.characters} personagens)`, 'success');
+                    // Aguardar um momento para garantir que o backup foi salvo no disco
+                    setTimeout(() => loadBackupList(), 300);
+                } else {
+                    showNotification('❌ Erro ao criar backup: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Erro ao criar backup', 'error');
+                console.error('Erro:', error);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        // Carregar lista de backups
+        async function loadBackupList(retries = 3) {
+            if (!serverOnline) {
+                document.getElementById('backupList').innerHTML = '<div style="text-align: center; color: #dc3545; padding: 20px;">Servidor offline</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/backups`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+
+                if (data.success && data.backups.length > 0) {
+                    renderBackupList(data.backups);
+                } else {
+                    document.getElementById('backupList').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">Nenhum backup encontrado</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar backups:', error);
+                
+                // Tentar novamente se ainda temos tentativas
+                if (retries > 0) {
+                    console.log(`Tentando carregar backups novamente... (${retries} tentativas restantes)`);
+                    setTimeout(() => loadBackupList(retries - 1), 500);
+                } else {
+                    document.getElementById('backupList').innerHTML = '<div style="text-align: center; color: #dc3545; padding: 20px;">Erro ao carregar backups</div>';
+                }
+            }
+        }
+
+        // Renderizar lista de backups
+        function renderBackupList(backups) {
+            const container = document.getElementById('backupList');
+            let html = '';
+
+            backups.forEach(backup => {
+                const date = new Date(backup.timestamp).toLocaleString('pt-BR');
+                const triggerIcon = backup.trigger === 'manual' ? '👤' : '🤖';
+                const triggerText = backup.trigger === 'manual' ? 'Manual' : 'Automático';
+                const sizeKB = Math.round(backup.size / 1024);
+                
+                // Indicador de sprites
+                const spriteInfo = backup.includes_sprites ? 
+                    `🖼️ ${backup.sprites || 0} sprites` : 
+                    '⚠️ Sem sprites';
+                
+                const backupTypeIcon = backup.includes_sprites ? '📦' : '📄';
+
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #dee2e6; border-radius: 6px; margin-bottom: 8px; background: white;">
+                        <div style="flex-grow: 1;">
+                            <div style="font-weight: bold; margin-bottom: 4px;">
+                                ${backupTypeIcon} ${triggerIcon} ${backup.filename}
+                            </div>
+                            <div style="font-size: 12px; color: #6c757d;">
+                                📅 ${date} • ${triggerText} • ${backup.characters} personagens • ${spriteInfo} • ${sizeKB}KB
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-primary btn-small" onclick="restoreFromBackup('${backup.filename}')">
+                                🔄 Restaurar
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="deleteBackup('${backup.filename}')">
+                                🗑️ Excluir
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Restaurar do backup
+        async function restoreFromBackup(filename) {
+            if (!confirm(`⚠️ ATENÇÃO: Restaurar substituirá todos os personagens atuais pelos dados do backup.\n\nDeseja continuar?`)) {
+                return;
+            }
+
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            try {
+                showNotification('🔄 Restaurando backup...', 'info');
+                
+                const response = await fetch(`${API_BASE}/restore/${filename}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const message = data.includes_sprites ? 
+                        `✅ Restaurado: ${data.characters} personagens, ${data.sprites} sprites` :
+                        `✅ Restaurado: ${data.characters} personagens (backup sem sprites)`;
+                    showNotification(message, 'success');
+                    // Aguardar um momento para garantir que a restauração terminou
+                    setTimeout(() => {
+                        loadCharacters();
+                        closeBackupModal();
+                    }, 500);
+                } else {
+                    showNotification('❌ Erro ao restaurar: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Erro ao restaurar backup', 'error');
+                console.error('Erro:', error);
+            }
+        }
+
+        // Excluir backup
+        async function deleteBackup(filename) {
+            if (!confirm(`Tem certeza que deseja excluir o backup:\n${filename}?`)) {
+                return;
+            }
+
+            if (!serverOnline) {
+                showNotification('Servidor offline!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/backup/${filename}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('🗑️ Backup excluído com sucesso', 'success');
+                    // Aguardar um momento para garantir que o arquivo foi removido do disco
+                    setTimeout(() => loadBackupList(), 300);
+                } else {
+                    showNotification('❌ Erro ao excluir backup', 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Erro ao excluir backup', 'error');
+                console.error('Erro:', error);
+            }
+        }
+
+        // Fechar modal de backup ao clicar fora
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('backupModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeBackupModal();
+                }
+            });
+        });
+
+        async function initApp() {
+            await checkServerStatus();
+            setInterval(checkServerStatus, 30000); // Verificar a cada 30s
+            
+            // Configurar drag and drop para a área de edição de sprite
+            const editUploadContainer = document.getElementById('editSpriteContainer');
+            
+            editUploadContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                if (serverOnline) {
+                    editUploadContainer.classList.add('dragover');
+                }
+            });
+
+            editUploadContainer.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                editUploadContainer.classList.remove('dragover');
+            });
+
+            editUploadContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                editUploadContainer.classList.remove('dragover');
+                
+                if (!serverOnline) {
+                    showNotification('Servidor offline! Não é possível fazer upload.', 'error');
+                    return;
+                }
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    
+                    // Simular input change event
+                    const editSpriteInput = document.getElementById('editSpriteInput');
+                    
+                    // Criar um novo FileList com o arquivo
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    editSpriteInput.files = dt.files;
+                    
+                    // Processar o arquivo
+                    handleEditImageUpload({ target: { files: [file] } });
+                }
+            });
+        }
+
+        // Iniciar quando a página carregar
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
