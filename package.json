@@ -1,6 +1,6 @@
 {
   "name": "rpgstack",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "RPGStack - Complete RPG Development Stack (Modular system starting with character database)",
   "main": "server.js",
