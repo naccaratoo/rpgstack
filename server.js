@@ -1,9 +1,14 @@
-const express = require('express');
-const multer = require('multer');
-const fs = require('fs').promises;
-const path = require('path');
-const cors = require('cors');
-const crypto = require('crypto');
+import express from 'express';
+import multer from 'multer';
+import fs from 'fs/promises';
+import path from 'path';
+import cors from 'cors';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = 3002;
@@ -32,7 +37,7 @@ const storage = multer.diskStorage({
     const filename = req.body.spriteFilename || 
                     `character.${file.originalname.split('.').pop()}`;
     cb(null, filename);
-  }
+  },
 });
 
 const upload = multer({ 
@@ -45,7 +50,7 @@ const upload = multer({
     } else {
       cb(new Error('Formato não suportado'));
     }
-  }
+  },
 });
 
 // Configurar multer para bulk import (memory storage)
@@ -58,7 +63,7 @@ const bulkUpload = multer({
     } else {
       cb(new Error('Apenas arquivos JSON são aceitos para importação em massa'));
     }
-  }
+  },
 });
 
 // Caminhos
@@ -123,7 +128,7 @@ async function initializeDirectories() {
     path.join(__dirname, 'data'),
     path.join(__dirname, 'assets', 'sprites'),
     path.join(__dirname, 'exports'),
-    path.join(__dirname, 'public')
+    path.join(__dirname, 'public'),
   ];
   
   for (const dir of dirs) {
@@ -159,7 +164,7 @@ async function saveDatabase(data) {
   try {
     // Garantir que nextId não seja salvo
     const dataToSave = {
-      characters: data.characters || {}
+      characters: data.characters || {},
     };
     
     await fs.writeFile(DB_PATH, JSON.stringify(dataToSave, null, 2));
@@ -183,10 +188,10 @@ async function createBackup(trigger = 'manual') {
     const backupData = {
       timestamp: new Date().toISOString(),
       trigger: trigger,
-      version: "3.2.0",
+      version: '3.2.0',
       total_characters: Object.keys(data.characters || {}).length,
       characters: data.characters || {},
-      includes_sprites: true
+      includes_sprites: true,
     };
     
     // Garantir que os diretórios existem
@@ -231,7 +236,7 @@ async function createBackup(trigger = 'manual') {
       success: true, 
       filename: backupFolderName, 
       data: backupData,
-      sprites_backed_up: spritesBackedUp.length
+      sprites_backed_up: spritesBackedUp.length,
     };
   } catch (error) {
     console.error('❌ Erro ao criar backup:', error);
@@ -275,7 +280,7 @@ async function listBackups() {
             characters: backupData.total_characters || 0,
             sprites: spriteCount,
             includes_sprites: true,
-            type: 'folder'
+            type: 'folder',
           });
         } catch (err) {
           console.warn(`Backup de pasta corrompido ignorado: ${item}`);
@@ -294,7 +299,7 @@ async function listBackups() {
             characters: backupData.total_characters || 0,
             sprites: 0,
             includes_sprites: false,
-            type: 'json'
+            type: 'json',
           });
         } catch (err) {
           console.warn(`Backup JSON corrompido ignorado: ${item}`);
@@ -383,7 +388,7 @@ async function restoreFromBackup(filename) {
     
     // Restaurar dados do banco
     const dataToRestore = {
-      characters: backupData.characters || {}
+      characters: backupData.characters || {},
     };
     
     await saveDatabase(dataToRestore);
@@ -395,7 +400,7 @@ async function restoreFromBackup(filename) {
       success: true, 
       characters: restoredCount,
       sprites: spritesRestored,
-      includes_sprites: hasSprites
+      includes_sprites: hasSprites,
     };
   } catch (error) {
     console.error('❌ Erro ao restaurar backup:', error);
@@ -457,7 +462,7 @@ async function exportToJavaScript(data) {
     });
     
     jsCode += '};\n\n';
-    jsCode += `// Statistics:\n`;
+    jsCode += '// Statistics:\n';
     jsCode += `// Total characters: ${characters.length}\n`;
     jsCode += `// Legacy IDs: ${legacyCount}\n`;
     jsCode += `// Hexadecimal IDs: ${hexCount}\n\n`;
@@ -497,8 +502,8 @@ app.get('/api/test', (req, res) => {
     idSystem: {
       newCharacters: 'Hexadecimal 10 characters',
       existingCharacters: 'Preserved original IDs',
-      immutable: true
-    }
+      immutable: true,
+    },
   });
 });
 
@@ -521,7 +526,7 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
     const {
       name, level, hp, attack, defense, experience,
       goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename
+      drops, skills, spriteFilename,
     } = req.body;
 
     // **IMPORTANTE**: APENAS personagens NOVOS recebem ID hexadecimal
@@ -558,7 +563,7 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
       description,
       drops: JSON.parse(drops || '[]'),
       skills: JSON.parse(skills || '[]'),
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     data.characters[newId] = character;
@@ -574,13 +579,13 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
         id: newId,
         type: 'HEXADECIMAL',
         immutable: true,
-        note: 'Este ID nunca será alterado e pode ser usado como referência'
+        note: 'Este ID nunca será alterado e pode ser usado como referência',
       },
       files: {
         sprite: spritePath,
         database: 'data/characters.json',
-        export: 'exports/character_database.js'
-      }
+        export: 'exports/character_database.js',
+      },
     });
 
   } catch (error) {
@@ -615,7 +620,7 @@ app.post('/api/upload-sprite', async (req, res) => {
       success: true, 
       path: `assets/sprites/${filename}`,
       message: 'Sprite salva automaticamente!',
-      url: `http://localhost:${PORT}/assets/sprites/${filename}`
+      url: `http://localhost:${PORT}/assets/sprites/${filename}`,
     });
 
   } catch (error) {
@@ -666,7 +671,7 @@ app.post('/api/rename-sprite', async (req, res) => {
       message: `Sprite renomeada de ${oldFilename} para ${newFilename}`,
       oldPath: `assets/sprites/${oldFilename}`,
       newPath: `assets/sprites/${newFilename}`,
-      newUrl: `http://localhost:${PORT}/assets/sprites/${newFilename}`
+      newUrl: `http://localhost:${PORT}/assets/sprites/${newFilename}`,
     });
 
   } catch (error) {
@@ -735,7 +740,7 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
     const {
       name, level, hp, attack, defense, experience,
       goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename
+      drops, skills, spriteFilename,
     } = req.body;
 
     // Processar sprite se fornecida
@@ -775,7 +780,7 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       description: description !== undefined ? description : existingCharacter.description,
       drops: drops ? JSON.parse(drops) : existingCharacter.drops,
       skills: skills ? JSON.parse(skills) : existingCharacter.skills,
-      updated_at: new Date().toISOString() // Adicionar timestamp de atualização
+      updated_at: new Date().toISOString(), // Adicionar timestamp de atualização
     };
 
     data.characters[id] = updatedCharacter;
@@ -790,8 +795,8 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       idInfo: {
         id: id,
         preserved: true,
-        immutable: true
-      }
+        immutable: true,
+      },
     });
 
   } catch (error) {
@@ -822,7 +827,7 @@ app.get('/api/sprites', async (req, res) => {
       .map(file => ({
         filename: file,
         url: `http://localhost:${PORT}/assets/sprites/${file}`,
-        path: `assets/sprites/${file}`
+        path: `assets/sprites/${file}`,
       }));
     
     res.json({ sprites, total: sprites.length });
@@ -841,7 +846,7 @@ app.get('/api/generate-id', async (req, res) => {
     res.json({
       id: newId,
       format: 'Hexadecimal 10 characters',
-      example: `Character ID: ${newId}`
+      example: `Character ID: ${newId}`,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -893,7 +898,7 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
             id: importId,
             name: character.name || 'Unknown',
             status: 'skipped',
-            reason: 'Dados obrigatórios ausentes (name, level, hp)'
+            reason: 'Dados obrigatórios ausentes (name, level, hp)',
           });
           skipped++;
           continue;
@@ -911,14 +916,14 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
             newId: finalId,
             name: character.name,
             status: 'conflict_resolved',
-            reason: `ID ${importId} já existe. Novo ID gerado: ${finalId}`
+            reason: `ID ${importId} já existe. Novo ID gerado: ${finalId}`,
           });
         } else {
           results.push({
             id: finalId,
             name: character.name,
             status: 'imported',
-            reason: 'Importado com sucesso'
+            reason: 'Importado com sucesso',
           });
         }
 
@@ -943,7 +948,7 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
           drops: Array.isArray(character.drops) ? character.drops : [],
           skills: Array.isArray(character.skills) ? character.skills : [],
           created_at: character.created_at || new Date().toISOString(),
-          imported_at: new Date().toISOString()
+          imported_at: new Date().toISOString(),
         };
 
         data.characters[finalId] = importedCharacter;
@@ -955,7 +960,7 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
           id: importId,
           name: character.name || 'Unknown',
           status: 'error',
-          reason: `Erro ao processar: ${charError.message}`
+          reason: `Erro ao processar: ${charError.message}`,
         });
         skipped++;
       }
@@ -968,7 +973,7 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
       imported,
       skipped,
       conflicts,
-      results
+      results,
     };
 
     console.log(`✅ Importação concluída: ${imported} importados, ${skipped} ignorados, ${conflicts} conflitos resolvidos`);
@@ -976,7 +981,7 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
     res.json({
       success: true,
       message: `Importação concluída: ${imported} personagens importados`,
-      summary
+      summary,
     });
 
   } catch (error) {
@@ -993,9 +998,9 @@ app.get('/api/bulk-export', async (req, res) => {
     
     const exportData = {
       exported_at: new Date().toISOString(),
-      version: "3.2.0",
+      version: '3.2.0',
       total_characters: Object.keys(data.characters || {}).length,
-      characters: data.characters || {}
+      characters: data.characters || {},
     };
 
     res.setHeader('Content-Type', 'application/json');
@@ -1023,12 +1028,12 @@ app.post('/api/backup', async (req, res) => {
         success: true,
         message: 'Backup criado com sucesso',
         filename: result.filename,
-        characters: result.data.total_characters
+        characters: result.data.total_characters,
       });
     } else {
       res.status(500).json({
         success: false,
-        error: result.error
+        error: result.error,
       });
     }
   } catch (error) {
@@ -1043,7 +1048,7 @@ app.get('/api/backups', async (req, res) => {
     const backups = await listBackups();
     res.json({
       success: true,
-      backups: backups
+      backups: backups,
     });
   } catch (error) {
     console.error('❌ Erro ao listar backups:', error);
@@ -1063,12 +1068,12 @@ app.post('/api/restore/:filename', async (req, res) => {
       res.json({
         success: true,
         message: `Banco restaurado com sucesso (${result.characters} personagens)`,
-        characters: result.characters
+        characters: result.characters,
       });
     } else {
       res.status(500).json({
         success: false,
-        error: result.error
+        error: result.error,
       });
     }
   } catch (error) {
@@ -1100,7 +1105,7 @@ app.delete('/api/backup/:filename', async (req, res) => {
     
     res.json({
       success: true,
-      message: `Backup ${filename} removido com sucesso`
+      message: `Backup ${filename} removido com sucesso`,
     });
   } catch (error) {
     if (error.code === 'ENOENT') {
@@ -1112,9 +1117,9 @@ app.delete('/api/backup/:filename', async (req, res) => {
   }
 });
 
-// Página inicial (caso acesse sem /index.html)
+// Página inicial (Character Database)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'character-database.html'));
 });
 
 // Middleware de erro para upload
@@ -1122,14 +1127,14 @@ app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({
-        error: 'Arquivo muito grande! Máximo 2MB.'
+        error: 'Arquivo muito grande! Máximo 2MB.',
       });
     }
   }
   
   if (error.message === 'Formato não suportado') {
     return res.status(400).json({
-      error: 'Formato de arquivo não suportado! Use PNG, JPG, GIF ou WEBP.'
+      error: 'Formato de arquivo não suportado! Use PNG, JPG, GIF ou WEBP.',
     });
   }
   

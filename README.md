@@ -195,6 +195,12 @@ rpgstack/
 - ✅ Comprehensive error handling
 - ✅ Modular, maintainable code structure
 
+### **Terminal-Based Debugging**
+- 📁 **`terminal-fixes/`** - Documentation repository for bugs resolved via terminal/CLI commands
+- 🔧 **Manual Fix Knowledge Base** - Detailed reports of system-level debugging processes
+- 🎯 **Learning Resource** - Command-line methodologies and root cause analysis documentation
+- 📋 **Standardized Structure** - Each case includes commands, logs, and prevention strategies
+
 ---
 
 ## 🤝 **Contributing**

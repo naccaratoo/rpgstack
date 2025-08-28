@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# Production builds
+dist
+build
+coverage
+
+# Logs
+*.log
+server.log
+
+# Backups
+backups/
+
+# Generated files
+exports/
+
+# Git
+.git
+
+# Documentation (preserve formatting)
+*.md
+
+# Assets
+assets/
+public/assets/
+
+# Data files
+data/
+*.json
