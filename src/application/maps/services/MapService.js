@@ -164,8 +164,15 @@ export class MapService {
     console.log(`📋 MapService: Creating new map "${mapData.name}"`);
     
     try {
-      // Validate input data
-      const validatedData = await this.validator.validate('MapCreate', mapData);
+      // Basic validation (simplified for now)
+      if (!mapData.name || typeof mapData.name !== 'string') {
+        throw new ValidationError('Map name is required');
+      }
+      if (!mapData.difficulty || mapData.difficulty < 1 || mapData.difficulty > 10) {
+        throw new ValidationError('Map difficulty must be between 1 and 10');
+      }
+      
+      const validatedData = mapData;
       
       // Verify boss character exists
       const bossCharacter = await this.characterRepository.findById(validatedData.boss.characterId);

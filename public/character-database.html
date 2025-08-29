@@ -72,9 +72,33 @@
             }
         }
 
+        .navigation {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+
+        .nav-link {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+
         .server-status {
             position: absolute;
-            top: 20px;
+            bottom: 15px;
             right: 20px;
             padding: 8px 15px;
             border-radius: 20px;
@@ -952,9 +976,14 @@
     <div class="container">
         <div class="header">
             <div class="version-badge">v3.1.0</div>
-            <div class="server-status" id="serverStatus">Verificando...</div>
-            <h1>RPGStack</h1>
+            <div class="navigation">
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/characters" class="nav-link">👥 Characters</a>
+                <a href="/maps" class="nav-link">🗺️ Maps</a>
+            </div>
+            <h1>RPGStack - Characters</h1>
             <p>Sistema de gerenciamento com IDs hexadecimais únicos</p>
+            <div class="server-status" id="serverStatus">Verificando...</div>
         </div>
 
         <div class="main-content">

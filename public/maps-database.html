@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPGStack - Maps Database Manager v2.0.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            min-height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .navigation {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+
+        .nav-link {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+
+        .server-status {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #27ae60;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 0;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-right: 1px solid #e9ecef;
+            width: 400px;
+            min-width: 350px;
+        }
+
+        .database-section {
+            flex: 1;
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-section-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .button.success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .maps-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .maps-table th,
+        .maps-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .maps-table th {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .maps-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .id-badge {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .difficulty-1 { background: #27ae60; }
+        .difficulty-2 { background: #f39c12; }
+        .difficulty-3 { background: #e67e22; }
+        .difficulty-4 { background: #e74c3c; }
+        .difficulty-5 { background: #8e44ad; }
+
+        .boss-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .boss-alive {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .boss-defeated {
+            background: #27ae60;
+            color: white;
+        }
+
+        .unlock-type {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .unlock-always { background: #95a5a6; }
+        .unlock-boss_defeat { background: #e74c3c; }
+        .unlock-achievement { background: #f39c12; }
+        .unlock-level { background: #3498db; }
+
+        .asset-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .asset-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .asset-upload:hover {
+            border-color: #764ba2;
+            background: #f8f9fa;
+        }
+
+        .asset-upload.dragover {
+            border-color: #27ae60;
+            background: #d5f4e6;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            background: #ffeaea;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #27ae60;
+            background: #e8f8f5;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .form-section {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .version-badge,
+            .navigation,
+            .server-status {
+                position: static;
+                display: inline-block;
+                margin: 5px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                border-radius: 10px;
+            }
+            
+            .form-section,
+            .database-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="version-badge">v2.0.0</div>
+            <div class="navigation">
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/characters" class="nav-link">👥 Characters</a>
+                <a href="/maps" class="nav-link">🗺️ Maps</a>
+            </div>
+            <h1>🗺️ RPGStack - Maps</h1>
+            <p>Sistema de Gerenciamento de Mapas com Clean Architecture</p>
+            <div class="server-status" id="serverStatus">🟢 Online</div>
+        </div>
+
+        <div class="main-content">
+            <!-- Form Section -->
+            <div class="form-section">
+                <div class="form-section-title">🆕 Criar Novo Mapa</div>
+                
+                <form id="mapForm">
+                    <div class="form-group">
+                        <label for="name">Nome do Mapa*</label>
+                        <input type="text" id="name" name="name" required maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Descrição</label>
+                        <textarea id="description" name="description" placeholder="Descrição do mapa..."></textarea>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="difficulty">Dificuldade*</label>
+                            <select id="difficulty" name="difficulty" required>
+                                <option value="1">1 - Fácil</option>
+                                <option value="2">2 - Médio</option>
+                                <option value="3">3 - Difícil</option>
+                                <option value="4">4 - Muito Difícil</option>
+                                <option value="5">5 - Extremo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="unlockType">Tipo de Desbloqueio*</label>
+                            <select id="unlockType" name="unlockType" required>
+                                <option value="always">Sempre disponível</option>
+                                <option value="boss_defeat">Vencer Boss</option>
+                                <option value="achievement">Conquista</option>
+                                <option value="level">Nível do jogador</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dimensions">Dimensões do Mapa</label>
+                        <div class="form-grid">
+                            <input type="number" id="width" name="width" placeholder="Largura" min="10" max="100" value="20">
+                            <input type="number" id="height" name="height" placeholder="Altura" min="10" max="100" value="15">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bossCharacter">Boss do Mapa</label>
+                        <select id="bossCharacter" name="bossCharacter">
+                            <option value="">Selecionar Boss...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experience">Experiência (XP)</label>
+                        <input type="number" id="experience" name="experience" min="0" value="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goldRange">Faixa de Ouro</label>
+                        <div class="form-grid">
+                            <input type="number" id="goldMin" name="goldMin" placeholder="Mín" min="0" value="10">
+                            <input type="number" id="goldMax" name="goldMax" placeholder="Máx" min="0" value="25">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload de Assets</label>
+                        <div class="asset-upload" id="assetUpload">
+                            <p>📁 Clique ou arraste arquivos aqui</p>
+                            <small>PNG, JPG, WebP, MP3, WAV, OGG</small>
+                            <input type="file" id="assetFile" multiple accept="image/*,audio/*" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <button type="submit" class="button">🗺️ Criar Mapa</button>
+                        <button type="button" class="button success" id="bulkImportBtn">📦 Importar JSON</button>
+                        <button type="button" class="button" id="exportBtn">💾 Exportar Tudo</button>
+                    </div>
+                </form>
+
+                <div id="messageArea"></div>
+            </div>
+
+            <!-- Database Section -->
+            <div class="database-section">
+                <!-- Statistics -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalMaps">0</div>
+                        <div class="stat-label">Total de Mapas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgDifficulty">0</div>
+                        <div class="stat-label">Dificuldade Média</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="bossCount">0</div>
+                        <div class="stat-label">Mapas com Boss</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="unlockedCount">0</div>
+                        <div class="stat-label">Sempre Disponíveis</div>
+                    </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Pesquisar mapas...">
+                    <div class="filters">
+                        <select id="difficultyFilter">
+                            <option value="">Todas Dificuldades</option>
+                            <option value="1">Fácil</option>
+                            <option value="2">Médio</option>
+                            <option value="3">Difícil</option>
+                            <option value="4">Muito Difícil</option>
+                            <option value="5">Extremo</option>
+                        </select>
+                        <select id="unlockFilter">
+                            <option value="">Todos Tipos</option>
+                            <option value="always">Sempre</option>
+                            <option value="boss_defeat">Boss</option>
+                            <option value="achievement">Conquista</option>
+                            <option value="level">Nível</option>
+                        </select>
+                        <select id="bossFilter">
+                            <option value="">Todos</option>
+                            <option value="with-boss">Com Boss</option>
+                            <option value="no-boss">Sem Boss</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Maps Table -->
+                <div class="table-container">
+                    <table class="maps-table" id="mapsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Dificuldade</th>
+                                <th>Dimensões</th>
+                                <th>Boss</th>
+                                <th>Desbloqueio</th>
+                                <th>Recompensas</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mapsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h3>✏️ Editar Mapa</h3>
+            <form id="editForm">
+                <!-- Edit form content will be populated by JavaScript -->
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Import Modal -->
+    <div class="modal" id="bulkImportModal">
+        <div class="modal-content">
+            <h3>📦 Importação em Massa</h3>
+            <textarea id="jsonImport" rows="10" placeholder="Cole o JSON dos mapas aqui..."></textarea>
+            <div style="margin-top: 20px;">
+                <button type="button" class="button success" id="confirmImport">Importar</button>
+                <button type="button" class="button" id="cancelImport">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v2/maps';
+        const CHARACTERS_API = '/api/characters';
+        
+        let allMaps = [];
+        let allCharacters = [];
+        let filteredMaps = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🗺️ Maps interface initialized');
+            await loadCharacters();
+            await loadMaps();
+            setupEventListeners();
+            updateStats();
+        });
+
+        // Load characters for boss selection
+        async function loadCharacters() {
+            try {
+                const response = await fetch(CHARACTERS_API);
+                const data = await response.json();
+                allCharacters = data.characters || [];
+                
+                const bossSelect = document.getElementById('bossCharacter');
+                bossSelect.innerHTML = '<option value="">Nenhum Boss</option>';
+                
+                Object.values(allCharacters).forEach(char => {
+                    const option = document.createElement('option');
+                    option.value = char.id;
+                    option.textContent = `${char.name} (Nv.${char.level})`;
+                    bossSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading characters:', error);
+                showMessage('Erro ao carregar personagens', 'error');
+            }
+        }
+
+        // Load maps
+        async function loadMaps() {
+            try {
+                const response = await fetch(API_BASE);
+                const data = await response.json();
+                allMaps = data.data || [];
+                filteredMaps = [...allMaps];
+                renderMapsTable();
+                updateStats();
+            } catch (error) {
+                console.error('Error loading maps:', error);
+                showMessage('Erro ao carregar mapas', 'error');
+            }
+        }
+
+        // Render maps table
+        function renderMapsTable() {
+            const tbody = document.getElementById('mapsTableBody');
+            tbody.innerHTML = '';
+
+            filteredMaps.forEach(map => {
+                const tr = document.createElement('tr');
+                
+                const boss = map.boss && allCharacters[map.boss.characterId];
+                const bossDisplay = boss ? 
+                    `<div class="boss-${map.boss.isDefeated ? 'defeated' : 'alive'}">${boss.name}</div>` :
+                    '<span style="color: #95a5a6;">Nenhum</span>';
+
+                tr.innerHTML = `
+                    <td><span class="id-badge" onclick="copyToClipboard('${map.id}')" title="Clique para copiar">${map.id}</span></td>
+                    <td><strong>${map.name}</strong></td>
+                    <td><span class="difficulty-badge difficulty-${map.difficulty}">${getDifficultyText(map.difficulty)}</span></td>
+                    <td>${map.dimensions.width}x${map.dimensions.height}</td>
+                    <td>${bossDisplay}</td>
+                    <td><span class="unlock-type unlock-${map.unlockRequirement.type}">${getUnlockText(map.unlockRequirement.type)}</span></td>
+                    <td>
+                        <div>💰 ${map.rewards.goldRange[0]}-${map.rewards.goldRange[1]}</div>
+                        <div>⭐ ${map.rewards.experience} XP</div>
+                    </td>
+                    <td>
+                        <button class="button" onclick="editMap('${map.id}')" style="padding: 5px 10px; font-size: 12px;">✏️</button>
+                        <button class="button danger" onclick="deleteMap('${map.id}')" style="padding: 5px 10px; font-size: 12px;">🗑️</button>
+                        ${map.boss && !map.boss.isDefeated ? 
+                            `<button class="button success" onclick="defeatBoss('${map.id}')" style="padding: 5px 10px; font-size: 12px;">⚔️</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Helper functions
+        function getDifficultyText(difficulty) {
+            const texts = {
+                1: 'Fácil',
+                2: 'Médio', 
+                3: 'Difícil',
+                4: 'Muito Difícil',
+                5: 'Extremo'
+            };
+            return texts[difficulty] || 'Desconhecido';
+        }
+
+        function getUnlockText(type) {
+            const texts = {
+                'always': 'Sempre',
+                'boss_defeat': 'Boss',
+                'achievement': 'Conquista',
+                'level': 'Nível'
+            };
+            return texts[type] || type;
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalMaps').textContent = allMaps.length;
+            
+            if (allMaps.length > 0) {
+                const avgDiff = (allMaps.reduce((sum, map) => sum + map.difficulty, 0) / allMaps.length).toFixed(1);
+                document.getElementById('avgDifficulty').textContent = avgDiff;
+                
+                const bossCount = allMaps.filter(map => map.boss && map.boss.characterId).length;
+                document.getElementById('bossCount').textContent = bossCount;
+                
+                const unlockedCount = allMaps.filter(map => map.unlockRequirement.type === 'always').length;
+                document.getElementById('unlockedCount').textContent = unlockedCount;
+            } else {
+                document.getElementById('avgDifficulty').textContent = '0';
+                document.getElementById('bossCount').textContent = '0';
+                document.getElementById('unlockedCount').textContent = '0';
+            }
+        }
+
+        // Create new map
+        document.getElementById('mapForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const mapData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                difficulty: parseInt(formData.get('difficulty')),
+                dimensions: {
+                    width: parseInt(formData.get('width')) || 20,
+                    height: parseInt(formData.get('height')) || 15
+                },
+                unlockRequirement: {
+                    type: formData.get('unlockType')
+                },
+                rewards: {
+                    experience: parseInt(formData.get('experience')) || 100,
+                    goldRange: [
+                        parseInt(formData.get('goldMin')) || 10,
+                        parseInt(formData.get('goldMax')) || 25
+                    ]
+                }
+            };
+
+            // Add boss if selected
+            const bossCharacterId = formData.get('bossCharacter');
+            if (bossCharacterId) {
+                mapData.boss = {
+                    characterId: bossCharacterId,
+                    spawnPoint: { x: Math.floor(mapData.dimensions.width * 0.8), y: Math.floor(mapData.dimensions.height * 0.5) },
+                    difficulty: 1.0,
+                    drops: [],
+                    isDefeated: false
+                };
+            }
+
+            try {
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(mapData)
+                });
+
+                if (response.ok) {
+                    showMessage('Mapa criado com sucesso!', 'success');
+                    document.getElementById('mapForm').reset();
+                    await loadMaps();
+                } else {
+                    const error = await response.json();
+                    showMessage(`Erro: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao criar mapa', 'error');
+                console.error(error);
+            }
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', filterMaps);
+            document.getElementById('difficultyFilter').addEventListener('change', filterMaps);
+            document.getElementById('unlockFilter').addEventListener('change', filterMaps);
+            document.getElementById('bossFilter').addEventListener('change', filterMaps);
+
+            // Asset upload
+            const assetUpload = document.getElementById('assetUpload');
+            const assetFile = document.getElementById('assetFile');
+            
+            assetUpload.addEventListener('click', () => assetFile.click());
+            assetFile.addEventListener('change', handleAssetUpload);
+
+            // Drag and drop
+            assetUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                assetUpload.classList.add('dragover');
+            });
+            
+            assetUpload.addEventListener('dragleave', () => {
+                assetUpload.classList.remove('dragover');
+            });
+            
+            assetUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                assetUpload.classList.remove('dragover');
+                assetFile.files = e.dataTransfer.files;
+                handleAssetUpload();
+            });
+
+            // Export/Import
+            document.getElementById('exportBtn').addEventListener('click', exportMaps);
+            document.getElementById('bulkImportBtn').addEventListener('click', () => {
+                document.getElementById('bulkImportModal').style.display = 'block';
+            });
+            
+            document.getElementById('confirmImport').addEventListener('click', importMaps);
+            document.getElementById('cancelImport').addEventListener('click', () => {
+                document.getElementById('bulkImportModal').style.display = 'none';
+            });
+
+            // Modal close on outside click
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter maps
+        function filterMaps() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            const unlockFilter = document.getElementById('unlockFilter').value;
+            const bossFilter = document.getElementById('bossFilter').value;
+
+            filteredMaps = allMaps.filter(map => {
+                const matchesSearch = map.name.toLowerCase().includes(searchTerm) ||
+                                     map.description.toLowerCase().includes(searchTerm);
+                
+                const matchesDifficulty = !difficultyFilter || map.difficulty.toString() === difficultyFilter;
+                const matchesUnlock = !unlockFilter || map.unlockRequirement.type === unlockFilter;
+                
+                const matchesBoss = !bossFilter || 
+                    (bossFilter === 'with-boss' && map.boss && map.boss.characterId) ||
+                    (bossFilter === 'no-boss' && (!map.boss || !map.boss.characterId));
+
+                return matchesSearch && matchesDifficulty && matchesUnlock && matchesBoss;
+            });
+
+            renderMapsTable();
+        }
+
+        // Asset upload handler
+        function handleAssetUpload() {
+            const files = document.getElementById('assetFile').files;
+            if (files.length > 0) {
+                showMessage(`${files.length} arquivo(s) selecionado(s)`, 'success');
+                // Asset upload implementation would go here
+            }
+        }
+
+        // Export maps
+        async function exportMaps() {
+            try {
+                const response = await fetch(`${API_BASE}/export`);
+                const blob = await response.blob();
+                
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `maps_export_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showMessage('Mapas exportados com sucesso!', 'success');
+            } catch (error) {
+                showMessage('Erro ao exportar mapas', 'error');
+                console.error(error);
+            }
+        }
+
+        // Import maps
+        async function importMaps() {
+            const jsonData = document.getElementById('jsonImport').value;
+            
+            try {
+                const data = JSON.parse(jsonData);
+                
+                const response = await fetch(`${API_BASE}/bulk-import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMessage('Mapas importados com sucesso!', 'success');
+                    document.getElementById('bulkImportModal').style.display = 'none';
+                    document.getElementById('jsonImport').value = '';
+                    await loadMaps();
+                } else {
+                    const error = await response.json();
+                    showMessage(`Erro na importação: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                showMessage('JSON inválido', 'error');
+                console.error(error);
+            }
+        }
+
+        // Edit map
+        function editMap(mapId) {
+            // Edit functionality would be implemented here
+            showMessage('Função de edição em desenvolvimento', 'error');
+        }
+
+        // Delete map
+        async function deleteMap(mapId) {
+            if (confirm('Tem certeza que deseja excluir este mapa?')) {
+                try {
+                    const response = await fetch(`${API_BASE}/${mapId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showMessage('Mapa excluído com sucesso!', 'success');
+                        await loadMaps();
+                    } else {
+                        const error = await response.json();
+                        showMessage(`Erro: ${error.error}`, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Erro ao excluir mapa', 'error');
+                    console.error(error);
+                }
+            }
+        }
+
+        // Defeat boss
+        async function defeatBoss(mapId) {
+            try {
+                const response = await fetch(`${API_BASE}/${mapId}/defeat-boss`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playerId: 'default' })
+                });
+
+                if (response.ok) {
+                    showMessage('Boss derrotado!', 'success');
+                    await loadMaps();
+                } else {
+                    const error = await response.json();
+                    showMessage(`Erro: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao derrotar boss', 'error');
+                console.error(error);
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage(`ID copiado: ${text}`, 'success');
+            }).catch(() => {
+                showMessage('Erro ao copiar ID', 'error');
+            });
+        }
+
+        // Show message
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            const div = document.createElement('div');
+            div.className = `${type}-message`;
+            div.textContent = message;
+            
+            messageArea.appendChild(div);
+            
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        }
+
+        // Test server connection
+        async function testConnection() {
+            try {
+                const response = await fetch('/api/test');
+                const data = await response.json();
+                document.getElementById('serverStatus').innerHTML = '🟢 Online';
+                document.getElementById('serverStatus').style.background = '#27ae60';
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = '🔴 Offline';
+                document.getElementById('serverStatus').style.background = '#e74c3c';
+            }
+        }
+
+        // Test connection every 30 seconds
+        setInterval(testConnection, 30000);
+        testConnection();
+    </script>
+</body>
+</html>

@@ -762,6 +762,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Uma elfa arqueira mágica especializada em flechas encantadas e magia elemental.",
       "drops": [],
@@ -785,6 +786,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Anão guerreiro com martelo rúnico ancestral, mestre da forja e combate corpo a corpo.",
       "drops": [],
@@ -808,6 +810,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Paladina humana portadora de uma lâmina sagrada que brilha com luz divina.",
       "drops": [],
@@ -831,6 +834,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Halfling ladino especializado em ataques furtivos e manipulação de sombras.",
       "drops": [],
@@ -854,6 +858,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Bruxa élfica negra especializada em magia sombria e invocação de criaturas do vazio.",
       "drops": [],
@@ -877,6 +882,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Bárbaro humano das montanhas que invoca a fúria dos trovões em batalha.",
       "drops": [],
@@ -900,6 +906,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Druida élfica jovem com conexão especial com criaturas da floresta.",
       "drops": [],
@@ -923,6 +930,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Orc chefe de guerra com cicatrizes de batalhas e machado gigante encantado.",
       "drops": [],
@@ -946,6 +954,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Clériga élfica alta especializada em magia curativa e proteção divina.",
       "drops": [],
@@ -969,6 +978,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Assassina humana das guildas sombrias com lâminas envenenadas.",
       "drops": [],
@@ -992,6 +1002,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Arqueiro élfico ágil especializado em tiros rápidos e táticas de grupo.",
       "drops": [],
@@ -1015,6 +1026,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Feiticeiro dracônico com domínio sobre magia de fogo e transformação.",
       "drops": [],
@@ -1038,6 +1050,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Bruxa lunar que manipula energia estelar e sonhos proféticos.",
       "drops": [],
@@ -1061,6 +1074,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Anão guardião com escudo mágico ancestral e martelo de guerra.",
       "drops": [],
@@ -1084,6 +1098,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Goblin alquimista expert em venenos e armadilhas explosivas.",
       "drops": [],
@@ -1107,6 +1122,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Gnomo erudito guardião de conhecimentos antigos e magias de proteção.",
       "drops": [],
@@ -1130,6 +1146,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Guerreiro humano mestre da espada com técnicas de combate lendárias.",
       "drops": [],
@@ -1153,6 +1170,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Bardo élfico que usa música mágica para controlar o campo de batalha.",
       "drops": [],
@@ -1176,6 +1194,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Gigante das montanhas com força descomunal e resistência lendária.",
       "drops": [],
@@ -1199,6 +1218,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Ninja élfica sombria especialista em assassinatos silenciosos.",
       "drops": [],
@@ -1222,6 +1242,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Mago élfico do gelo com controle absoluto sobre temperaturas extremas.",
       "drops": [],
@@ -1245,6 +1266,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Druida jovem halfling conectada com os espíritos da natureza.",
       "drops": [],
@@ -1268,6 +1290,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Anão guerreiro veterano com machado duplo encantado com runas.",
       "drops": [],
@@ -1291,6 +1314,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Ranger élfico caçador noturno com arco lunar prateado.",
       "drops": [],
@@ -1314,6 +1338,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Paladino humano abençoado pelos deuses da tempestade.",
       "drops": [],
@@ -1337,6 +1362,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Assassino sombrio das dimensões obscuras com poderes de teletransporte.",
       "drops": [],
@@ -1360,6 +1386,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Druida iniciante élfica com habilidades de cura natural.",
       "drops": [],
@@ -1383,6 +1410,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "General anão comandante de legiões com martelo de guerra ancestral.",
       "drops": [],
@@ -1406,6 +1434,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Arquimago élfico negro mestre das magias proibidas do vazio.",
       "drops": [],
@@ -1429,6 +1458,7 @@
         null,
         null
       ],
+      "ai_type": "aggressive",
       "spawn_weight": null,
       "description": "Guardião dracônico com capacidade de renascimento das chamas.",
       "drops": [],

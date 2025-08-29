@@ -1117,9 +1117,19 @@ app.delete('/api/backup/:filename', async (req, res) => {
   }
 });
 
-// Página inicial (Character Database)
+// Página Principal (RPGStack Hub)
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Character Database Module
+app.get('/characters', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'character-database.html'));
+});
+
+// Maps Database Module
+app.get('/maps', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'maps-database.html'));
 });
 
 // Middleware de erro para upload
@@ -1141,6 +1151,63 @@ app.use((error, req, res, next) => {
   next(error);
 });
 
+// =====================================
+// MAPS SYSTEM INTEGRATION
+// =====================================
+
+// Import Maps system components
+import { JsonMapRepository } from './src/infrastructure/maps/repositories/JsonMapRepository.js';
+import { MapAssetManager } from './src/infrastructure/maps/file-system/MapAssetManager.js';
+import { MapService } from './src/application/maps/services/MapService.js';
+import { MapProgressService } from './src/application/maps/services/MapProgressService.js';
+import { MapController } from './src/infrastructure/maps/web/controllers/MapController.js';
+import { createMapRoutes } from './src/infrastructure/maps/web/routes/mapRoutes.js';
+import { JsonCharacterRepository } from './src/infrastructure/repositories/JsonCharacterRepository.js';
+
+// Maps system instances
+let mapRepository;
+let mapAssetManager;
+let mapService;
+let mapProgressService;
+let mapController;
+
+// Initialize Maps system
+async function initializeMapsSystem() {
+  try {
+    console.log('🗺️ Inicializando Maps System...');
+    
+    // Create Maps repository
+    mapRepository = new JsonMapRepository('data/maps.json', 'backups/maps/');
+    await mapRepository.initialize();
+    
+    // Create asset manager
+    mapAssetManager = new MapAssetManager('assets/maps');
+    await mapAssetManager.initialize();
+    
+    // Create character repository for Maps system
+    const characterRepository = new JsonCharacterRepository('data/characters.json', 'backups/characters/');
+    await characterRepository.initialize();
+    
+    // Create Maps services
+    mapService = new MapService(mapRepository, characterRepository, mapAssetManager);
+    mapProgressService = new MapProgressService(mapRepository, null, characterRepository); // Progress repository will be implemented later
+    
+    // Create Maps controller
+    mapController = new MapController(mapService, mapProgressService);
+    
+    // Setup Maps API routes
+    const mapRoutes = createMapRoutes(mapController);
+    app.use('/api/v2/maps', mapRoutes);
+    
+    console.log('✅ Maps System inicializado com sucesso');
+    console.log('🌐 Maps API disponível em /api/v2/maps');
+    
+  } catch (error) {
+    console.error('❌ Erro ao inicializar Maps System:', error);
+    throw error;
+  }
+}
+
 // **FUNÇÃO ATUALIZADA**: Inicializar servidor SEM migração de IDs
 async function startServer() {
   try {
@@ -1148,6 +1215,9 @@ async function startServer() {
     
     // Inicializar banco SEM alterar IDs existentes
     await initializeDatabase();
+    
+    // Inicializar Maps System
+    await initializeMapsSystem();
     
     app.listen(PORT, () => {
       console.log(`
