@@ -1,41 +1,44 @@
 # 🎮 RPGStack - Complete RPG Development Framework
 
-## 📊 **Status Atual: PRODUÇÃO COM SISTEMA GAMEBREAKER SKILLS REWORKED** 
+## 📊 **Status Atual: PRODUÇÃO COM SISTEMA ULTRA GAMEBREAKER CHARACTER INTEGRATION** 
 
-**Versão**: 3.6  
+**Versão**: 3.7  
 **Data de Atualização**: 1 de Setembro, 2025  
-**Status**: Produção - Sistema completo com Skills GAMEBREAKER, Battle System e Documentação Completa  
+**Status**: Produção - Sistema ULTRA GAMEBREAKER com integração de atributos críticos dos personagens  
 
 ---
 
-## 💀 **Últimas Atualizações - Sistema GAMEBREAKER v3.6**
+## 💀 **Últimas Atualizações - Sistema ULTRA GAMEBREAKER v3.7**
 
-### **Sessão: 1 de Setembro, 2025 - GAMEBREAKER Skills Rework & Complete Documentation**
+### **Sessão: 1 de Setembro, 2025 - Arsenal Adaptativo v3.1.0 ULTRA GAMEBREAKER Character Integration**
 **Objetivos Alcançados**:
-- 💀 **Arsenal Adaptativo v3.0.0 GAMEBREAKER**: 65% crítico + instant kill + 5 ânima cost
-- 🛡️ **Convergência Ânima v2.1.0 BALANCED IMMORTAL**: Auto-ativação + meditação infinita controlada
-- 🐉 **Cadência do Dragão v6.0.0 REWORK**: Sistema ativo + scaling permanente de Attack
-- 📋 **Battle System Documentation**: Documentação completa do sistema de batalha v5.0.0
-- 🎯 **Skills Integration**: Sistema completamente integrado com character database
-- 🚀 **Meta Breaking**: Skills intencionalmente quebradas para dominação early game
+- 💀 **Arsenal Adaptativo v3.1.0 ULTRA GAMEBREAKER**: Integração com atributo crítico dos personagens
+- 🎯 **Character Critical Integration**: 30% base + atributo crítico = chance de instant kill personalizada
+- 🏹 **Sesshoumaru Power**: 30% + 70 crítico = **100% INSTANT KILL GARANTIDO**
+- ✨ **Merlin Power**: 30% + 100 crítico = **100% INSTANT KILL GARANTIDO**
+- 🥊 **Loki Power**: 30% + 50 crítico = **80% INSTANT KILL**
+- 🔗 **Database Integration**: Skills agora usam stats reais dos personagens
 
-### **Principais Implementações v3.6**:
-1. **GAMEBREAKER Skills System** - 3 skills completamente quebradas intencionalmente
-2. **Battle Documentation v5.0.0** - Documentação completa do sistema de batalha
-3. **Immortality Mechanics** - Sistema de imortalidade controlada via meditação
-4. **Instant Kill System** - Mecânica de morte instantânea em críticos
-5. **Meta Destruction** - Skills que quebram completamente o balance do jogo
+### **Principais Implementações v3.7**:
+1. **Character Critical Integration** - Skills integradas com atributos críticos dos personagens
+2. **Personalized Instant Kill** - Chances de morte instantânea baseadas no crítico individual
+3. **Ultra Gamebreaker System** - Personagens com alto crítico = máquinas de morte garantida
+4. **Database Stats Integration** - Sistema puxa e usa stats reais do character database
+5. **Guaranteed Kill Mechanics** - Sesshoumaru e Merlin com 100% instant kill garantido
 
 ---
 
-## ✅ **Implementações Realizadas - Sistema GAMEBREAKER v3.6**
+## ✅ **Implementações Realizadas - Sistema ULTRA GAMEBREAKER v3.7**
 
-### **1. Arsenal Adaptativo v3.0.0 GAMEBREAKER - COMPLETAMENTE QUEBRADO**
+### **1. Arsenal Adaptativo v3.1.0 ULTRA GAMEBREAKER - CHARACTER INTEGRATION**
 - 💀 **Instant Kill System**: 100% morte instantânea em qualquer crítico
-- ⚡ **Critical Chance**: 65% base (garantido quase sempre)
+- 🎯 **Character Critical Integration**: 30% base + atributo crítico do personagem
+- 🏹 **Sesshoumaru (70 crítico)**: 30% + 70% = **100% INSTANT KILL GARANTIDO**
+- ✨ **Merlin (100 crítico)**: 30% + 100% = **100% INSTANT KILL GARANTIDO** 
+- 🥊 **Loki (50 crítico)**: 30% + 50% = **80% INSTANT KILL**
 - 💰 **Ultra Low Cost**: Apenas 5 ânima (spammable desde turno 1)
 - 🔄 **No Cooldown**: Ativação infinita sem restrições
-- 🎯 **Early Game Domination**: 99% win rate até turno 4
+- 🔗 **Database Stats**: Usa atributo crítico real do character database
 - 💀 **Configurações QUEBRADAS**: +200% crítico, -90% custos, triple damage, full heal
 
 ### **2. Convergência Ânima v2.1.0 BALANCED IMMORTAL - IMORTALIDADE CONTROLADA**
@@ -138,7 +141,7 @@ playerUseSkill(skill) {
 }
 ```
 
-### **Skills GAMEBREAKER v3.6**: 3 skills intencionalmente quebradas
+### **Skills ULTRA GAMEBREAKER v3.7**: Character integration system
 ```json
 [
   {
@@ -160,7 +163,7 @@ playerUseSkill(skill) {
   },
   {
     "id": "8AB7CDE5F9", 
-    "name": "💀 Arsenal Adaptativo v3.0.0 GAMEBREAKER",
+    "name": "💀 Arsenal Adaptativo v3.1.0 ULTRA GAMEBREAKER",
     "type": "buff",
     "classe": "Armamentista", 
     "anima_cost": 5,
@@ -168,10 +171,16 @@ playerUseSkill(skill) {
     "duration": 25,
     "metadata": {
       "isPassive": false,
-      "version": "3.0.0",
-      "mechanic": "gamebreaker_instant_kill",
-      "buffFormula": "if (criticalHit) { enemy.hp = 0; victory = true; }",
-      "powerLevel": "gamebreaker"
+      "version": "3.1.0",
+      "mechanic": "character_critical_integration_instant_kill",
+      "buffFormula": "criticalChance = 30 + character.critico; if (criticalHit) { enemy.hp = 0; victory = true; }",
+      "characterIntegration": true,
+      "criticalCalculation": "30% base + character.critico attribute",
+      "ultimateBrokenness": {
+        "Sesshoumaru_guaranteed_kill": "100% instant kill rate",
+        "Loki_high_kill": "80% instant kill rate",
+        "Merlin_guaranteed_kill": "100% instant kill rate"
+      }
     }
   },
   {

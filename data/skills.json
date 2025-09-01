@@ -42,8 +42,8 @@
     },
     "8AB7CDE5F9": {
       "id": "8AB7CDE5F9",
-      "name": "💀 Arsenal Adaptativo v3.0.0 GAMEBREAKER",
-      "description": "💀 GAMEBREAKER v3.0.0: COMPLETAMENTE QUEBRADO! O armamentista se torna uma máquina de morte instantânea. Qualquer crítico = INSTANT KILL garantido. Custo mínimo para dominação total early game.\n\n💀 ALGORITMO v3.0.0: BROKEN INSTANT KILL SYSTEM\n• Ativar skill: Entra em Modo Arsenal QUEBRADO por 25 turnos (custa APENAS 5 ânima)\n• 🗡️ Configuração Ofensiva: +200% dano crítico + 65% chance crítica + INSTANT KILL on crit\n• 🛡️ Configuração Defensiva: -90% custo ânima + regenera 50 ânima + immunity frames\n• 🧘 Configuração Suporte: FULL HEAL + remove ALL debuffs + reset ALL cooldowns\n• 🎯 Configuração Híbrida: TRIPLE DAMAGE + ALL configurations ativas simultaneamente\n\n💀 BROKEN COMBO SYSTEM: 1 config = INSTANT DOMINATION, 2+ configs = GAME OVER para inimigos\n\n💀 MECÂNICA QUEBRADA: Usar skill por 5 ânima → Critical = INSTANT KILL → Win garantido.",
+      "name": "💀 Arsenal Adaptativo v3.1.0 ULTRA GAMEBREAKER",
+      "description": "💀 ULTRA GAMEBREAKER v3.1.0: AINDA MAIS QUEBRADO! Agora integra o atributo crítico do personagem para chances de instant kill EXTREMAS. Personagens com alto crítico se tornam máquinas de morte imparáveis.\n\n💀 ALGORITMO v3.1.0: CHARACTER CRITICAL INTEGRATION SYSTEM\n• Ativar skill: Entra em Modo Arsenal QUEBRADO por 25 turnos (custa APENAS 5 ânima)\n• 🎯 NOVA MECÂNICA: 30% crítico base + ATRIBUTO CRÍTICO DO PERSONAGEM\n• 🏹 Sesshoumaru (70 crítico): 30% + 70% = 100% chance instant kill GARANTIDA\n• 🥊 Loki (50 crítico): 30% + 50% = 80% chance instant kill\n• ✨ Merlin (100 crítico): 30% + 100% = 100% chance instant kill GARANTIDA (cap)\n• 💀 Configurações QUEBRADAS: +200% crítico, -90% custos, triple damage, full heal\n\n💀 ULTRA BROKEN SYSTEM: Personagens com crítico alto = INSTANT KILL GARANTIDO\n\n💀 MECÂNICA ULTRA QUEBRADA: Crítico do personagem + 30% base = Chance de instant kill → Win garantido para personagens fortes.",
       "type": "buff",
       "classe": "Armamentista",
       "level": 1,
@@ -59,9 +59,9 @@
           "configurations": {
             "offensive": {
               "trigger": "attack",
-              "effect": "+200% critical damage + 65% critical chance + INSTANT KILL on critical hit",
+              "effect": "+200% critical damage + 30% base critical + CHARACTER CRITICAL ATTRIBUTE + INSTANT KILL on critical hit",
               "duration": 99,
-              "secondary_effects": ["instant_kill", "guaranteed_crit", "enemy_deletion"]
+              "secondary_effects": ["instant_kill", "character_critical_integration", "enemy_deletion"]
             },
             "defensive": {
               "trigger": "defend", 
@@ -90,18 +90,24 @@
           },
           "gamebreaker_mode": {
             "trigger": "skill_activation",
-            "effect": "65% critical chance + INSTANT KILL on ANY critical hit",
+            "effect": "30% base critical + CHARACTER CRITICAL ATTRIBUTE + INSTANT KILL on ANY critical hit",
             "duration": "permanent_until_victory",
-            "power_level": "reality_breaking"
+            "power_level": "character_dependent_reality_breaking",
+            "character_integration": true,
+            "critical_examples": {
+              "Sesshoumaru": "30% + 70 = 100% instant kill chance",
+              "Loki": "30% + 50 = 80% instant kill chance", 
+              "Merlin": "30% + 100 = 100% instant kill chance (capped)"
+            }
           }
         }
       ],
       "metadata": {
         "skillType": "arsenal_adaptativo",
         "isPassive": false,
-        "version": "3.0.0",
-        "mechanic": "gamebreaker_instant_kill",
-        "buffFormula": "if (criticalHit) { enemy.hp = 0; victory = true; }",
+        "version": "3.1.0",
+        "mechanic": "character_critical_integration_instant_kill",
+        "buffFormula": "criticalChance = 30 + character.critico; if (criticalHit) { enemy.hp = 0; victory = true; }",
         "activationRequired": true,
         "modeDuration": 25,
         "configurationTypes": [
@@ -114,11 +120,18 @@
         "gamebreakerMode": true,
         "resetCondition": "enemy_team_eliminated",
         "powerLevel": "gamebreaker",
-        "balanceNotes": "INTENTIONALLY BROKEN - INSTANT KILL MECHANICS FOR EARLY GAME DOMINATION",
-        "winCondition": "critical_hit_equals_instant_victory"
+        "balanceNotes": "ULTRA BROKEN v3.1.0 - CHARACTER CRITICAL INTEGRATION FOR PERSONALIZED INSTANT KILL RATES",
+        "winCondition": "critical_hit_equals_instant_victory",
+        "characterIntegration": true,
+        "criticalCalculation": "30% base + character.critico attribute",
+        "ultimateBrokenness": {
+          "Sesshoumaru_guaranteed_kill": "100% instant kill rate",
+          "Loki_high_kill": "80% instant kill rate",
+          "Merlin_guaranteed_kill": "100% instant kill rate"
+        }
       },
       "created_at": "2025-09-01T04:00:00.000Z",
-      "updated_at": "2025-09-01T14:00:00.000Z"
+      "updated_at": "2025-09-01T15:30:00.000Z"
     },
     "9BC8DEF6G1": {
       "id": "9BC8DEF6G1",

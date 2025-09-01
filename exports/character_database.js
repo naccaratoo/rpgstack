@@ -1,5 +1,5 @@
 // RPGStack Characters - Generated automatically
-// Generated at: 2025-09-01T11:59:05.312Z
+// Generated at: 2025-09-01T15:00:36.262Z
 // Mixed ID System: Legacy IDs preserved + New Hexadecimal IDs
 
 const CharacterDatabase = {
@@ -67,10 +67,10 @@ const CharacterDatabase = {
     "skills": [
         {
             "skillId": "7YUOFU26OF",
-            "skillName": "🐉 Cadência do Dragão v4.1.0",
+            "skillName": "🐉 Cadência do Dragão v6.0.0 REWORK",
             "skillDamage": 0,
             "skillMana": 0,
-            "skillType": "passive",
+            "skillType": "buff",
             "source": "skills_module"
         }
     ],
@@ -78,7 +78,7 @@ const CharacterDatabase = {
     "anima": 100,
     "critico": 50,
     "created_at": "2025-08-31T17:47:13.246Z",
-    "updated_at": "2025-09-01T11:55:37.326Z"
+    "updated_at": "2025-09-01T15:00:36.260Z"
 },
 
   // ID: ARCANO001 (LEGACY)
