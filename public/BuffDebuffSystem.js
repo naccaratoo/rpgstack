@@ -47,6 +47,13 @@ class BuffDebuffSystem {
         name: 'Defendendo',
         color: '#0369a1',
         type: 'buff'
+      },
+      meditationCounter: {
+        icon: '🧘',
+        className: 'buff-meditation-counter',
+        name: 'Contador de Meditação',
+        color: '#059669',
+        type: 'buff'
       }
     };
   }
@@ -98,6 +105,7 @@ class BuffDebuffSystem {
         break;
       case 'Arcano':
         this.checkConvergenciaAnima(characterId);
+        this.checkMeditationCounter(characterId);
         break;
     }
   }
@@ -188,6 +196,37 @@ class BuffDebuffSystem {
   }
 
   /**
+   * Verificar contador de meditação para Arcanos
+   * @param {string} characterId - ID do personagem
+   */
+  checkMeditationCounter(characterId) {
+    const meditationState = this.battleMechanics.getMeditationCounterState(characterId);
+    if (meditationState.isActive && meditationState.totalMeditations > 0) {
+      // Verificar status especiais
+      const willCauseInstantKill = meditationState.sessionMeditations === 5;
+      const hasArmamentistaCounter = meditationState.sessionMeditations >= 5;
+      
+      let statusText = '';
+      if (willCauseInstantKill) {
+        statusText = ' 💀 PRÓXIMA MEDITAÇÃO = INSTANT KILL!';
+      } else if (hasArmamentistaCounter) {
+        statusText = ' ⚔️ CONVERGÊNCIA ATIVA!';
+      }
+      
+      this.addBuff(characterId, 'meditationCounter', {
+        value: `${meditationState.sessionMeditations}`,
+        description: `${meditationState.totalMeditations} meditações no total, ${meditationState.sessionMeditations} nesta batalha${statusText}`,
+        stacks: meditationState.sessionMeditations,
+        additionalInfo: `${meditationState.consecutiveMeditations} consecutivas neste turno`,
+        isCounterActive: hasArmamentistaCounter,
+        willCauseInstantKill: willCauseInstantKill
+      });
+    } else {
+      this.removeBuff(characterId, 'meditationCounter');
+    }
+  }
+
+  /**
    * Adicionar um buff à lista de ativos
    * @param {string} characterId - ID do personagem
    * @param {string} buffType - Tipo do buff
@@ -259,7 +298,18 @@ class BuffDebuffSystem {
    */
   createBuffElement(buff) {
     const buffElement = document.createElement('div');
-    buffElement.className = `buff-icon ${buff.className}`;
+    let className = `buff-icon ${buff.className}`;
+    
+    // Adicionar classes especiais para counter/instant kill
+    if (buff.id === 'meditationCounter') {
+      if (buff.willCauseInstantKill) {
+        className += ' instant-kill-ready';
+      } else if (buff.isCounterActive) {
+        className += ' counter-active';
+      }
+    }
+    
+    buffElement.className = className;
     buffElement.innerHTML = buff.icon;
     
     // Criar tooltip

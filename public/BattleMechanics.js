@@ -38,6 +38,10 @@ class BattleMechanics {
    */
   static MEDITATION_ANIMA_RECOVERY = 0.10; // 10% do Ânima máximo
   static MEDITATION_HP_RECOVERY = 0.05; // 5% da vida máxima
+  
+  // ARCANO IMMORTALITY SYSTEM - Convergência Ânima v2.2.0 BALANCED
+  static ARCANO_MEDITATION_HP_RECOVERY = 0.50; // 50% HP para Arcanos com Convergência Ânima
+  static ARCANO_MEDITATION_ANIMA_RECOVERY = 0.25; // 25% Ânima para Arcanos com Convergência Ânima
 
   /**
    * Estados de batalha
@@ -169,24 +173,73 @@ class BattleMechanics {
    * @returns {Object} Resultado da meditação
    */
   meditate(character) {
-    // Calcular recuperação de Ânima (10% do máximo)
     const maxAnima = character.anima || 100;
-    const animaRecovered = Math.round(maxAnima * BattleMechanics.MEDITATION_ANIMA_RECOVERY);
+    let animaRecovered, hpRecovered, newAnima, newHp, message;
     
-    // Calcular recuperação de HP (5% do máximo)
-    const hpRecovered = Math.round(character.maxHP * BattleMechanics.MEDITATION_HP_RECOVERY);
+    // ARCANO IMMORTALITY SYSTEM - Convergência Ânima v2.2.0
+    if (character.classe === 'Arcano') {
+      // Verificar se tem Convergência Ânima ativa
+      const hasConvergencia = character.skills && character.skills.some(skill => 
+        skill.skillId === '9BC8DEF6G1' || skill.skillName?.includes('Convergência Ânima')
+      );
+      
+      if (hasConvergencia) {
+        // BALANCED RESTORATION para Arcanos com Convergência Ânima
+        animaRecovered = Math.round(maxAnima * BattleMechanics.ARCANO_MEDITATION_ANIMA_RECOVERY);
+        hpRecovered = Math.round(character.maxHP * BattleMechanics.ARCANO_MEDITATION_HP_RECOVERY);
+        newAnima = Math.min(character.currentAnima + animaRecovered, maxAnima);
+        newHp = Math.min(character.currentHP + hpRecovered, character.maxHP);
+        
+        // Marcar como meditando para proteção contra instant kill
+        character.isMeditating = true;
+        character.meditationActive = true;
+        
+        message = `🛡️ CONVERGÊNCIA ÂNIMA: Meditação balanceada! Restaurou ${hpRecovered} HP (50%) e ${animaRecovered} Ânima (25%). PROTEGIDO contra instant kill crítico!`;
+      } else {
+        // Arcano sem Convergência Ânima - meditação normal
+        animaRecovered = Math.round(maxAnima * BattleMechanics.MEDITATION_ANIMA_RECOVERY);
+        hpRecovered = Math.round(character.maxHP * BattleMechanics.MEDITATION_HP_RECOVERY);
+        newAnima = Math.min(character.currentAnima + animaRecovered, maxAnima);
+        newHp = Math.min(character.currentHP + hpRecovered, character.maxHP);
+        message = `Meditação concluída! Recuperou ${hpRecovered} HP e ${animaRecovered} Ânima.`;
+      }
+    } else {
+      // Outras classes - meditação normal
+      animaRecovered = Math.round(maxAnima * BattleMechanics.MEDITATION_ANIMA_RECOVERY);
+      hpRecovered = Math.round(character.maxHP * BattleMechanics.MEDITATION_HP_RECOVERY);
+      newAnima = Math.min(character.currentAnima + animaRecovered, maxAnima);
+      newHp = Math.min(character.currentHP + hpRecovered, character.maxHP);
+      message = `Meditação concluída! Recuperou ${hpRecovered} HP e ${animaRecovered} Ânima.`;
+    }
     
-    // Aplicar limites máximos
-    const newAnima = Math.min(character.currentAnima + animaRecovered, maxAnima);
-    const newHp = Math.min(character.currentHP + hpRecovered, character.maxHP);
+    // MEDITATION COUNTER para Arcanos
+    let meditationCounterState = null;
+    let convergenciaInstantKill = false;
     
+    if (character.classe === 'Arcano') {
+      // Verificar se era a 5ª meditação ANTES de processar
+      const previousState = this.getMeditationCounterState(character.id);
+      const isConvergenciaInstantKill = previousState.sessionMeditations === 5;
+      
+      meditationCounterState = this.processMeditationCounter(character.id);
+      
+      // Se era a 6ª meditação (após 5), ativar instant kill
+      if (isConvergenciaInstantKill) {
+        convergenciaInstantKill = true;
+        message += ' 💀 CONVERGÊNCIA ÂNIMA: INSTANT KILL ATIVADO!';
+      }
+    }
+
     return {
       animaRecovered,
       hpRecovered,
       newAnima,
       newHp,
       success: true,
-      message: `Meditação concluída! Recuperou ${hpRecovered} HP e ${animaRecovered} Ânima.`
+      message,
+      isArcanoImmortal: character.classe === 'Arcano' && character.isMeditating,
+      meditationCounter: meditationCounterState,
+      convergenciaInstantKill: convergenciaInstantKill
     };
   }
 
@@ -561,6 +614,147 @@ class BattleMechanics {
       isActive: skillState.isActive,
       currentReduction: skillState.currentReduction,
       consecutiveAnimaSkills: skillState.consecutiveAnimaSkills
+    };
+  }
+
+  // ============= MEDITATION COUNTER SYSTEM (Arcano) =============
+
+  /**
+   * Processar meditação para Arcanos com contador
+   * @param {string} characterId - ID do personagem
+   * @returns {Object} Estado atual do contador de meditação
+   */
+  processMeditationCounter(characterId) {
+    if (!this.skillStates.has(characterId)) {
+      this.skillStates.set(characterId, {});
+    }
+    
+    if (!this.skillStates.get(characterId).meditationCounter) {
+      this.skillStates.get(characterId).meditationCounter = {
+        totalMeditations: 0,
+        sessionMeditations: 0,
+        consecutiveMeditations: 0,
+        lastMeditationTurn: 0,
+        isActive: true
+      };
+    }
+
+    const meditationState = this.skillStates.get(characterId).meditationCounter;
+    
+    // Incrementar contadores
+    meditationState.totalMeditations++;
+    meditationState.sessionMeditations++;
+    meditationState.consecutiveMeditations++;
+    meditationState.lastMeditationTurn = Date.now();
+
+    console.log('🧘 MeditationCounter - Processed:', {
+      characterId,
+      totalMeditations: meditationState.totalMeditations,
+      sessionMeditations: meditationState.sessionMeditations,
+      consecutiveMeditations: meditationState.consecutiveMeditations
+    });
+
+    // Verificar se próxima meditação (6ª) causará instant kill
+    const willCauseInstantKill = meditationState.sessionMeditations === 5;
+    const hasArmamentistaCounter = meditationState.sessionMeditations >= 5;
+    
+    return {
+      totalMeditations: meditationState.totalMeditations,
+      sessionMeditations: meditationState.sessionMeditations,
+      consecutiveMeditations: meditationState.consecutiveMeditations,
+      isActive: meditationState.isActive,
+      hasArmamentistaCounter: hasArmamentistaCounter,
+      willCauseInstantKill: willCauseInstantKill,
+      message: `🧘 Meditações: ${meditationState.totalMeditations} total, ${meditationState.sessionMeditations} nesta batalha${willCauseInstantKill ? ' 💀 PRÓXIMA MEDITAÇÃO = INSTANT KILL!' : hasArmamentistaCounter ? ' ⚔️ CONVERGÊNCIA ATIVA!' : ''}`
+    };
+  }
+
+  /**
+   * Reset contador de meditações consecutivas
+   * @param {string} characterId - ID do personagem
+   */
+  resetConsecutiveMeditations(characterId) {
+    if (this.skillStates.has(characterId) && this.skillStates.get(characterId).meditationCounter) {
+      this.skillStates.get(characterId).meditationCounter.consecutiveMeditations = 0;
+      console.log('🧘 MeditationCounter - Reset consecutive meditations for:', characterId);
+    }
+  }
+
+  /**
+   * Obter estado atual do contador de meditação
+   * @param {string} characterId - ID do personagem
+   * @returns {Object} Estado atual
+   */
+  getMeditationCounterState(characterId) {
+    console.log('🧘 getMeditationCounterState DEBUG:', {
+      characterId,
+      hasSkillStates: this.skillStates.has(characterId),
+      skillStatesKeys: Array.from(this.skillStates.keys())
+    });
+
+    if (!this.skillStates.has(characterId) || !this.skillStates.get(characterId).meditationCounter) {
+      console.log('🧘 No meditation state found, returning default');
+      return {
+        totalMeditations: 0,
+        sessionMeditations: 0,
+        consecutiveMeditations: 0,
+        isActive: false
+      };
+    }
+
+    const meditationState = this.skillStates.get(characterId).meditationCounter;
+    console.log('🧘 Found meditation state:', meditationState);
+    
+    return {
+      totalMeditations: meditationState.totalMeditations,
+      sessionMeditations: meditationState.sessionMeditations,
+      consecutiveMeditations: meditationState.consecutiveMeditations,
+      isActive: meditationState.isActive
+    };
+  }
+
+  /**
+   * Reset contador de sessão (para nova batalha)
+   * @param {string} characterId - ID do personagem
+   */
+  resetSessionMeditations(characterId) {
+    if (this.skillStates.has(characterId) && this.skillStates.get(characterId).meditationCounter) {
+      this.skillStates.get(characterId).meditationCounter.sessionMeditations = 0;
+      this.skillStates.get(characterId).meditationCounter.consecutiveMeditations = 0;
+      console.log('🧘 MeditationCounter - Reset session for:', characterId);
+    }
+  }
+
+  /**
+   * Verificar se Arcano pode dar instant kill em Armamentista (5+ meditações)
+   * @param {string} arcanoId - ID do Arcano atacante
+   * @param {Object} target - Alvo do ataque
+   * @returns {Object} Resultado da verificação
+   */
+  checkArcanoArmamentistaCounter(arcanoId, target) {
+    const meditationState = this.getMeditationCounterState(arcanoId);
+    const canInstantKill = meditationState.sessionMeditations >= 5 && target.classe === 'Armamentista';
+    
+    console.log('⚔️ ArcanoCounter - DEBUG COMPLETO:', {
+      arcanoId,
+      targetClass: target.classe,
+      targetName: target.name,
+      sessionMeditations: meditationState.sessionMeditations,
+      meditationState: meditationState,
+      canInstantKill,
+      isTargetArmamentista: target.classe === 'Armamentista',
+      hasEnoughMeditations: meditationState.sessionMeditations >= 5
+    });
+
+    return {
+      canInstantKill,
+      meditationCount: meditationState.sessionMeditations,
+      targetClass: target.classe,
+      message: canInstantKill 
+        ? `⚔️ COUNTER ATIVO: Arcano (${meditationState.sessionMeditations} meditações) vs Armamentista = INSTANT KILL GARANTIDO!`
+        : meditationState.sessionMeditations >= 5 
+          ? `⚔️ Counter ativo mas alvo não é Armamentista (${target.classe})`
+          : `🧘 Meditações insuficientes: ${meditationState.sessionMeditations}/5 para counter`
     };
   }
 }

@@ -42,14 +42,14 @@
     },
     "8AB7CDE5F9": {
       "id": "8AB7CDE5F9",
-      "name": "💀 Arsenal Adaptativo v3.1.0 ULTRA GAMEBREAKER",
-      "description": "💀 ULTRA GAMEBREAKER v3.1.0: AINDA MAIS QUEBRADO! Agora integra o atributo crítico do personagem para chances de instant kill EXTREMAS. Personagens com alto crítico se tornam máquinas de morte imparáveis.\n\n💀 ALGORITMO v3.1.0: CHARACTER CRITICAL INTEGRATION SYSTEM\n• Ativar skill: Entra em Modo Arsenal QUEBRADO por 25 turnos (custa APENAS 5 ânima)\n• 🎯 NOVA MECÂNICA: 30% crítico base + ATRIBUTO CRÍTICO DO PERSONAGEM\n• 🏹 Sesshoumaru (70 crítico): 30% + 70% = 100% chance instant kill GARANTIDA\n• 🥊 Loki (50 crítico): 30% + 50% = 80% chance instant kill\n• ✨ Merlin (100 crítico): 30% + 100% = 100% chance instant kill GARANTIDA (cap)\n• 💀 Configurações QUEBRADAS: +200% crítico, -90% custos, triple damage, full heal\n\n💀 ULTRA BROKEN SYSTEM: Personagens com crítico alto = INSTANT KILL GARANTIDO\n\n💀 MECÂNICA ULTRA QUEBRADA: Crítico do personagem + 30% base = Chance de instant kill → Win garantido para personagens fortes.",
+      "name": "💀 Arsenal Adaptativo v4.0.0 CAPCRIT BALANCED",
+      "description": "💀 CAPCRIT BALANCED v4.0.0: Sistema BALANCEADO integrado com CapCrit.js! Apenas personagens com EXATAMENTE 100% de crítico podem dar instant kill. Meditação protege contra instant kills.\n\n💀 ALGORITMO v4.0.0: CAPCRIT INTEGRATION SYSTEM\n• Ativar skill: Entra em Modo Arsenal por 25 turnos (custa 10 ânima)\n• 🎯 CAPCRIT MECHANIC: 30% crítico base + ATRIBUTO CRÍTICO DO PERSONAGEM\n• 🏹 Sesshoumaru (70 crítico): 30% + 70% = 100% EXATO → INSTANT KILL ATIVO\n• 🥊 Loki (50 crítico): 30% + 50% = 80% → CRÍTICO NORMAL (sem instant kill)\n• ✨ Merlin (100 crítico): 30% + 100% = 130% (cap 100% mas não exato) → CRÍTICO NORMAL\n• 🛡️ PROTEÇÃO: Alvos meditando são IMUNES a instant kill por crítico\n\n⚖️ BALANCED SYSTEM: Só crítico EXATO de 100% = Instant kill + Proteção por meditação\n\n💀 MECÂNICA BALANCEADA: CapCrit.js valida se crítico = 100% exato → Se sim: instant kill → Se não: crítico normal.",
       "type": "buff",
       "classe": "Armamentista",
       "level": 1,
       "damage": 9999,
       "sprite": null,
-      "anima_cost": 5,
+      "anima_cost": 10,
       "cooldown": 0,
       "duration": 25,
       "prerequisites": [],
@@ -59,27 +59,27 @@
           "configurations": {
             "offensive": {
               "trigger": "attack",
-              "effect": "+200% critical damage + 30% base critical + CHARACTER CRITICAL ATTRIBUTE + INSTANT KILL on critical hit",
+              "effect": "+150% critical damage + CapCrit integration + INSTANT KILL only on EXACT 100% critical",
               "duration": 99,
-              "secondary_effects": ["instant_kill", "character_critical_integration", "enemy_deletion"]
+              "secondary_effects": ["capcrit_instant_kill", "meditation_protection", "exact_critical_validation"]
             },
             "defensive": {
               "trigger": "defend", 
-              "effect": "-90% anima cost ALL actions + regenerate 50 anima + immunity frames",
+              "effect": "-50% anima cost + regenerate 30 anima + meditation protection",
               "duration": 99,
-              "secondary_effects": ["anima_overflow", "damage_immunity", "resource_infinite"]
+              "secondary_effects": ["anima_efficiency", "instant_kill_immunity", "capcrit_protection"]
             },
             "support": {
               "trigger": "meditate",
-              "effect": "FULL HEAL to max HP + remove ALL debuffs + reset ALL cooldowns",
+              "effect": "HEAL 75% HP + remove debuffs + instant kill immunity",
               "duration": 99,
-              "secondary_effects": ["full_restoration", "debuff_immunity", "cooldown_negation"]
+              "secondary_effects": ["partial_restoration", "capcrit_immunity", "meditation_protection"]
             },
             "hybrid": {
               "trigger": "skill",
-              "effect": "TRIPLE DAMAGE on all actions + ALL 4 configurations active simultaneously", 
+              "effect": "DOUBLE DAMAGE + enhanced critical calculation + all configs synergy", 
               "duration": 99,
-              "secondary_effects": ["damage_multiplier_3x", "configuration_stacking", "god_mode"]
+              "secondary_effects": ["damage_multiplier_2x", "capcrit_enhancement", "balanced_power"]
             }
           },
           "combo_system": {
@@ -90,14 +90,18 @@
           },
           "gamebreaker_mode": {
             "trigger": "skill_activation",
-            "effect": "30% base critical + CHARACTER CRITICAL ATTRIBUTE + INSTANT KILL on ANY critical hit",
+            "effect": "30% base critical + CHARACTER CRITICAL ATTRIBUTE + CapCrit validation + INSTANT KILL only on EXACT 100%",
             "duration": "permanent_until_victory",
-            "power_level": "character_dependent_reality_breaking",
+            "power_level": "capcrit_balanced_precision",
             "character_integration": true,
-            "critical_examples": {
-              "Sesshoumaru": "30% + 70 = 100% instant kill chance",
-              "Loki": "30% + 50 = 80% instant kill chance", 
-              "Merlin": "30% + 100 = 100% instant kill chance (capped)"
+            "capcrit_examples": {
+              "Sesshoumaru": "30% + 70 = 100% EXACT → INSTANT KILL ATIVO",
+              "Loki": "30% + 50 = 80% → CRÍTICO NORMAL (sem instant kill)", 
+              "Merlin": "30% + 100 = 130% (cap mas não exato) → CRÍTICO NORMAL"
+            },
+            "meditation_protection": {
+              "rule": "Targets meditating are IMMUNE to critical instant kills",
+              "integration": "CapCrit.isProtectedFromInstantKill() validation"
             }
           }
         }
@@ -105,9 +109,9 @@
       "metadata": {
         "skillType": "arsenal_adaptativo",
         "isPassive": false,
-        "version": "3.1.0",
-        "mechanic": "character_critical_integration_instant_kill",
-        "buffFormula": "criticalChance = 30 + character.critico; if (criticalHit) { enemy.hp = 0; victory = true; }",
+        "version": "4.0.0",
+        "mechanic": "capcrit_exact_100_instant_kill_with_meditation_protection",
+        "buffFormula": "criticalChance = 30 + character.critico; if (criticalChance === 100 && criticalHit && !target.isMeditating) { instantKill = true; }",
         "activationRequired": true,
         "modeDuration": 25,
         "configurationTypes": [
@@ -119,24 +123,27 @@
         "comboSystem": true,
         "gamebreakerMode": true,
         "resetCondition": "enemy_team_eliminated",
-        "powerLevel": "gamebreaker",
-        "balanceNotes": "ULTRA BROKEN v3.1.0 - CHARACTER CRITICAL INTEGRATION FOR PERSONALIZED INSTANT KILL RATES",
-        "winCondition": "critical_hit_equals_instant_victory",
+        "powerLevel": "balanced_precision",
+        "balanceNotes": "CAPCRIT BALANCED v4.0.0 - EXACT 100% CRITICAL FOR INSTANT KILL + MEDITATION PROTECTION",
+        "winCondition": "exact_100_critical_hit_with_no_meditation_protection",
         "characterIntegration": true,
-        "criticalCalculation": "30% base + character.critico attribute",
-        "ultimateBrokenness": {
-          "Sesshoumaru_guaranteed_kill": "100% instant kill rate",
-          "Loki_high_kill": "80% instant kill rate",
-          "Merlin_guaranteed_kill": "100% instant kill rate"
-        }
+        "criticalCalculation": "30% base + character.critico attribute (exact 100% required)",
+        "capCritIntegration": {
+          "system": "CapCrit.js validation",
+          "Sesshoumaru_precision_kill": "100% EXACT = instant kill capability",
+          "Loki_normal_critical": "80% = high critical damage only",
+          "Merlin_capped_critical": "130% capped to 100% but not exact = normal critical",
+          "meditation_immunity": "All meditating targets immune to instant kill"
+        },
+        "jsIntegration": "window.CapCrit.processAttack(attacker, target, 30)"
       },
       "created_at": "2025-09-01T04:00:00.000Z",
-      "updated_at": "2025-09-01T15:30:00.000Z"
+      "updated_at": "2025-09-01T16:00:00.000Z"
     },
     "9BC8DEF6G1": {
       "id": "9BC8DEF6G1",
-      "name": "🛡️ Convergência Ânima v2.1.0 BALANCED IMMORTAL",
-      "description": "🛡️ BALANCED IMMORTAL v2.1.0: ATIVAÇÃO AUTOMÁTICA com limitações táticas! O arcano se torna IMORTAL através de meditação controlada que restaura TUDO com limites estratégicos.\n\n🛡️ ALGORITMO v2.1.0: SISTEMA DE IMORTALIDADE BALANCEADO\n• AUTO-ATIVO: Skill ativa AUTOMATICAMENTE no início da batalha (0 custo)\n• 💚 Meditação PODEROSA: FULL HEAL HP + FULL RESTORE ânima\n• ⚡ 2 Meditações por Turno: Pode meditar até 2 vezes por turno (limitado)\n• 🌟 Super Cycle Rápido: A cada 2 meditações = TODOS cooldowns resetam\n• 🎯 Tactical Cooldown: Sistema em cooldown por 3 turnos após super cycle\n• 🛡️ IMORTALIDADE CONTROLADA: Enquanto puder meditar = muito difícil morrer\n\n⚖️ BALANCED SYSTEM: Auto-ativo + Meditação dupla + Full restore + Super cycle cada 2 + Cooldown tático = IMORTALIDADE ESTRATÉGICA\n\n🛡️ MECÂNICA BALANCEADA: Sistema ativo desde turno 1 → 2 Meditações restauram TUDO → Super cycle rápido → Cooldown tático → Repetir ciclo.",
+      "name": "🛡️ Convergência Ânima v2.3.0 BALANCED PROTECTION",
+      "description": "🛡️ BALANCED PROTECTION v2.3.0: ATIVAÇÃO AUTOMÁTICA com proteção balanceada contra instant kill crítico! O arcano se torna resistente e IMUNE a instant kills através de meditação estratégica.\n\n🛡️ ALGORITMO v2.3.0: SISTEMA BALANCEADO + CAPCRIT IMMUNITY\n• AUTO-ATIVO: Skill ativa AUTOMATICAMENTE no início da batalha (0 custo)\n• 💚 Meditação BALANCEADA: Restaura 50% HP + 25% Ânima por uso\n• ⚡ 2 Meditações por Turno: Pode meditar até 2 vezes por turno (limitado)\n• 🛡️ INSTANT KILL IMMUNITY: Personagens meditando são IMUNES a critical instant kill\n• 🌟 Super Cycle Rápido: A cada 2 meditações = TODOS cooldowns resetam\n• 🎯 Tactical Cooldown: Sistema em cooldown por 3 turnos após super cycle\n• ⚖️ CAPCRIT INTEGRATION: Integrado com CapCrit.js para proteção automática\n\n⚖️ BALANCED + PROTECTION: Resistência estratégica + Imunidade a instant kill crítico\n\n🛡️ MECÂNICA BALANCEADA: Meditar = 50% HP/25% Ânima + Proteção contra Sesshoumaru instant kill.",
       "type": "buff",
       "classe": "Arcano",
       "level": 1,
@@ -157,10 +164,10 @@
           "type": "controlled_meditation",
           "meditation_cost": 0,
           "meditation_cooldown": 0,
-          "hp_restore": "100%",
-          "anima_restore": "100%",
+          "hp_restore": "50%",
+          "anima_restore": "25%",
           "uses_per_turn": 2,
-          "description": "Limited meditation with full restoration (2x per turn)"
+          "description": "Limited meditation with balanced restoration (2x per turn)"
         },
         {
           "type": "balanced_immortality",
@@ -189,15 +196,15 @@
           "critical_chance_boost": 20,
           "applies_to": "all_actions",
           "duration": "permanent",
-          "description": "20% additional critical hit chance"
+          "description": "20% additional critical hit chance + instant kill immunity while active"
         }
       ],
       "metadata": {
         "skillType": "convergencia_anima",
         "isPassive": false,
-        "version": "2.1.0",
-        "mechanic": "balanced_immortality_through_controlled_meditation",
-        "buffFormula": "if (canMeditate && !tacticalCooldown) { superCycle = (meditations % 2 == 0); }",
+        "version": "2.3.0",
+        "mechanic": "balanced_immortality_with_capcrit_instant_kill_protection",
+        "buffFormula": "if (canMeditate && !tacticalCooldown) { superCycle = (meditations % 2 == 0); instantKillImmunity = isMeditating; }",
         "activationRequired": false,
         "autoActivation": true,
         "modeDuration": 999,
@@ -214,11 +221,17 @@
           "full_restoration",
           "2x_per_turn",
           "fast_super_cycle",
-          "tactical_cooldown"
-        ]
+          "tactical_cooldown",
+          "capcrit_instant_kill_immunity"
+        ],
+        "capCritProtection": {
+          "immunity": "Meditating characters immune to critical instant kills",
+          "integration": "CapCrit.isProtectedFromInstantKill() returns true",
+          "counters": "Arsenal Adaptativo Sesshoumaru instant kill attempts"
+        }
       },
       "created_at": "2025-09-01T04:00:00.000Z",
-      "updated_at": "2025-09-01T15:00:00.000Z"
+      "updated_at": "2025-09-01T16:10:00.000Z"
     }
   }
 }

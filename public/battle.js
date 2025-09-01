@@ -311,6 +311,15 @@ class BattleSystem {
     async playerAttack() {
         if (this.battleState !== 'player_turn') return;
         
+        // Reset meditation state quando atacar
+        this.currentBattle.player.isMeditating = false;
+        this.currentBattle.player.meditationActive = false;
+        
+        // Reset contador de meditações consecutivas para Arcanos
+        if (this.currentBattle.player.classe === 'Arcano') {
+            this.battleMechanics.resetConsecutiveMeditations(this.currentBattle.player.id);
+        }
+        
         console.log('🎯 BOTÃO ATAQUE CLICADO - DEBUG COMPLETO:', {
             playerClass: this.currentBattle.player.classe,
             playerId: this.currentBattle.player.id,
@@ -338,8 +347,37 @@ class BattleSystem {
             this.addBattleLog(arsenalResult.message, 'skill');
         }
         
-        // Aplicar defesa
-        damage = this.battleMechanics.applyDefense(damage, this.currentBattle.enemy.id);
+        // ARCANO COUNTER SYSTEM - Verificar instant kill vs Armamentista (5+ meditações)
+        let isArcanoCounterInstantKill = false;
+        if (this.currentBattle.player.classe === 'Arcano') {
+            console.log('🎯 DEBUG Attack - Arcano detected, checking counter:', {
+                playerId: this.currentBattle.player.id,
+                playerClass: this.currentBattle.player.classe,
+                enemyClass: this.currentBattle.enemy.classe,
+                enemyName: this.currentBattle.enemy.name
+            });
+            
+            const counterCheck = this.battleMechanics.checkArcanoArmamentistaCounter(
+                this.currentBattle.player.id,
+                this.currentBattle.enemy
+            );
+            
+            console.log('🎯 DEBUG Counter Result:', counterCheck);
+            
+            if (counterCheck.canInstantKill) {
+                console.log('💀 INSTANT KILL ATIVADO!');
+                isArcanoCounterInstantKill = true;
+                damage = this.currentBattle.enemy.currentHP + 1000; // Dano suficiente para instant kill
+                this.addBattleLog(counterCheck.message, 'skill');
+            } else if (counterCheck.meditationCount >= 1) {
+                this.addBattleLog(counterCheck.message, 'info');
+            }
+        }
+        
+        // Aplicar defesa (apenas se não for instant kill)
+        if (!isArcanoCounterInstantKill) {
+            damage = this.battleMechanics.applyDefense(damage, this.currentBattle.enemy.id);
+        }
         
         // Mostrar vantagem de classe
         const advantageInfo = this.battleMechanics.getClassAdvantageInfo(
@@ -353,7 +391,12 @@ class BattleSystem {
         this.currentBattle.enemy.currentHP = Math.max(0, this.currentBattle.enemy.currentHP - damage);
         
         this.addBattleLog(`${this.currentBattle.player.name} atacou ${this.currentBattle.enemy.name}!`, 'damage');
-        this.addBattleLog(`${this.currentBattle.enemy.name} recebeu ${damage} de dano!`, 'damage');
+        
+        if (isArcanoCounterInstantKill) {
+            this.addBattleLog(`💀⚔️ COUNTER INSTANT KILL! ${this.currentBattle.enemy.name} foi eliminado pelo poder do Arcano imortal!`, 'damage');
+        } else {
+            this.addBattleLog(`${this.currentBattle.enemy.name} recebeu ${damage} de dano!`, 'damage');
+        }
         
         this.animateDamage('enemy');
         this.updateBattleUI();
@@ -493,10 +536,65 @@ class BattleSystem {
             this.addBattleLog(advantageInfo.advantageText, 'skill');
         }
         
-        this.currentBattle.player.currentHP = Math.max(0, this.currentBattle.player.currentHP - damage);
+        // ARCANO IMMORTALITY SYSTEM - Verificar proteção contra crítico e imortalidade
+        let actualDamage = damage;
+        let isCriticalInstantKillAttempt = false;
+        let isArcanoImmortal = false;
+        
+        // Verificar se é tentativa de instant kill crítico
+        if (this.currentBattle.enemy.classe === 'Armamentista' && this.currentBattle.player.classe === 'Arcano') {
+            // Usar CapCrit system se disponível
+            if (typeof window !== 'undefined' && window.CapCrit) {
+                const critResult = window.CapCrit.processAttack(
+                    this.currentBattle.enemy, 
+                    this.currentBattle.player, 
+                    30
+                );
+                
+                if (critResult.instantKillOccurs) {
+                    isCriticalInstantKillAttempt = true;
+                    actualDamage = this.currentBattle.player.currentHP + 1000; // Damage suficiente para matar
+                } else if (critResult.targetProtected) {
+                    this.addBattleLog(critResult.message, 'skill');
+                    actualDamage = Math.round(damage * 1.5); // Dano crítico normal
+                }
+            }
+        }
+        
+        // Verificar se Arcano tem imortalidade ativa (meditando ou Convergência Ânima)
+        if (this.currentBattle.player.classe === 'Arcano') {
+            const hasConvergencia = this.currentBattle.player.skills && this.currentBattle.player.skills.some(skill => 
+                skill.skillId === '9BC8DEF6G1' || skill.skillName?.includes('Convergência Ânima')
+            );
+            
+            isArcanoImmortal = hasConvergencia || this.currentBattle.player.isMeditating;
+        }
+        
+        // Aplicar dano com verificação de imortalidade
+        const oldHP = this.currentBattle.player.currentHP;
+        this.currentBattle.player.currentHP = Math.max(0, this.currentBattle.player.currentHP - actualDamage);
+        
+        // SISTEMA DE IMORTALIDADE: Prevenir morte do Arcano
+        if (isArcanoImmortal && this.currentBattle.player.currentHP === 0) {
+            this.currentBattle.player.currentHP = 1; // Manter vivo com 1 HP
+            this.addBattleLog('🛡️ IMORTALIDADE ATIVA: Arcano não pode morrer! HP mantido em 1.', 'skill');
+            
+            // Ativação automática da meditação de emergência
+            const emergencyMeditation = this.battleMechanics.meditate(this.currentBattle.player);
+            this.currentBattle.player.currentHP = emergencyMeditation.newHp;
+            this.currentBattle.player.currentAnima = emergencyMeditation.newAnima;
+            this.addBattleLog('💚 MEDITAÇÃO DE EMERGÊNCIA: Arcano restaurou 50% HP e 25% Ânima!', 'skill');
+        }
         
         this.addBattleLog(`${this.currentBattle.enemy.name} atacou ${this.currentBattle.player.name}!`, 'damage');
-        this.addBattleLog(`${this.currentBattle.player.name} recebeu ${damage} de dano!`, 'damage');
+        
+        if (isCriticalInstantKillAttempt && !isArcanoImmortal) {
+            this.addBattleLog(`💀 INSTANT KILL CRÍTICO! ${this.currentBattle.player.name} foi eliminado!`, 'damage');
+        } else if (actualDamage !== damage) {
+            this.addBattleLog(`${this.currentBattle.player.name} recebeu ${actualDamage} de dano crítico!`, 'damage');
+        } else {
+            this.addBattleLog(`${this.currentBattle.player.name} recebeu ${actualDamage} de dano!`, 'damage');
+        }
         
         this.animateDamage('player');
         this.updateBattleUI();
@@ -524,7 +622,30 @@ class BattleSystem {
             this.addBattleLog(advantageInfo.advantageText, 'skill');
         }
         
+        // ARCANO IMMORTALITY SYSTEM - Aplicar mesma proteção para skills
+        let isArcanoImmortal = false;
+        
+        // Verificar se Arcano tem imortalidade ativa
+        if (this.currentBattle.player.classe === 'Arcano') {
+            const hasConvergencia = this.currentBattle.player.skills && this.currentBattle.player.skills.some(skill => 
+                skill.skillId === '9BC8DEF6G1' || skill.skillName?.includes('Convergência Ânima')
+            );
+            isArcanoImmortal = hasConvergencia || this.currentBattle.player.isMeditating;
+        }
+        
         this.currentBattle.player.currentHP = Math.max(0, this.currentBattle.player.currentHP - damage);
+        
+        // SISTEMA DE IMORTALIDADE: Prevenir morte do Arcano
+        if (isArcanoImmortal && this.currentBattle.player.currentHP === 0) {
+            this.currentBattle.player.currentHP = 1; // Manter vivo com 1 HP
+            this.addBattleLog('🛡️ IMORTALIDADE ATIVA: Arcano não pode morrer! HP mantido em 1.', 'skill');
+            
+            // Ativação automática da meditação de emergência
+            const emergencyMeditation = this.battleMechanics.meditate(this.currentBattle.player);
+            this.currentBattle.player.currentHP = emergencyMeditation.newHp;
+            this.currentBattle.player.currentAnima = emergencyMeditation.newAnima;
+            this.addBattleLog('💚 MEDITAÇÃO DE EMERGÊNCIA: Arcano restaurou 50% HP e 25% Ânima!', 'skill');
+        }
         
         this.addBattleLog(`${this.currentBattle.enemy.name} usou uma habilidade especial!`, 'skill');
         this.addBattleLog(`${this.currentBattle.player.name} recebeu ${damage} de dano mágico!`, 'damage');
@@ -689,6 +810,38 @@ class BattleSystem {
         if (this.currentBattle.player.classe === 'Armamentista') {
             const arsenalResult = this.battleMechanics.processArsenalAdaptativo(this.currentBattle.player.id, 'meditation');
             this.addBattleLog(arsenalResult.message, 'skill');
+        }
+        
+        // ARCANO IMMORTALITY SYSTEM - Processar Convergência Ânima
+        if (this.currentBattle.player.classe === 'Arcano' && meditationResult.isArcanoImmortal) {
+            this.addBattleLog('🛡️ IMORTALIDADE ATIVA: Arcano protegido contra instant kill crítico!', 'skill');
+            
+            // Verificar se precisa de ressurreição automática
+            if (this.currentBattle.player.currentHP <= 0) {
+                this.currentBattle.player.currentHP = this.currentBattle.player.maxHP;
+                this.currentBattle.player.currentAnima = this.currentBattle.player.anima;
+                this.addBattleLog('💀➡️💚 RESSURREIÇÃO AUTOMÁTICA: Arcano imortal não pode morrer!', 'skill');
+            }
+        }
+
+        // MEDITATION COUNTER para Arcanos
+        if (this.currentBattle.player.classe === 'Arcano' && meditationResult.meditationCounter) {
+            this.addBattleLog(meditationResult.meditationCounter.message, 'skill');
+        }
+
+        // CONVERGÊNCIA ÂNIMA INSTANT KILL (6ª meditação)
+        if (meditationResult.convergenciaInstantKill) {
+            this.addBattleLog('💀 CONVERGÊNCIA ÂNIMA: PODER SUPREMO ATIVADO!', 'skill');
+            
+            // Aplicar instant kill no inimigo
+            this.currentBattle.enemy.currentHP = 0;
+            this.addBattleLog(`💀✨ ${this.currentBattle.enemy.name} foi ANIQUILADO pelo poder da Convergência Ânima!`, 'damage');
+            
+            // Atualizar UI e verificar fim da batalha
+            this.updateBattleUI();
+            
+            // Verificar se a batalha terminou
+            if (this.checkBattleEnd()) return;
         }
         
         this.addBattleLog(meditationResult.message);
