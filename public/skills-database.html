@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Database - RPG Stack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d7377;
+            --primary-dark: #14a085;
+            --primary-light: #41ead4;
+            --success-color: #0f766e;
+            --warning-color: #d97706;
+            --danger-color: #991b1b;
+            --dark-bg: #0f172a;
+            --darker-bg: #020617;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-gray: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --accent-color: #155e75;
+            --hover-bg: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 50%, var(--accent-color) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--hover-bg) 100%);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(65, 234, 212, 0.1);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(65, 234, 212, 0.3);
+        }
+
+        .header p {
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .nav-link {
+            background: rgba(13, 115, 119, 0.8);
+            color: var(--text-light);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid rgba(65, 234, 212, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-link:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(13, 115, 119, 0.3);
+            border-color: var(--primary-light);
+        }
+
+        .controls {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.8) 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.95rem;
+            letter-spacing: 0.025em;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: 1px solid rgba(65, 234, 212, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(13, 115, 119, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #0d9488 100%);
+            color: white;
+            border: 1px solid rgba(15, 118, 110, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(15, 118, 110, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+            color: white;
+            border: 1px solid rgba(153, 27, 27, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(153, 27, 27, 0.4);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            flex: 1;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input, .filter-select {
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: rgba(2, 6, 23, 0.8);
+            color: var(--text-light);
+            outline: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input:focus, .filter-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(65, 234, 212, 0.1);
+            background: var(--darker-bg);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            min-width: 120px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.9) 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.4);
+            border-color: var(--primary-light);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-light);
+            display: block;
+            text-shadow: 0 0 20px rgba(65, 234, 212, 0.3);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.9) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        .skill-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(65, 234, 212, 0.2);
+            border-color: var(--primary-light);
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .skill-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .skill-type {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(13, 115, 119, 0.3);
+        }
+
+        .skill-classe {
+            background: linear-gradient(135deg, var(--warning-color), #f59e0b);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+        }
+
+        .skill-description {
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .skill-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(2, 6, 23, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .skill-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+        }
+
+        .skill-stat-value {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .skill-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-gray);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-gray);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.95) 100%);
+            margin: 5% auto;
+            padding: 2.5rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 75px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            color: var(--text-gray);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: rgba(2, 6, 23, 0.8);
+            color: var(--text-light);
+            outline: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(65, 234, 212, 0.1);
+            background: var(--darker-bg);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1100;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        /* Sprite Upload Styles */
+        .sprite-upload-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sprite-preview {
+            width: 80px;
+            height: 80px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(2, 6, 23, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sprite-preview:hover {
+            border-color: var(--primary-color);
+            background: rgba(13, 115, 119, 0.1);
+        }
+
+        .upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            gap: 0.25rem;
+        }
+
+        .upload-placeholder i {
+            font-size: 1.5rem;
+        }
+
+        .sprite-preview img {
+            border-radius: 6px;
+            transition: transform 0.2s ease;
+        }
+
+        .sprite-preview img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Skill card sprite display */
+        .skill-sprite {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            background: rgba(2, 6, 23, 0.8);
+        }
+
+        .skill-sprite-placeholder {
+            width: 48px;
+            height: 48px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(2, 6, 23, 0.8);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-magic"></i> Skills Database</h1>
+            <p>Gerencie todas as habilidades do seu RPG</p>
+            <div class="nav-links">
+                <a href="/" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/characters" class="nav-link"><i class="fas fa-users"></i> Personagens</a>
+                <a href="/maps" class="nav-link"><i class="fas fa-map"></i> Mapas</a>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="openCreateModal()">
+                <i class="fas fa-plus"></i> Nova Skill
+            </button>
+            <button class="btn btn-success" onclick="loadStats()">
+                <i class="fas fa-chart-bar"></i> Estatísticas
+            </button>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Buscar skills...">
+                <select class="filter-select" id="typeFilter">
+                    <option value="">Todos os Tipos</option>
+                    <option value="combat">Combate</option>
+                    <option value="magic">Magia</option>
+                    <option value="passive">Passiva</option>
+                    <option value="utility">Utilidade</option>
+                    <option value="healing">Cura</option>
+                    <option value="buff">Buff</option>
+                    <option value="debuff">Debuff</option>
+                </select>
+                <select class="filter-select" id="classeFilter">
+                    <option value="">Todas as Classes</option>
+                    <option value="Lutador">Lutador</option>
+                    <option value="Armamentista">Armamentista</option>
+                    <option value="Arcano">Arcano</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid" style="display: none;">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando skills...</p>
+        </div>
+
+        <div class="skills-grid" id="skillsGrid">
+            <!-- Skills will be loaded here -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-magic"></i>
+            <h3>Nenhuma skill encontrada</h3>
+            <p>Crie sua primeira skill ou ajuste os filtros de pesquisa</p>
+        </div>
+    </div>
+
+    <!-- Create/Edit Skill Modal -->
+    <div id="skillModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nova Skill</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="skillForm">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="skillName">Nome da Skill</label>
+                        <input type="text" id="skillName" class="form-input" required>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 120px;">
+                        <label class="form-label">Sprite</label>
+                        <div class="sprite-upload-container">
+                            <input type="file" id="skillSprite" accept="image/*" style="display: none;" onchange="previewSprite(event)">
+                            <div class="sprite-preview" onclick="document.getElementById('skillSprite').click()">
+                                <img id="spritePreview" style="display: none; width: 64px; height: 64px; object-fit: cover;">
+                                <div id="uploadPlaceholder" class="upload-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <span>Upload</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="skillDescription">Descrição</label>
+                    <textarea id="skillDescription" class="form-textarea"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="skillType">Tipo</label>
+                        <select id="skillType" class="form-select" required>
+                            <option value="combat">Combate</option>
+                            <option value="magic">Magia</option>
+                            <option value="passive">Passiva</option>
+                            <option value="utility">Utilidade</option>
+                            <option value="healing">Cura</option>
+                            <option value="buff">Buff</option>
+                            <option value="debuff">Debuff</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="skillClasse">Classe</label>
+                        <select id="skillClasse" class="form-select">
+                            <option value="Lutador">Lutador</option>
+                            <option value="Armamentista">Armamentista</option>
+                            <option value="Arcano">Arcano</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="skillLevel">Nível</label>
+                        <input type="number" id="skillLevel" class="form-input" min="1" max="10" value="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="skillAnimaCost">Custo de Ânima</label>
+                        <input type="number" id="skillAnimaCost" class="form-input" min="0" value="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="skillDamage">Dano</label>
+                        <input type="number" id="skillDamage" class="form-input" min="0" value="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="skillCooldown">Cooldown</label>
+                        <input type="number" id="skillCooldown" class="form-input" min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="skillDuration">Duração</label>
+                        <input type="number" id="skillDuration" class="form-input" min="0" value="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Salvar Skill
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let skills = [];
+        let currentSkillId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSkills();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Search and filter
+            document.getElementById('searchInput').addEventListener('input', filterSkills);
+            document.getElementById('typeFilter').addEventListener('change', filterSkills);
+            document.getElementById('classeFilter').addEventListener('change', filterSkills);
+
+            // Form submission
+            document.getElementById('skillForm').addEventListener('submit', saveSkill);
+        }
+
+        async function loadSkills() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('skillsGrid').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'none';
+
+                const response = await fetch('/api/skills');
+                const result = await response.json();
+
+                if (result.success) {
+                    skills = result.data.skills;
+                    renderSkills(skills);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar skills:', error);
+                showToast('Erro ao carregar skills: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/skills/statistics');
+                const result = await response.json();
+
+                if (result.success) {
+                    renderStats(result.data);
+                    document.getElementById('statsGrid').style.display = 'grid';
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+                showToast('Erro ao carregar estatísticas: ' + error.message, 'error');
+            }
+        }
+
+        function renderStats(stats) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <span class="stat-number">${stats.total}</span>
+                    <div class="stat-label">Total de Skills</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${stats.combatSkills}</span>
+                    <div class="stat-label">Skills de Combate</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${stats.passiveSkills}</span>
+                    <div class="stat-label">Skills Passivas</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${stats.basicSkills}</span>
+                    <div class="stat-label">Skills Básicas</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${Math.round(stats.averageStats.damage)}</span>
+                    <div class="stat-label">Dano Médio</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${Math.round(stats.averageStats.animaCost)}</span>
+                    <div class="stat-label">Mana Média</div>
+                </div>
+            `;
+        }
+
+        function renderSkills(skillsToRender) {
+            const skillsGrid = document.getElementById('skillsGrid');
+            
+            if (!skillsToRender || skillsToRender.length === 0) {
+                skillsGrid.style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            skillsGrid.style.display = 'grid';
+            document.getElementById('emptyState').style.display = 'none';
+
+            skillsGrid.innerHTML = skillsToRender.map(skill => `
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="skill-name">${skill.name}</div>
+                            <div class="skill-sprite-container">
+                                ${skill.sprite ? 
+                                    `<img src="/${skill.sprite}" alt="${skill.name}" class="skill-sprite">` :
+                                    `<div class="skill-sprite-placeholder"><i class="fas fa-image"></i></div>`
+                                }
+                            </div>
+                        </div>
+                        <div>
+                            <span class="skill-type">${skill.type}</span>
+                            <span class="skill-classe">${skill.classe || 'Lutador'}</span>
+                        </div>
+                    </div>
+                    
+                    ${skill.description ? `<div class="skill-description">${skill.description}</div>` : ''}
+                    
+                    <div class="skill-stats">
+                        <div class="skill-stat">
+                            <span class="skill-stat-label">Nível</span>
+                            <span class="skill-stat-value">${skill.level}</span>
+                        </div>
+                        <div class="skill-stat">
+                            <span class="skill-stat-label">Mana</span>
+                            <span class="skill-stat-value">${skill.anima_cost}</span>
+                        </div>
+                        <div class="skill-stat">
+                            <span class="skill-stat-label">Dano</span>
+                            <span class="skill-stat-value">${skill.damage}</span>
+                        </div>
+                        <div class="skill-stat">
+                            <span class="skill-stat-label">Cooldown</span>
+                            <span class="skill-stat-value">${skill.cooldown}s</span>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-actions">
+                        <button class="btn btn-primary btn-small" onclick="editSkill('${skill.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteSkill('${skill.id}')">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterSkills() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            const classeFilter = document.getElementById('classeFilter').value;
+
+            const filteredSkills = skills.filter(skill => {
+                const matchesSearch = skill.name.toLowerCase().includes(searchTerm) ||
+                                    skill.description.toLowerCase().includes(searchTerm);
+                const matchesType = !typeFilter || skill.type === typeFilter;
+                const matchesClasse = !classeFilter || skill.classe === classeFilter;
+
+                return matchesSearch && matchesType && matchesClasse;
+            });
+
+            renderSkills(filteredSkills);
+        }
+
+        function openCreateModal() {
+            currentSkillId = null;
+            document.getElementById('modalTitle').textContent = 'Nova Skill';
+            document.getElementById('skillForm').reset();
+            document.getElementById('skillModal').style.display = 'block';
+        }
+
+        function editSkill(id) {
+            const skill = skills.find(s => s.id === id);
+            if (!skill) return;
+
+            currentSkillId = id;
+            document.getElementById('modalTitle').textContent = 'Editar Skill';
+            
+            // Fill form
+            document.getElementById('skillName').value = skill.name;
+            document.getElementById('skillDescription').value = skill.description;
+            document.getElementById('skillType').value = skill.type;
+            document.getElementById('skillClasse').value = skill.classe;
+            document.getElementById('skillLevel').value = skill.level;
+            document.getElementById('skillAnimaCost').value = skill.anima_cost;
+            document.getElementById('skillDamage').value = skill.damage;
+            document.getElementById('skillCooldown').value = skill.cooldown;
+            document.getElementById('skillDuration').value = skill.duration;
+            
+            // Show existing sprite if available
+            const preview = document.getElementById('spritePreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            
+            if (skill.sprite) {
+                preview.src = `/${skill.sprite}`;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                resetSpritePreview();
+            }
+            
+            document.getElementById('skillModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('skillModal').style.display = 'none';
+            currentSkillId = null;
+            resetSpritePreview();
+        }
+
+        async function saveSkill(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('skillName').value,
+                description: document.getElementById('skillDescription').value,
+                type: document.getElementById('skillType').value,
+                classe: document.getElementById('skillClasse').value,
+                level: parseInt(document.getElementById('skillLevel').value),
+                anima_cost: parseInt(document.getElementById('skillAnimaCost').value),
+                damage: parseInt(document.getElementById('skillDamage').value),
+                cooldown: parseInt(document.getElementById('skillCooldown').value),
+                duration: parseInt(document.getElementById('skillDuration').value)
+            };
+
+            try {
+                let response;
+                if (currentSkillId) {
+                    // Update
+                    response = await fetch(`/api/skills/${currentSkillId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    // Create
+                    response = await fetch('/api/skills', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Check if there's a sprite to upload
+                    const spriteFile = document.getElementById('skillSprite').files[0];
+                    if (spriteFile) {
+                        try {
+                            const skillId = result.data.skill.id;
+                            await uploadSkillSprite(skillId, spriteFile);
+                            showToast('Skill e sprite salvos com sucesso!', 'success');
+                        } catch (spriteError) {
+                            console.error('Error uploading sprite:', spriteError);
+                            showToast(`Skill salva, mas erro no sprite: ${spriteError.message}`, 'error');
+                        }
+                    } else {
+                        showToast(result.message, 'success');
+                    }
+                    
+                    closeModal();
+                    loadSkills();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Erro ao salvar skill:', error);
+                showToast('Erro ao salvar skill: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteSkill(id, force = false) {
+            const skill = skills.find(s => s.id === id);
+            if (!skill) return;
+
+            if (!force) {
+                if (!confirm(`Tem certeza de que deseja excluir a skill "${skill.name}"?`)) {
+                    return;
+                }
+            }
+
+            try {
+                const url = force ? `/api/skills/${id}?force=true` : `/api/skills/${id}`;
+                const response = await fetch(url, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    loadSkills();
+                    showToast(result.message, 'success');
+                } else {
+                    // Se falhou por ser pré-requisito, ofereça opção de exclusão forçada
+                    if (result.code === 'BUSINESS_RULE_VIOLATION' && !force) {
+                        const confirmForce = confirm(
+                            `${result.error}\n\nDeseja excluir mesmo assim? Isso também removerá as dependências.`
+                        );
+                        if (confirmForce) {
+                            deleteSkill(id, true);
+                        }
+                    } else {
+                        throw new Error(result.error);
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao excluir skill:', error);
+                showToast('Erro ao excluir skill: ' + error.message, 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        // Sprite upload functions
+        function previewSprite(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('spritePreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function resetSpritePreview() {
+            const preview = document.getElementById('spritePreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const fileInput = document.getElementById('skillSprite');
+            
+            preview.style.display = 'none';
+            preview.src = '';
+            placeholder.style.display = 'flex';
+            fileInput.value = '';
+        }
+
+        async function uploadSkillSprite(skillId, file) {
+            const formData = new FormData();
+            formData.append('sprite', file);
+
+            try {
+                const response = await fetch(`/api/skills/${skillId}/sprite`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Upload failed');
+                }
+
+                return result;
+            } catch (error) {
+                console.error('Error uploading sprite:', error);
+                throw error;
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('skillModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

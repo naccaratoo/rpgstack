@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ Sistema de Batalha - RPGStack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="battle.css">
+</head>
+<body>
+    <div class="battle-container">
+        <!-- Battle Arena -->
+        <div class="battle-arena">
+            <!-- Enemy Area -->
+            <div class="enemy-area">
+                <div class="enemy-info">
+                    <div class="character-name" id="enemy-name">Boss Enemy</div>
+                    <div class="health-bar">
+                        <div class="health-bar-bg">
+                            <div class="health-bar-fill" id="enemy-health-bar"></div>
+                        </div>
+                        <div class="health-text">
+                            <span id="enemy-hp">100</span>/<span id="enemy-max-hp">100</span> HP
+                        </div>
+                    </div>
+                    <div class="level-badge">Lv. <span id="enemy-level">??</span></div>
+                </div>
+                <div class="character-sprite enemy-sprite">
+                    <img id="enemy-sprite" src="" alt="Enemy" />
+                </div>
+            </div>
+
+            <!-- Battle Field -->
+            <div class="battle-field">
+                <div class="battle-effects" id="battle-effects"></div>
+            </div>
+
+            <!-- Player Area -->
+            <div class="player-area">
+                <div class="character-sprite player-sprite">
+                    <img id="player-sprite" src="" alt="Player" />
+                </div>
+                <div class="player-info">
+                    <div class="character-name" id="player-name">Your Character</div>
+                    <div class="health-bar">
+                        <div class="health-bar-bg">
+                            <div class="health-bar-fill" id="player-health-bar"></div>
+                        </div>
+                        <div class="health-text">
+                            <span id="player-hp">100</span>/<span id="player-max-hp">100</span> HP
+                        </div>
+                    </div>
+                    <div class="anima-bar">
+                        <div class="anima-bar-bg">
+                            <div class="anima-bar-fill" id="player-anima-bar"></div>
+                        </div>
+                        <div class="anima-text">
+                            <span id="player-anima">50</span>/<span id="player-max-anima">50</span> Ânima
+                        </div>
+                    </div>
+                    <div class="level-badge">Lv. <span id="player-level">1</span></div>
+                    <div class="buff-indicators" id="player-buffs">
+                        <!-- Buff icons will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle UI -->
+        <div class="battle-ui">
+            <!-- Battle Log -->
+            <div class="battle-log">
+                <div class="new-messages-indicator" id="new-messages-indicator">
+                    ↓ Novas mensagens ↓
+                </div>
+                <div class="log-content" id="battle-log">
+                    <div class="log-message">Batalha iniciada!</div>
+                </div>
+            </div>
+
+            <!-- Action Menu -->
+            <div class="action-menu" id="action-menu">
+                <div class="action-list">
+                    <button class="action-btn attack-btn" id="attack-btn">
+                        ⚔️ Atacar
+                    </button>
+                    <button class="action-btn defend-btn" id="defend-btn">
+                        🛡️ Defender
+                    </button>
+                    <button class="action-btn meditate-btn" id="meditate-btn">
+                        🧘 Meditar
+                    </button>
+                    <div class="skills-section" id="skills-section">
+                        <!-- Character skills will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn Indicator -->
+            <div class="turn-indicator" id="turn-indicator">
+                <div class="turn-text">Sua vez!</div>
+                <div class="turn-timer" id="turn-timer"></div>
+            </div>
+        </div>
+
+        <!-- Battle Setup Modal -->
+        <div class="modal" id="setup-modal">
+            <div class="modal-content">
+                <h2>🎯 Escolha seu Personagem</h2>
+                <div class="character-select" id="character-select">
+                    <!-- Characters will be loaded here -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="start-battle-btn" disabled>
+                        ⚔️ Iniciar Batalha
+                    </button>
+                    <button class="btn btn-secondary" id="back-btn">
+                        ← Voltar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Result Modal -->
+        <div class="modal" id="result-modal">
+            <div class="modal-content">
+                <h2 id="result-title">🏆 Vitória!</h2>
+                <div class="result-content" id="result-content">
+                    <div class="exp-gain">Experiência ganha: <span id="exp-gained">0</span></div>
+                    <div class="level-up" id="level-up" style="display:none">
+                        🎉 Level Up! Nível <span id="new-level">2</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="continue-btn">
+                        Continuar
+                    </button>
+                    <button class="btn btn-secondary" id="new-battle-btn">
+                        Nova Batalha
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Preparando batalha...</div>
+        </div>
+    </div>
+
+    <script src="BattleMechanics.js"></script>
+    <script src="BuffDebuffSystem.js"></script>
+    <script src="battle.js"></script>
+</body>
+</html>

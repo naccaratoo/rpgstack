@@ -1,0 +1,80 @@
+{
+  "skills": {
+    "7YUOFU26OF": {
+      "id": "7YUOFU26OF",
+      "name": "Cadência do Dragão",
+      "description": "O lutador entra no ritmo implacável do dragão, canalizando seu espírito de combate a cada golpe básico. O poder de cada ataque simples fortalece o próximo, mas a perda do ritmo faz com que ele precisa recomeçar sua construção de poder.\n\nAo usar um Ataque Básico, calcula-se um novo bônus de ataque: X = (Nº de Ataques Básicos Consecutivos) + 1.",
+      "type": "buff",
+      "classe": "Lutador",
+      "level": 1,
+      "damage": 0,
+      "sprite": null,
+      "anima_cost": 20,
+      "cooldown": 0,
+      "duration": 0,
+      "prerequisites": [],
+      "effects": [],
+      "metadata": {
+        "skillType": "dragon_cadence",
+        "isPassive": true,
+        "mechanic": "consecutive_basic_attacks",
+        "buffFormula": "X = (Consecutive Basic Attacks) + 1"
+      },
+      "created_at": "2025-09-01T01:13:25.712Z",
+      "updated_at": "2025-09-01T04:45:12.518Z"
+    },
+    "8AB7CDE5F9": {
+      "id": "8AB7CDE5F9",
+      "name": "Arsenal Adaptativo",
+      "description": "O armamentista é mestre da versatilidade tática, alternando fluidamente entre offense e support. Sua experiência em combate híbrido permite que cada tipo de ação diferente fortaleça sua próxima investida.\n\nA cada ação realizada de tipo diferente da anterior, ganha-se +Z% de efetividade na próxima ação que não seja Defesa, onde Z = (Nº de alternâncias consecutivas) × 3%.\n\nTipos de Ação: Ataque, Suporte, Defesa, Meditação.",
+      "type": "buff",
+      "classe": "Armamentista",
+      "level": 1,
+      "damage": 0,
+      "sprite": null,
+      "anima_cost": 20,
+      "cooldown": 0,
+      "duration": 0,
+      "prerequisites": [],
+      "effects": [],
+      "metadata": {
+        "skillType": "arsenal_adaptativo",
+        "isPassive": true,
+        "mechanic": "action_alternation",
+        "buffFormula": "Z = (Alternation Count) × 3%",
+        "actionTypes": [
+          "attack",
+          "support",
+          "defense",
+          "meditation"
+        ]
+      },
+      "created_at": "2025-09-01T04:00:00.000Z",
+      "updated_at": "2025-09-01T04:45:10.640Z"
+    },
+    "9BC8DEF6G1": {
+      "id": "9BC8DEF6G1",
+      "name": "Convergência Ânima",
+      "description": "O arcano domina a arte de manipular o Ânima com precisão crescente, onde cada spell lançado refina sua conexão com as energias místicas. Quanto mais magia utiliza consecutivamente, maior sua eficiência.\n\nAo usar qualquer Skill que consome Ânima, calcula-se uma nova redução de custo: Y = (Nº de Skills com Ânima usadas consecutivamente) × 2%.\n\nEsta redução substitui a anterior, exceto se o novo valor for menor.",
+      "type": "buff",
+      "classe": "Arcano",
+      "level": 1,
+      "damage": 0,
+      "sprite": null,
+      "anima_cost": 20,
+      "cooldown": 0,
+      "duration": 0,
+      "prerequisites": [],
+      "effects": [],
+      "metadata": {
+        "skillType": "convergencia_anima",
+        "isPassive": true,
+        "mechanic": "consecutive_anima_skills",
+        "buffFormula": "Y = (Consecutive Anima Skills) × 2%",
+        "reductionType": "anima_cost"
+      },
+      "created_at": "2025-09-01T04:00:00.000Z",
+      "updated_at": "2025-09-01T04:45:05.538Z"
+    }
+  }
+}

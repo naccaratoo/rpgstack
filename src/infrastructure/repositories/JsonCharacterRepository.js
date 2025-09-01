@@ -618,6 +618,9 @@ export class JsonCharacterRepository extends CharacterRepository {
       gold: data.gold || 0,
       experience: data.experience || 0,
       skill_points: data.skill_points || 0,
+      classe: data.classe || 'Lutador',
+      anima: data.anima || 100,
+      critico: data.critico || 1.0,
       metadata: {
         createdAt: data.created_at || data.createdAt || new Date().toISOString(),
         updatedAt: data.updated_at || data.updatedAt || new Date().toISOString(),

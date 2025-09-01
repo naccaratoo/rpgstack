@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPGStack - Character Database Manager v3.1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,8 +13,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0d7377 100%);
             min-height: 100vh;
             padding: 10px;
             margin: 0;
@@ -24,18 +25,19 @@
             width: 100%;
             max-width: none;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 20px;
+            box-shadow: 0 25px 75px rgba(0,0,0,0.4);
             overflow-x: auto;
             min-height: calc(100vh - 20px);
             display: flex;
             flex-direction: column;
+            border: 1px solid rgba(65, 234, 212, 0.1);
         }
 
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
             padding: 30px;
             text-align: center;
             position: relative;
@@ -1070,6 +1072,26 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="classe">Classe</label>
+                        <select id="classe" name="classe" required>
+                            <option value="Lutador">Lutador</option>
+                            <option value="Armamentista">Armamentista</option>
+                            <option value="Arcano">Arcano</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="anima">Ânima</label>
+                            <input type="number" id="anima" name="anima" min="1" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="critico">Crítico</label>
+                            <input type="number" id="critico" name="critico" min="0" step="0.1" value="1.0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="aiType">Tipo de IA</label>
                         <select id="aiType" name="aiType" required>
                             <option value="aggressive">Agressiva</option>
@@ -1164,6 +1186,9 @@
                                 <th>HP</th>
                                 <th>ATK</th>
                                 <th>DEF</th>
+                                <th>Classe</th>
+                                <th>Ânima</th>
+                                <th>Crítico</th>
                                 <th>EXP</th>
                                 <th>Gold</th>
                                 <th>IA</th>
@@ -1172,7 +1197,7 @@
                         </thead>
                         <tbody id="charactersTableBody">
                             <tr>
-                                <td colspan="11" style="text-align: center; padding: 20px; color: #6c757d;">
+                                <td colspan="14" style="text-align: center; padding: 20px; color: #6c757d;">
                                     Carregando personagens...
                                 </td>
                             </tr>
@@ -1273,6 +1298,25 @@
 
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="editClasse">Classe</label>
+                        <select id="editClasse" name="classe" required>
+                            <option value="Lutador">Lutador</option>
+                            <option value="Armamentista">Armamentista</option>
+                            <option value="Arcano">Arcano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAnima">Ânima</label>
+                        <input type="number" id="editAnima" name="anima" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editCritico">Crítico</label>
+                        <input type="number" id="editCritico" name="critico" min="0" step="0.1" required>
+                    </div>
+                    <div class="form-group">
                         <label for="editAiType">Tipo de IA</label>
                         <select id="editAiType" name="aiType" required>
                             <option value="aggressive">Agressiva</option>
@@ -1284,6 +1328,9 @@
                             <option value="tank">Tanque</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
                         <label for="editSpawnWeight">Peso de Spawn</label>
                         <input type="number" id="editSpawnWeight" name="spawnWeight" min="1" max="20" required>
@@ -1293,6 +1340,13 @@
                 <div class="form-group">
                     <label for="editDescription">Descrição (Opcional)</label>
                     <textarea id="editDescription" name="description" rows="3" placeholder="Descrição do personagem..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Skills</label>
+                    <div class="skills-container" id="editSkillsContainer">
+                        <button type="button" class="add-btn" onclick="addEditSkill()">+ Adicionar Skill</button>
+                    </div>
                 </div>
 
                 <div class="form-buttons">
@@ -1431,16 +1485,28 @@
 
         // Verificar status do servidor
         async function checkServerStatus() {
+            console.log('Verificando status do servidor...');
+            console.log('API_BASE:', API_BASE);
+            
             try {
                 const response = await fetch(`${API_BASE}/test`);
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
                 const result = await response.json();
+                console.log('Result:', result);
+                
                 serverOnline = response.ok;
+                console.log('Server online definido para:', serverOnline);
+                
                 updateServerStatus(true, result.idSystem || 'Hexadecimal');
                 loadCharacters();
                 
                 // Não gerar ID exemplo automaticamente - apenas quando solicitado
             } catch (error) {
+                console.error('Erro na verificação do servidor:', error);
                 serverOnline = false;
+                console.log('Server online definido para:', serverOnline);
                 updateServerStatus(false);
                 showNotification('⚠️ Servidor offline! Inicie o backend primeiro.', 'error');
             }
@@ -1698,19 +1764,309 @@
             container.appendChild(dropDiv);
         }
 
-        // Adicionar skill
-        function addSkill() {
-            const container = document.getElementById('skillsContainer');
+        // Adicionar skill - Integração com módulo de skills
+        async function addSkill() {
+            try {
+                // Buscar skills disponíveis do módulo de skills
+                const response = await fetch('/api/skills');
+                const data = await response.json();
+                
+                if (!data.success || !data.data.skills) {
+                    showNotification('Erro ao carregar skills disponíveis', 'error');
+                    return;
+                }
+                
+                const skills = data.data.skills;
+                
+                if (skills.length === 0) {
+                    showNotification('Nenhuma skill encontrada. Crie skills primeiro no módulo Skills.', 'info');
+                    return;
+                }
+
+                const container = document.getElementById('skillsContainer');
+                const skillDiv = document.createElement('div');
+                skillDiv.className = 'skill-item';
+                
+                // Criar select com skills disponíveis
+                let skillOptions = '<option value="">Selecione uma skill...</option>';
+                skills.forEach(skill => {
+                    const sprite = skill.sprite ? `🎨` : '';
+                    skillOptions += `<option value="${skill.id}" data-name="${skill.name}" data-damage="${skill.damage}" data-mana="${skill.mana_cost}" data-type="${skill.type}">${sprite} ${skill.name} (${skill.type} - Dano: ${skill.damage})</option>`;
+                });
+
+                skillDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <select name="skillId[]" onchange="updateSkillInfo(this)" style="flex: 1; min-width: 200px;">
+                            ${skillOptions}
+                        </select>
+                        <input type="text" placeholder="Nome da skill" name="skillName[]" readonly style="width: 150px;" title="Nome da skill selecionada">
+                        <input type="number" placeholder="Dano" name="skillDamage[]" readonly style="width: 80px;" title="Dano base da skill">
+                        <input type="number" placeholder="Custo mana" name="skillMana[]" readonly style="width: 80px;" title="Custo de mana">
+                        <span class="skill-type" name="skillType[]" style="background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;"></span>
+                        <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()" title="Remover skill">×</button>
+                    </div>
+                `;
+                container.appendChild(skillDiv);
+                
+                showNotification(`${skills.length} skills carregadas do módulo Skills`, 'success');
+                
+            } catch (error) {
+                console.error('Erro ao buscar skills:', error);
+                showNotification('Erro ao conectar com o módulo de Skills', 'error');
+            }
+        }
+
+        // Função para atualizar informações da skill selecionada
+        function updateSkillInfo(selectElement) {
+            const skillDiv = selectElement.parentElement;
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            
+            if (selectedOption.value) {
+                // Preencher campos com dados da skill selecionada
+                skillDiv.querySelector('input[name="skillName[]"]').value = selectedOption.getAttribute('data-name');
+                skillDiv.querySelector('input[name="skillDamage[]"]').value = selectedOption.getAttribute('data-damage');
+                skillDiv.querySelector('input[name="skillMana[]"]').value = selectedOption.getAttribute('data-mana');
+                skillDiv.querySelector('.skill-type').textContent = selectedOption.getAttribute('data-type');
+                skillDiv.querySelector('.skill-type').style.background = getTypeColor(selectedOption.getAttribute('data-type'));
+            } else {
+                // Limpar campos se nenhuma skill estiver selecionada
+                skillDiv.querySelector('input[name="skillName[]"]').value = '';
+                skillDiv.querySelector('input[name="skillDamage[]"]').value = '';
+                skillDiv.querySelector('input[name="skillMana[]"]').value = '';
+                skillDiv.querySelector('.skill-type').textContent = '';
+                skillDiv.querySelector('.skill-type').style.background = '#e9ecef';
+            }
+        }
+
+        // Função para obter cor baseada no tipo da skill
+        function getTypeColor(type) {
+            const colors = {
+                'combat': '#dc3545',
+                'magic': '#6f42c1',
+                'healing': '#28a745',
+                'passive': '#6c757d',
+                'utility': '#17a2b8',
+                'buff': '#ffc107',
+                'debuff': '#fd7e14'
+            };
+            return colors[type] || '#e9ecef';
+        }
+
+        // Adicionar skill no modal de edição - Integração com módulo de skills
+        async function addEditSkill() {
+            try {
+                // Buscar skills disponíveis do módulo de skills
+                const response = await fetch('/api/skills');
+                const data = await response.json();
+                
+                if (!data.success || !data.data.skills) {
+                    showNotification('Erro ao carregar skills disponíveis', 'error');
+                    return;
+                }
+                
+                const skills = data.data.skills;
+                
+                if (skills.length === 0) {
+                    showNotification('Nenhuma skill encontrada. Crie skills primeiro no módulo Skills.', 'info');
+                    return;
+                }
+
+                const container = document.getElementById('editSkillsContainer');
+                const skillDiv = document.createElement('div');
+                skillDiv.className = 'skill-item';
+                
+                // Criar select com skills disponíveis
+                let skillOptions = '<option value="">Selecione uma skill...</option>';
+                skills.forEach(skill => {
+                    const sprite = skill.sprite ? `🎨` : '';
+                    skillOptions += `<option value="${skill.id}" data-name="${skill.name}" data-damage="${skill.damage}" data-mana="${skill.mana_cost}" data-type="${skill.type}">${sprite} ${skill.name} (${skill.type} - Dano: ${skill.damage})</option>`;
+                });
+
+                skillDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <select name="editSkillId[]" onchange="updateEditSkillInfo(this)" style="flex: 1; min-width: 200px;">
+                            ${skillOptions}
+                        </select>
+                        <input type="text" placeholder="Nome da skill" name="editSkillName[]" readonly style="width: 150px;" title="Nome da skill selecionada">
+                        <input type="number" placeholder="Dano" name="editSkillDamage[]" readonly style="width: 80px;" title="Dano base da skill">
+                        <input type="number" placeholder="Custo mana" name="editSkillMana[]" readonly style="width: 80px;" title="Custo de mana">
+                        <span class="skill-type" name="editSkillType[]" style="background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;"></span>
+                        <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()" title="Remover skill">×</button>
+                    </div>
+                `;
+                container.appendChild(skillDiv);
+                
+                showNotification(`${skills.length} skills carregadas para edição`, 'success');
+                
+            } catch (error) {
+                console.error('Erro ao buscar skills para edição:', error);
+                showNotification('Erro ao conectar com o módulo de Skills', 'error');
+            }
+        }
+
+        // Função para atualizar informações da skill selecionada no modal de edição
+        function updateEditSkillInfo(selectElement) {
+            const skillDiv = selectElement.parentElement;
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            
+            if (selectedOption.value) {
+                // Preencher campos com dados da skill selecionada
+                skillDiv.querySelector('input[name="editSkillName[]"]').value = selectedOption.getAttribute('data-name');
+                skillDiv.querySelector('input[name="editSkillDamage[]"]').value = selectedOption.getAttribute('data-damage');
+                skillDiv.querySelector('input[name="editSkillMana[]"]').value = selectedOption.getAttribute('data-mana');
+                skillDiv.querySelector('.skill-type').textContent = selectedOption.getAttribute('data-type');
+                skillDiv.querySelector('.skill-type').style.background = getTypeColor(selectedOption.getAttribute('data-type'));
+            } else {
+                // Limpar campos se nenhuma skill estiver selecionada
+                skillDiv.querySelector('input[name="editSkillName[]"]').value = '';
+                skillDiv.querySelector('input[name="editSkillDamage[]"]').value = '';
+                skillDiv.querySelector('input[name="editSkillMana[]"]').value = '';
+                skillDiv.querySelector('.skill-type').textContent = '';
+                skillDiv.querySelector('.skill-type').style.background = '#e9ecef';
+            }
+        }
+
+        // Função para carregar skills existentes do personagem no modal de edição
+        async function loadExistingSkills(characterSkills) {
+            try {
+                // Buscar todas as skills disponíveis
+                const response = await fetch('/api/skills');
+                const data = await response.json();
+                
+                if (!data.success || !data.data.skills) {
+                    console.log('Não foi possível carregar skills disponíveis');
+                    return;
+                }
+                
+                const availableSkills = data.data.skills;
+                const container = document.getElementById('editSkillsContainer');
+                
+                // Limpar container (manter apenas o botão)
+                container.innerHTML = '<button type="button" class="add-btn" onclick="addEditSkill()">+ Adicionar Skill</button>';
+                
+                // Adicionar skills existentes
+                for (const characterSkill of characterSkills) {
+                    // Encontrar a skill correspondente no módulo skills
+                    const skillData = availableSkills.find(skill => skill.id === characterSkill.skillId || skill.name === characterSkill.skillName);
+                    
+                    if (skillData) {
+                        await addExistingSkillToEdit(skillData);
+                    } else {
+                        // Skill não encontrada no módulo skills (possivelmente skill manual antiga)
+                        addLegacySkillToEdit(characterSkill);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Erro ao carregar skills existentes:', error);
+            }
+        }
+
+        // Adicionar skill existente ao modal de edição
+        async function addExistingSkillToEdit(skillData) {
+            try {
+                const response = await fetch('/api/skills');
+                const data = await response.json();
+                const allSkills = data.data.skills;
+                
+                const container = document.getElementById('editSkillsContainer');
+                const skillDiv = document.createElement('div');
+                skillDiv.className = 'skill-item';
+                
+                // Criar select com skills disponíveis
+                let skillOptions = '<option value="">Selecione uma skill...</option>';
+                allSkills.forEach(skill => {
+                    const sprite = skill.sprite ? `🎨` : '';
+                    const selected = skill.id === skillData.id ? 'selected' : '';
+                    skillOptions += `<option value="${skill.id}" data-name="${skill.name}" data-damage="${skill.damage}" data-mana="${skill.mana_cost}" data-type="${skill.type}" ${selected}>${sprite} ${skill.name} (${skill.type} - Dano: ${skill.damage})</option>`;
+                });
+
+                skillDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <select name="editSkillId[]" onchange="updateEditSkillInfo(this)" style="flex: 1; min-width: 200px;">
+                            ${skillOptions}
+                        </select>
+                        <input type="text" placeholder="Nome da skill" name="editSkillName[]" readonly style="width: 150px;" value="${skillData.name}" title="Nome da skill selecionada">
+                        <input type="number" placeholder="Dano" name="editSkillDamage[]" readonly style="width: 80px;" value="${skillData.damage}" title="Dano base da skill">
+                        <input type="number" placeholder="Custo mana" name="editSkillMana[]" readonly style="width: 80px;" value="${skillData.mana_cost}" title="Custo de mana">
+                        <span class="skill-type" name="editSkillType[]" style="background: ${getTypeColor(skillData.type)}; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; color: white;">${skillData.type}</span>
+                        <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()" title="Remover skill">×</button>
+                    </div>
+                `;
+                container.appendChild(skillDiv);
+                
+            } catch (error) {
+                console.error('Erro ao adicionar skill existente:', error);
+            }
+        }
+
+        // Adicionar skill legada (manual) ao modal de edição
+        function addLegacySkillToEdit(skillData) {
+            const container = document.getElementById('editSkillsContainer');
             const skillDiv = document.createElement('div');
             skillDiv.className = 'skill-item';
+            
             skillDiv.innerHTML = `
-                <input type="text" placeholder="Nome da skill" name="skillName[]">
-                <input type="number" placeholder="Dano" name="skillDamage[]">
-                <input type="number" placeholder="Custo stamina" name="skillCost[]">
-                <input type="number" placeholder="Chance (0-1)" step="0.01" min="0" max="1" name="skillChance[]">
-                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fff3cd; padding: 8px; border-radius: 4px; border: 1px solid #ffeaa7;">
+                    <span style="color: #856404; font-size: 0.9em; flex: 1;">
+                        ⚠️ Skill Legada: ${skillData.skillName || 'Nome não informado'} 
+                        (Dano: ${skillData.skillDamage || 0}, Custo: ${skillData.skillCost || 0})
+                    </span>
+                    <button type="button" class="remove-btn" onclick="this.parentElement.parentElement.remove()" title="Remover skill legada">×</button>
+                    <input type="hidden" name="legacySkillName[]" value="${skillData.skillName || ''}">
+                    <input type="hidden" name="legacySkillDamage[]" value="${skillData.skillDamage || 0}">
+                    <input type="hidden" name="legacySkillCost[]" value="${skillData.skillCost || 0}">
+                </div>
             `;
             container.appendChild(skillDiv);
+        }
+
+        // Processar skills editadas para envio ao servidor
+        function processEditedSkills() {
+            const skillsArray = [];
+            const container = document.getElementById('editSkillsContainer');
+            
+            // Coletar skills do módulo Skills (novas)
+            const skillIdElements = container.querySelectorAll('select[name="editSkillId[]"]');
+            skillIdElements.forEach(selectElement => {
+                const skillId = selectElement.value;
+                if (skillId) {
+                    const skillDiv = selectElement.parentElement;
+                    const skillName = skillDiv.querySelector('input[name="editSkillName[]"]').value;
+                    const skillDamage = skillDiv.querySelector('input[name="editSkillDamage[]"]').value;
+                    const skillMana = skillDiv.querySelector('input[name="editSkillMana[]"]').value;
+                    const skillType = skillDiv.querySelector('.skill-type').textContent;
+                    
+                    skillsArray.push({
+                        skillId: skillId,
+                        skillName: skillName,
+                        skillDamage: parseInt(skillDamage) || 0,
+                        skillMana: parseInt(skillMana) || 0,
+                        skillType: skillType,
+                        source: 'skills_module'
+                    });
+                }
+            });
+            
+            // Coletar skills legadas (skills manuais antigas)
+            const legacySkillNames = container.querySelectorAll('input[name="legacySkillName[]"]');
+            legacySkillNames.forEach((nameInput, index) => {
+                const skillName = nameInput.value;
+                if (skillName) {
+                    const damageInputs = container.querySelectorAll('input[name="legacySkillDamage[]"]');
+                    const costInputs = container.querySelectorAll('input[name="legacySkillCost[]"]');
+                    
+                    skillsArray.push({
+                        skillName: skillName,
+                        skillDamage: parseInt(damageInputs[index]?.value) || 0,
+                        skillCost: parseInt(costInputs[index]?.value) || 0,
+                        source: 'legacy'
+                    });
+                }
+            });
+            
+            console.log('Skills processadas para edição:', skillsArray);
+            return skillsArray;
         }
 
         // **FUNÇÃO ATUALIZADA**: Processar formulário com IDs hexadecimais
@@ -1729,14 +2085,26 @@
             submitBtn.disabled = true;
             
             try {
+                console.log('Iniciando criação de personagem...');
+                console.log('Server online:', serverOnline);
+                
                 const formData = new FormData();
                 
-                // Dados básicos
-                formData.append('name', document.getElementById('name').value);
-                formData.append('level', document.getElementById('level').value);
+                // Dados básicos - com logging para debug
+                const name = document.getElementById('name').value;
+                const level = document.getElementById('level').value;
+                const classe = document.getElementById('classe').value;
+                
+                console.log('Dados básicos:', { name, level, classe });
+                
+                formData.append('name', name);
+                formData.append('level', level);
                 formData.append('hp', document.getElementById('hp').value);
                 formData.append('attack', document.getElementById('attack').value);
                 formData.append('defense', document.getElementById('defense').value);
+                formData.append('classe', classe);
+                formData.append('anima', document.getElementById('anima').value);
+                formData.append('critico', document.getElementById('critico').value);
                 formData.append('experience', document.getElementById('experience').value);
                 formData.append('goldMin', document.getElementById('goldMin').value);
                 formData.append('goldMax', document.getElementById('goldMax').value);
@@ -1758,13 +2126,25 @@
                 const dropTypes = document.getElementsByName('dropType[]');
                 const dropValues = document.getElementsByName('dropValue[]');
                 
+                console.log('Drops encontradas:', dropNames.length);
+                console.log('Drop chances encontradas:', dropChances.length);
+                console.log('Drop types encontradas:', dropTypes.length);
+                console.log('Drop values encontradas:', dropValues.length);
+                
                 for (let i = 0; i < dropNames.length; i++) {
-                    if (dropNames[i].value.trim()) {
+                    if (dropNames[i] && dropNames[i].value && dropNames[i].value.trim()) {
+                        const dropName = dropNames[i].value;
+                        const dropChance = dropChances[i] ? parseFloat(dropChances[i].value) || 0.1 : 0.1;
+                        const dropType = dropTypes[i] ? dropTypes[i].value || 'material' : 'material';
+                        const dropValue = dropValues[i] ? parseInt(dropValues[i].value) || 5 : 5;
+                        
+                        console.log(`Drop ${i}:`, { dropName, dropChance, dropType, dropValue });
+                        
                         drops.push({
-                            item: dropNames[i].value,
-                            chance: parseFloat(dropChances[i].value) || 0.1,
-                            type: dropTypes[i].value || 'material',
-                            value: parseInt(dropValues[i].value) || 5
+                            item: dropName,
+                            chance: dropChance,
+                            type: dropType,
+                            value: dropValue
                         });
                     }
                 }
@@ -1777,25 +2157,44 @@
                 const skillCosts = document.getElementsByName('skillCost[]');
                 const skillChances = document.getElementsByName('skillChance[]');
                 
+                console.log('Skills encontradas:', skillNames.length);
+                console.log('Damages encontradas:', skillDamages.length);
+                console.log('Costs encontradas:', skillCosts.length);
+                console.log('Chances encontradas:', skillChances.length);
+                
                 for (let i = 0; i < skillNames.length; i++) {
-                    if (skillNames[i].value.trim()) {
+                    if (skillNames[i] && skillNames[i].value && skillNames[i].value.trim()) {
+                        const skillName = skillNames[i].value;
+                        const skillDamage = skillDamages[i] ? parseInt(skillDamages[i].value) || 10 : 10;
+                        const skillCost = skillCosts[i] ? parseInt(skillCosts[i].value) || 5 : 5;
+                        const skillChance = skillChances[i] ? parseFloat(skillChances[i].value) || 0.3 : 0.3;
+                        
+                        console.log(`Skill ${i}:`, { skillName, skillDamage, skillCost, skillChance });
+                        
                         skills.push({
-                            name: skillNames[i].value,
-                            damage: parseInt(skillDamages[i].value) || 10,
-                            stamina_cost: parseInt(skillCosts[i].value) || 5,
-                            chance: parseFloat(skillChances[i].value) || 0.3
+                            name: skillName,
+                            damage: skillDamage,
+                            stamina_cost: skillCost,
+                            chance: skillChance
                         });
                     }
                 }
                 formData.append('skills', JSON.stringify(skills));
 
                 // Enviar para o servidor
+                console.log('Enviando requisição para:', `${API_BASE}/characters`);
+                console.log('FormData preparado');
+                
                 const response = await fetch(`${API_BASE}/characters`, {
                     method: 'POST',
                     body: formData
                 });
+                
+                console.log('Response status:', response.status);
+                console.log('Response OK:', response.ok);
 
                 const result = await response.json();
+                console.log('Result:', result);
                 
                 if (result.success) {
                     showNotification(`✅ Personagem salvo com ID IMUTÁVEL: ${result.character.id}!
@@ -1812,8 +2211,18 @@
                 }
 
             } catch (error) {
-                console.error('Erro:', error);
-                showNotification('Erro de conexão com o servidor', 'error');
+                console.error('Erro completo:', error);
+                console.error('Stack trace:', error.stack);
+                console.error('Mensagem:', error.message);
+                
+                let errorMessage = 'Erro de conexão com o servidor';
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Falha na conexão com o servidor. Verifique se o backend está rodando.';
+                } else if (error.message.includes('NetworkError')) {
+                    errorMessage = 'Erro de rede. Verifique sua conexão.';
+                }
+                
+                showNotification(`${errorMessage} - Detalhes: ${error.message}`, 'error');
             } finally {
                 loadingIndicator.classList.remove('show');
                 submitBtn.disabled = false;
@@ -1944,6 +2353,18 @@
                             <div class="stat-value">${char.defense}</div>
                         </div>
                         <div class="stat-item">
+                            <div class="stat-label">Classe</div>
+                            <div class="stat-value class-badge">${char.classe || 'Lutador'}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Ânima</div>
+                            <div class="stat-value">${char.anima || 100}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Crítico</div>
+                            <div class="stat-value">${char.critico || 1.0}</div>
+                        </div>
+                        <div class="stat-item">
                             <div class="stat-label">EXP</div>
                             <div class="stat-value">${char.experience || 'N/A'}</div>
                         </div>
@@ -1975,7 +2396,7 @@
             if (!characters || Object.keys(characters).length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="11" style="text-align: center; padding: 20px; color: #6c757d;">
+                        <td colspan="14" style="text-align: center; padding: 20px; color: #6c757d;">
                             Nenhum personagem cadastrado ainda.
                         </td>
                     </tr>
@@ -2047,6 +2468,9 @@
                     <td>${char.hp}</td>
                     <td>${char.attack}</td>
                     <td>${char.defense}</td>
+                    <td><span class="class-badge">${char.classe || 'Lutador'}</span></td>
+                    <td>${char.anima || 100}</td>
+                    <td>${char.critico || 1.0}</td>
                     <td>${char.experience || 'N/A'}</td>
                     <td>${char.goldRange ? `${char.goldRange[0]}-${char.goldRange[1]}` : 'N/A'}</td>
                     <td><span class="ai-type ai-${char.ai_type}">${char.ai_type || 'N/A'}</span></td>
@@ -2333,12 +2757,18 @@
                 document.getElementById('editHp').value = character.hp;
                 document.getElementById('editAttack').value = character.attack;
                 document.getElementById('editDefense').value = character.defense;
+                document.getElementById('editClasse').value = character.classe || 'Lutador';
+                document.getElementById('editAnima').value = character.anima || 100;
+                document.getElementById('editCritico').value = character.critico || 1.0;
                 document.getElementById('editExperience').value = character.experience;
                 document.getElementById('editGoldMin').value = character.goldRange[0];
                 document.getElementById('editGoldMax').value = character.goldRange[1];
                 document.getElementById('editAiType').value = character.ai_type;
                 document.getElementById('editSpawnWeight').value = character.spawn_weight;
                 document.getElementById('editDescription').value = character.description || '';
+
+                // Carregar skills existentes do personagem
+                await loadExistingSkills(character.skills || []);
 
                 // Armazenar informações da sprite original
                 originalSpriteFilename = character.sprite ? character.sprite.split('/').pop() : null;
@@ -2418,6 +2848,10 @@
                 <strong>Clique para alterar sprite</strong><br>
                 ou arraste uma nova imagem aqui<br>
             `;
+            
+            // Limpar container de skills
+            const editSkillsContainer = document.getElementById('editSkillsContainer');
+            editSkillsContainer.innerHTML = '<button type="button" class="add-btn" onclick="addEditSkill()">+ Adicionar Skill</button>';
         }
 
         // Manipular upload de imagem na edição
@@ -2641,6 +3075,12 @@
                     // Nome não foi alterado, apenas manter
                     formData.set('spriteFilename', newFilename);
                 }
+            }
+
+            // Processar skills editadas
+            const editedSkills = processEditedSkills();
+            if (editedSkills.length > 0) {
+                formData.set('skills', JSON.stringify(editedSkills));
             }
 
             try {

@@ -1,0 +1,21 @@
+Cadência do Dragão (Passiva)
+
+O lutador entra no ritmo implacável do dragão, canalizando seu espírito de combate a cada golpe básico. O poder de cada ataque simples fortalece o próximo, mas a perda do ritmo faz com que ele precise recomeçar sua construção de poder from scratch, podendo resultar em um buff menor.
+
+Efeito Mechanicamente Exato:
+
+Ao usar um Ataque Básico, calcula-se um novo bônus de ataque: X = (Nº de Ataques Básicos Consecutivos) + 1.
+
+Este novo bônus X% substitui o bônus anterior desta skill.
+
+Se qualquer outra ação que não seja um Ataque Básico for realizada, o contador de sequência é zerado. O bônus de ataque atual permanece inalterado até que outro Ataque Básico seja realizado e calcule um novo valor X.
+
+Exemplo Revisado (Lógico):
+
+Turno 1: Ataque Básico. X = 1 + 4 = 5%. Buff de Ataque: 5%.
+
+Turno 2: Ataque Básico. X = 2 + 4 = 6%. Buff de Ataque: 6% (substitui o 5%).
+
+Turno 3: Usou uma Skill, Meditou ou Defendeu. Contador não é acionado. Buff de Ataque: 6% (permanece).
+
+Turno 4: Ataque Básico. X = 1 + 4 = 5%. O jogo compara: o novo valor (5%) com o valor gerado no penultímo calcúlo (6%). Buff de Ataque: 11% 

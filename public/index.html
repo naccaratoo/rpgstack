@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPGStack - Framework Completo para Desenvolvimento de Jogos RPG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,8 +13,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0d7377 100%);
             min-height: 100vh;
             padding: 20px;
             margin: 0;
@@ -22,11 +23,12 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 24px;
+            box-shadow: 0 25px 75px rgba(0,0,0,0.4);
             overflow: hidden;
             animation: fadeIn 0.8s ease-out;
+            border: 1px solid rgba(65, 234, 212, 0.1);
         }
 
         @keyframes fadeIn {
@@ -35,8 +37,8 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
             padding: 60px 40px;
             text-align: center;
             position: relative;
@@ -470,30 +472,52 @@
                     <a href="/maps" class="access-button">🗺️ Acessar Módulo</a>
                 </div>
 
-                <!-- Items & Skills Database -->
-                <div class="module-card development" style="--accent-color: #f39c12;">
-                    <div class="module-icon">⚔️</div>
-                    <h3 class="module-title">Items & Skills Database</h3>
-                    <span class="module-status status-planned">📋 PLANEJADO</span>
+                <!-- Skills Database -->
+                <div class="module-card active" style="--accent-color: #f39c12;">
+                    <div class="module-icon">🎯</div>
+                    <h3 class="module-title">Skills Database</h3>
+                    <span class="module-status status-complete">✅ COMPLETO</span>
                     <p class="module-description">
-                        Sistema de itens, equipamentos e habilidades com raridades, 
-                        efeitos, crafting e progressão de skills.
+                        Sistema completo de habilidades com tipos, elementos, 
+                        dano, cooldowns, pré-requisitos e efeitos especiais.
                     </p>
                     <div class="module-stats">
                         <div class="stat-item">
-                            <div class="stat-value">0</div>
-                            <div class="stat-label">Itens</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">0</div>
+                            <div class="stat-value" id="skillCount">0</div>
                             <div class="stat-label">Skills</div>
                         </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="skillTypes">7</div>
+                            <div class="stat-label">Tipos</div>
+                        </div>
                     </div>
-                    <button class="access-button" disabled>🔒 Em Desenvolvimento</button>
+                    <a href="/skills" class="access-button">🎯 Acessar Módulo</a>
+                </div>
+
+                <!-- Battle System -->
+                <div class="module-card active" style="--accent-color: #e74c3c;">
+                    <div class="module-icon">⚔️</div>
+                    <h3 class="module-title">Sistema de Batalha</h3>
+                    <span class="module-status status-complete">✅ COMPLETO</span>
+                    <p class="module-description">
+                        Sistema de batalha turn-based com boss-character integration, 
+                        IA avançada, interface estilo Pokemon e mecânicas balanceadas.
+                    </p>
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">1v1</div>
+                            <div class="stat-label">Combate</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Ações</div>
+                        </div>
+                    </div>
+                    <a href="/battle" class="access-button">⚔️ Iniciar Batalha</a>
                 </div>
 
                 <!-- Game Engine -->
-                <div class="module-card planned" style="--accent-color: #e74c3c;">
+                <div class="module-card planned" style="--accent-color: #9b59b6;">
                     <div class="module-icon">🎲</div>
                     <h3 class="module-title">Game Engine</h3>
                     <span class="module-status status-planned">📋 PLANEJADO</span>

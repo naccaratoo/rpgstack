@@ -6,6 +6,7 @@ import cors from 'cors';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { SkillController } from './src/presentation/controllers/SkillController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -521,13 +522,16 @@ app.get('/api/characters', async (req, res) => {
 app.post('/api/characters', upload.single('sprite'), async (req, res) => {
   try {
     console.log('📝 Recebendo novo personagem...');
+    console.log('📋 Dados recebidos do frontend:', req.body);
     const data = await loadDatabase();
     
     const {
       name, level, hp, attack, defense, experience,
       goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename,
+      drops, skills, spriteFilename, classe, anima, critico,
     } = req.body;
+    
+    console.log('📊 Campos extraídos - classe:', classe, 'anima:', anima, 'critico:', critico);
 
     // **IMPORTANTE**: APENAS personagens NOVOS recebem ID hexadecimal
     const existingIds = Object.keys(data.characters || {});
@@ -563,6 +567,9 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
       description,
       drops: JSON.parse(drops || '[]'),
       skills: JSON.parse(skills || '[]'),
+      classe: classe || 'Lutador', // Campo classe adicionado
+      anima: parseInt(anima) || 100, // Campo anima adicionado
+      critico: parseFloat(critico) || 1.0, // Campo critico adicionado
       created_at: new Date().toISOString(),
     };
 
@@ -740,7 +747,7 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
     const {
       name, level, hp, attack, defense, experience,
       goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename,
+      drops, skills, spriteFilename, classe, anima, critico,
     } = req.body;
 
     // Processar sprite se fornecida
@@ -780,6 +787,9 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       description: description !== undefined ? description : existingCharacter.description,
       drops: drops ? JSON.parse(drops) : existingCharacter.drops,
       skills: skills ? JSON.parse(skills) : existingCharacter.skills,
+      classe: classe || existingCharacter.classe,
+      anima: anima ? parseInt(anima) : existingCharacter.anima,
+      critico: critico ? parseFloat(critico) : existingCharacter.critico,
       updated_at: new Date().toISOString(), // Adicionar timestamp de atualização
     };
 
@@ -1127,6 +1137,11 @@ app.get('/characters', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'character-database.html'));
 });
 
+// Skills Database Module
+app.get('/skills', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'skills-database.html'));
+});
+
 // Maps Database Module
 app.get('/maps', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'maps-database.html'));
@@ -1207,6 +1222,322 @@ async function initializeMapsSystem() {
     throw error;
   }
 }
+
+// 🎯 **SKILLS SYSTEM** - Skills Management System
+console.log('🎯 Inicializando Skills System...');
+
+// Initialize Skills Controller
+const skillController = new SkillController();
+
+// Skills API Routes
+app.get('/api/skills', skillController.getAllSkills);
+app.get('/api/skills/search', skillController.searchSkills);
+app.get('/api/skills/basic', skillController.getBasicSkills);
+app.get('/api/skills/combat', skillController.getCombatSkills);
+app.get('/api/skills/statistics', skillController.getSkillStatistics);
+app.get('/api/skills/generate-id', skillController.generateSkillId);
+app.get('/api/skills/type/:type', skillController.getSkillsByType);
+app.get('/api/skills/classe/:classe', skillController.getSkillsByClasse);
+app.get('/api/skills/:id', skillController.getSkill);
+
+app.post('/api/skills', skillController.createSkill);
+app.post('/api/skills/batch', skillController.createSkillsBatch);
+
+app.put('/api/skills/:id', skillController.updateSkill);
+
+app.delete('/api/skills/:id', skillController.deleteSkill);
+
+// Skill sprite endpoints (using memory storage for buffer access)
+const skillSpriteUpload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Formato não suportado'));
+    }
+  }
+});
+
+app.post('/api/skills/:id/sprite', skillSpriteUpload.single('sprite'), skillController.uploadSkillSprite);
+app.delete('/api/skills/:id/sprite', skillController.removeSkillSprite);
+
+console.log('✅ Skills System inicializado com sucesso');
+console.log('🎯 Skills API disponível em /api/skills');
+
+// ⚔️ **BATTLE SYSTEM** - Boss-Character Integration
+let battles = new Map(); // Store active battles in memory
+
+// Battle System Routes
+app.post('/api/battle/start', async (req, res) => {
+  try {
+    const { playerId } = req.body;
+    
+    if (!playerId) {
+      return res.status(400).json({ error: 'Player ID is required' });
+    }
+
+    // Load player character
+    const data = await loadDatabase();
+    const playerCharacter = data.characters[playerId];
+    
+    if (!playerCharacter) {
+      return res.status(404).json({ error: 'Player character not found' });
+    }
+
+    // Select boss enemy
+    const characters = Object.values(data.characters);
+    const bossCharacters = characters.filter(char => 
+      char.id !== playerId && char.level >= playerCharacter.level
+    );
+    
+    let enemyCharacter;
+    if (bossCharacters.length > 0) {
+      enemyCharacter = bossCharacters[Math.floor(Math.random() * bossCharacters.length)];
+    } else {
+      const otherCharacters = characters.filter(char => char.id !== playerId);
+      enemyCharacter = otherCharacters[Math.floor(Math.random() * otherCharacters.length)];
+    }
+
+    // Create boss enhancement
+    const bossEnemy = {
+      ...enemyCharacter,
+      hp: Math.floor(enemyCharacter.hp * 1.2),
+      maxHP: Math.floor(enemyCharacter.hp * 1.2),
+      attack: Math.floor(enemyCharacter.attack * 1.1),
+      defense: Math.floor(enemyCharacter.defense * 1.1)
+    };
+
+    // Create battle instance
+    const battleId = crypto.randomBytes(4).toString('hex');
+    const battle = {
+      id: battleId,
+      player: {
+        ...playerCharacter,
+        currentHP: playerCharacter.hp,
+        currentMP: playerCharacter.mp || 50,
+        defending: false
+      },
+      enemy: {
+        ...bossEnemy,
+        currentHP: bossEnemy.hp,
+        defending: false
+      },
+      turn: 'player',
+      round: 1,
+      status: 'active',
+      log: [],
+      createdAt: new Date().toISOString()
+    };
+
+    battles.set(battleId, battle);
+    
+    console.log(`⚔️ Nova batalha iniciada: ${battle.player.name} vs ${battle.enemy.name}`);
+    
+    res.json({
+      success: true,
+      battle: {
+        id: battleId,
+        player: battle.player,
+        enemy: battle.enemy,
+        turn: battle.turn,
+        round: battle.round
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao iniciar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const battle = battles.get(battleId);
+    
+    if (!battle) {
+      return res.status(404).json({ error: 'Battle not found' });
+    }
+
+    res.json({
+      success: true,
+      battle: {
+        id: battle.id,
+        player: battle.player,
+        enemy: battle.enemy,
+        turn: battle.turn,
+        round: battle.round,
+        status: battle.status,
+        log: battle.log
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao buscar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/battle/:battleId/action', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const { action, target } = req.body;
+    const battle = battles.get(battleId);
+    
+    if (!battle) {
+      return res.status(404).json({ error: 'Battle not found' });
+    }
+
+    if (battle.status !== 'active') {
+      return res.status(400).json({ error: 'Battle is not active' });
+    }
+
+    if (battle.turn !== 'player') {
+      return res.status(400).json({ error: 'Not player turn' });
+    }
+
+    // Process player action
+    let actionResult = processPlayerAction(battle, action);
+    battle.log.push(actionResult);
+
+    // Check battle end
+    if (battle.player.currentHP <= 0) {
+      battle.status = 'defeat';
+      battle.log.push({ message: `${battle.player.name} foi derrotado!`, type: 'defeat' });
+    } else if (battle.enemy.currentHP <= 0) {
+      battle.status = 'victory';
+      battle.log.push({ message: `${battle.enemy.name} foi derrotado!`, type: 'victory' });
+    } else {
+      // Enemy turn
+      battle.turn = 'enemy';
+      setTimeout(() => {
+        if (battles.has(battleId) && battle.status === 'active') {
+          const enemyResult = processEnemyAction(battle);
+          battle.log.push(enemyResult);
+          
+          // Check battle end after enemy action
+          if (battle.player.currentHP <= 0) {
+            battle.status = 'defeat';
+            battle.log.push({ message: `${battle.player.name} foi derrotado!`, type: 'defeat' });
+          } else {
+            battle.turn = 'player';
+            battle.round++;
+          }
+        }
+      }, 1000);
+    }
+
+    res.json({
+      success: true,
+      battle: {
+        id: battle.id,
+        player: battle.player,
+        enemy: battle.enemy,
+        turn: battle.turn,
+        round: battle.round,
+        status: battle.status,
+        log: battle.log.slice(-10) // Return last 10 log entries
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao processar ação de batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    
+    if (battles.has(battleId)) {
+      battles.delete(battleId);
+      console.log(`⚔️ Batalha encerrada: ${battleId}`);
+      res.json({ success: true, message: 'Battle ended' });
+    } else {
+      res.status(404).json({ error: 'Battle not found' });
+    }
+
+  } catch (error) {
+    console.error('❌ Erro ao encerrar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Battle action processors
+function processPlayerAction(battle, action) {
+  switch (action) {
+    case 'attack':
+      return processAttack(battle.player, battle.enemy, 'attack');
+    case 'defend':
+      battle.player.defending = true;
+      return { message: `${battle.player.name} está se defendendo!`, type: 'defend' };
+    case 'skill':
+      if (battle.player.currentMP >= 10) {
+        battle.player.currentMP -= 10;
+        return processAttack(battle.player, battle.enemy, 'skill');
+      } else {
+        return { message: 'MP insuficiente!', type: 'error' };
+      }
+    case 'item':
+      const healAmount = Math.floor(battle.player.maxHP * 0.3);
+      const oldHP = battle.player.currentHP;
+      battle.player.currentHP = Math.min(battle.player.maxHP, battle.player.currentHP + healAmount);
+      const actualHeal = battle.player.currentHP - oldHP;
+      return { message: `${battle.player.name} recuperou ${actualHeal} HP!`, type: 'heal' };
+    default:
+      return { message: 'Ação inválida!', type: 'error' };
+  }
+}
+
+function processEnemyAction(battle) {
+  const action = Math.random();
+  
+  if (action < 0.7) {
+    return processAttack(battle.enemy, battle.player, 'attack');
+  } else if (action < 0.9) {
+    return processAttack(battle.enemy, battle.player, 'skill');
+  } else {
+    battle.enemy.defending = true;
+    return { message: `${battle.enemy.name} está se defendendo!`, type: 'defend' };
+  }
+}
+
+function processAttack(attacker, defender, type) {
+  let baseDamage;
+  
+  if (type === 'skill') {
+    baseDamage = Math.floor(attacker.attack * 1.5) - Math.floor(defender.defense * 0.5);
+  } else {
+    baseDamage = attacker.attack - Math.floor(defender.defense * 0.7);
+  }
+  
+  // Add randomness and defending modifier
+  const randomMultiplier = 0.8 + (Math.random() * 0.4);
+  let finalDamage = Math.floor(baseDamage * randomMultiplier);
+  
+  if (defender.defending) {
+    finalDamage = Math.floor(finalDamage * 0.5);
+  }
+  
+  finalDamage = Math.max(1, finalDamage);
+  defender.currentHP = Math.max(0, defender.currentHP - finalDamage);
+  
+  const actionText = type === 'skill' ? 'usou uma habilidade' : 'atacou';
+  return {
+    message: `${attacker.name} ${actionText} ${defender.name} causando ${finalDamage} de dano!`,
+    type: 'damage',
+    damage: finalDamage
+  };
+}
+
+// Route to serve battle interface
+app.get('/battle', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'battle.html'));
+});
 
 // **FUNÇÃO ATUALIZADA**: Inicializar servidor SEM migração de IDs
 async function startServer() {
