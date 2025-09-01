@@ -16,6 +16,13 @@ class BattleSystem {
         
         this.initializeUI();
         this.loadCharacters();
+        
+        // Mostrar modal de setup inicialmente
+        setTimeout(() => {
+            if (this.setupModal) {
+                this.setupModal.style.display = 'flex';
+            }
+        }, 500);
     }
 
     initializeUI() {
@@ -72,6 +79,8 @@ class BattleSystem {
         this.defendBtn.addEventListener('click', () => this.playerDefend());
         this.meditateBtn.addEventListener('click', () => this.playerMeditate());
         
+        // Skills são carregadas dinamicamente por personagem
+        
         // Modal buttons
         this.startBattleBtn.addEventListener('click', () => this.startBattle());
         this.backBtn.addEventListener('click', () => this.goBack());
@@ -98,6 +107,15 @@ class BattleSystem {
             const response = await fetch('/api/characters');
             const data = await response.json();
             this.characters = Object.values(data.characters || {});
+            
+            // Adicionar propriedades necessárias se não existirem
+            this.characters.forEach(char => {
+                if (!char.currentHP) char.currentHP = char.hp;
+                if (!char.maxHP) char.maxHP = char.hp;
+                if (!char.currentAnima) char.currentAnima = char.anima || 100;
+                if (!char.maxAnima) char.maxAnima = char.anima || 100;
+            });
+            
             this.renderCharacterSelect();
             this.showLoading(false);
         } catch (error) {
@@ -117,12 +135,13 @@ class BattleSystem {
             
             card.innerHTML = `
                 <img src="${character.sprite}" alt="${character.name}" 
-                     onerror="this.src='assets/sprites/default.png'">
+                     onerror="this.style.background='linear-gradient(135deg, #4f46e5, #7c3aed)'; this.style.color='white'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontWeight='bold'; this.textContent='${character.name.charAt(0)}'; this.src='';">
                 <h4>${character.name}</h4>
                 <div class="character-stats">
-                    <div>Nível: ${character.level}</div>
+                    <div>Nível: ${character.level} | ${character.classe}</div>
                     <div>HP: ${character.hp}/${character.maxHP}</div>
                     <div>ATK: ${character.attack} | DEF: ${character.defense}</div>
+                    <div>Ânima: ${character.anima || 100}</div>
                 </div>
             `;
             
@@ -143,6 +162,9 @@ class BattleSystem {
         
         this.playerCharacter = { ...character };
         this.startBattleBtn.disabled = false;
+        
+        // Carregar skills específicas do personagem selecionado
+        this.loadCharacterSpecificSkills();
     }
 
     async startBattle() {
@@ -278,7 +300,7 @@ class BattleSystem {
         this.meditateBtn.disabled = buttonsDisabled;
         
         // Also disable skill buttons
-        const skillButtons = this.skillsSection.querySelectorAll('.skill-action-btn');
+        const skillButtons = this.skillsSection.querySelectorAll('.skill-action-btn, .skill-btn');
         skillButtons.forEach(btn => btn.disabled = buttonsDisabled);
         
         // Ensure log stays scrolled to bottom when turn changes
@@ -286,8 +308,14 @@ class BattleSystem {
     }
 
     // Player Actions
-    playerAttack() {
+    async playerAttack() {
         if (this.battleState !== 'player_turn') return;
+        
+        console.log('🎯 BOTÃO ATAQUE CLICADO - DEBUG COMPLETO:', {
+            playerClass: this.currentBattle.player.classe,
+            playerId: this.currentBattle.player.id,
+            playerAttack: this.currentBattle.player.attack
+        });
         
         // Calcular dano usando as novas mecânicas
         let damage = this.battleMechanics.calculateBasicAttackDamage(
@@ -295,23 +323,10 @@ class BattleSystem {
             this.currentBattle.enemy
         );
         
-        // Aplicar Cadência do Dragão se jogador é Lutador
-        if (this.currentBattle.player.classe === 'Lutador') {
-            const cadenceResult = this.battleMechanics.processDragonCadence(this.currentBattle.player.id);
-            
-            // Aplicar o buff que estava ativo no ataque atual
-            if (cadenceResult.appliedBuff > 0) {
-                const buffMultiplier = 1 + (cadenceResult.appliedBuff / 100);
-                damage = Math.round(damage * buffMultiplier);
-            }
-            
-            this.addBattleLog(cadenceResult.message, 'skill');
-            
-            // Adicionar efeito visual de buff se mudou
-            if (cadenceResult.appliedBuff !== cadenceResult.currentBuff) {
-                this.buffSystem.addTemporaryEffect(this.currentBattle.player.id, 'buff');
-            }
-        }
+        console.log('💥 Dano base calculado:', damage);
+        
+        // NOVO SISTEMA: Verificar automaticamente se o personagem tem Cadência do Dragão
+        damage = await this.checkAndApplyDragonCadence(damage);
         
         // Aplicar Arsenal Adaptativo se jogador é Armamentista
         if (this.currentBattle.player.classe === 'Armamentista') {
@@ -762,6 +777,86 @@ class BattleSystem {
         setTimeout(() => this.endPlayerTurn(), 1000);
     }
 
+    /**
+     * Verificar automaticamente se o personagem tem Cadência do Dragão e aplicar
+     * @param {number} baseDamage - Dano base calculado
+     * @returns {number} Dano final com buff aplicado
+     */
+    async checkAndApplyDragonCadence(baseDamage) {
+        try {
+            console.log('🔍 Verificando se personagem tem Cadência do Dragão...');
+            
+            // Buscar skills do personagem na database
+            const response = await fetch('/api/skills');
+            const result = await response.json();
+            
+            if (!result.success) {
+                console.log('❌ Erro ao buscar skills:', result);
+                return baseDamage;
+            }
+            
+            // Procurar pela Cadência do Dragão (ID: 7YUOFU26OF)
+            const dragonCadenceSkill = result.data.skills.find(skill => skill.id === '7YUOFU26OF');
+            
+            if (!dragonCadenceSkill) {
+                console.log('❌ Cadência do Dragão não encontrada na database');
+                return baseDamage;
+            }
+            
+            console.log('✅ Cadência do Dragão encontrada:', dragonCadenceSkill.name);
+            
+            // Verificar se o personagem tem essa skill
+            const playerHasSkill = this.currentBattle.player.skills?.some(skill => skill.skillId === '7YUOFU26OF');
+            
+            if (!playerHasSkill) {
+                console.log('❌ Personagem não possui a skill Cadência do Dragão');
+                return baseDamage;
+            }
+            
+            console.log('✅ Personagem possui Cadência do Dragão - Aplicando automaticamente');
+            
+            // AUTO-ATIVAR se não estiver ativa ainda
+            const currentState = this.battleMechanics.getDragonCadenceState(this.currentBattle.player.id);
+            if (!currentState.isActive) {
+                console.log('🐉 Auto-ativando Cadência do Dragão...');
+                const activationResult = this.battleMechanics.activateDragonCadence(this.currentBattle.player.id);
+                console.log('🐉 Resultado da auto-ativação:', activationResult);
+                this.addBattleLog('🐉 Cadência do Dragão auto-ativada!', 'skill');
+            }
+            
+            // PROCESSAR o buff baseado no algoritmo v6.0.0
+            const baseAttack = this.currentBattle.player.attack;
+            const cadenceResult = this.battleMechanics.processDragonCadence(this.currentBattle.player.id, baseAttack);
+            
+            console.log('🐉 Resultado da Cadência:', cadenceResult);
+            
+            // APLICAR o bônus de attack
+            let finalDamage = baseDamage;
+            if (cadenceResult.attackBonus > 0) {
+                finalDamage = Math.round(baseDamage + cadenceResult.attackBonus);
+                console.log('🐉 BUFF APLICADO AUTOMATICAMENTE:', {
+                    danoOriginal: baseDamage,
+                    bonusAttack: cadenceResult.attackBonus,
+                    danoFinal: finalDamage
+                });
+                
+                this.addBattleLog(cadenceResult.message, 'skill');
+                
+                // Adicionar efeito visual
+                this.buffSystem.addTemporaryEffect(this.currentBattle.player.id, 'buff');
+            } else {
+                console.log('🐉 Primeiro ataque - preparando para próximo buff');
+                this.addBattleLog('🐉 Cadência do Dragão ativa - próximo ataque será mais forte!', 'skill');
+            }
+            
+            return finalDamage;
+            
+        } catch (error) {
+            console.error('❌ Erro ao verificar Cadência do Dragão:', error);
+            return baseDamage;
+        }
+    }
+
     // Funções de cálculo antigas removidas - agora usando BattleMechanics
     
     /**
@@ -955,8 +1050,11 @@ class BattleSystem {
 
     resetBattle() {
         // Limpar estados das mecânicas de batalha
-        this.battleMechanics.clearBattleStates();
-        this.battleMechanics.clearSkillStates();
+        // this.battleMechanics.clearBattleStates(); // Método não existe
+        // this.battleMechanics.clearSkillStates(); // Método não existe
+        
+        // Reset manual dos estados de skill
+        this.battleMechanics.skillStates.clear();
         
         // Limpar sistema de buff/debuff
         this.buffSystem.reset();
@@ -968,6 +1066,220 @@ class BattleSystem {
         this.battleLog = [];
         this.battleLogEl.innerHTML = '<div class="log-message">Batalha iniciada!</div>';
         this.startBattleBtn.disabled = true;
+    }
+
+
+    activateDragonCadence() {
+        console.log('🎯 ATIVANDO CADÊNCIA DO DRAGÃO - DEBUG:', {
+            battleState: this.battleState,
+            playerClass: this.currentBattle.player.classe,
+            playerId: this.currentBattle.player.id,
+            currentAnima: this.currentBattle.player.currentAnima
+        });
+        
+        if (this.battleState !== 'player_turn') {
+            console.log('❌ Não é turno do jogador:', this.battleState);
+            return;
+        }
+        
+        if (this.currentBattle.player.classe !== 'Lutador') {
+            console.log('❌ Personagem não é Lutador:', this.currentBattle.player.classe);
+            this.addBattleLog('❌ Apenas Lutadores podem usar Cadência do Dragão!', 'error');
+            return;
+        }
+
+        // Verificar se tem ânima suficiente
+        const animaCost = 50; // Custo da skill
+        console.log('💰 Verificando ânima:', {animaCost, currentAnima: this.currentBattle.player.currentAnima});
+        
+        if (this.currentBattle.player.currentAnima < animaCost) {
+            console.log('❌ Ânima insuficiente!');
+            this.addBattleLog(`❌ Ânima insuficiente! Precisa ${animaCost}, tem ${this.currentBattle.player.currentAnima}`, 'error');
+            return;
+        }
+
+        // Consumir ânima e ativar a skill
+        console.log('💰 Consumindo ânima:', animaCost);
+        this.currentBattle.player.currentAnima -= animaCost;
+        console.log('💰 Ânima após consumo:', this.currentBattle.player.currentAnima);
+        
+        // Ativar o estado aprimorado através do BattleMechanics
+        console.log('🐉 Chamando battleMechanics.activateDragonCadence...');
+        const result = this.battleMechanics.activateDragonCadence(this.currentBattle.player.id);
+        console.log('🐉 Resultado da ativação:', result);
+        
+        this.addBattleLog(result.message, 'skill');
+        this.addBattleLog('💡 Agora use ataques básicos para aumentar progressivamente seu poder de ataque!', 'info');
+        
+        // Verificar se realmente foi ativado
+        const checkState = this.battleMechanics.getDragonCadenceState(this.currentBattle.player.id);
+        console.log('🔍 Estado após ativação:', checkState);
+        
+        this.updateBattleUI();
+        setTimeout(() => this.endPlayerTurn(), 1000);
+    }
+
+    activateArsenalAdaptativo() {
+        if (this.battleState !== 'player_turn') return;
+        
+        if (this.currentBattle.player.classe !== 'Armamentista') {
+            this.addBattleLog('❌ Apenas Armamentistas podem usar Arsenal Adaptativo!', 'error');
+            return;
+        }
+
+        const animaCost = 20;
+        if (this.currentBattle.player.currentAnima < animaCost) {
+            this.addBattleLog(`❌ Ânima insuficiente! Precisa ${animaCost}, tem ${this.currentBattle.player.currentAnima}`, 'error');
+            return;
+        }
+
+        this.currentBattle.player.currentAnima -= animaCost;
+        this.addBattleLog('⚡ Arsenal Adaptativo ATIVADO! Alterne entre tipos de ação para ganhar bônus!', 'skill');
+        
+        this.updateBattleUI();
+        setTimeout(() => this.endPlayerTurn(), 1000);
+    }
+
+    activateConvergenciaAnima() {
+        if (this.battleState !== 'player_turn') return;
+        
+        if (this.currentBattle.player.classe !== 'Arcano') {
+            this.addBattleLog('❌ Apenas Arcanos podem usar Convergência Ânima!', 'error');
+            return;
+        }
+
+        const animaCost = 20;
+        if (this.currentBattle.player.currentAnima < animaCost) {
+            this.addBattleLog(`❌ Ânima insuficiente! Precisa ${animaCost}, tem ${this.currentBattle.player.currentAnima}`, 'error');
+            return;
+        }
+
+        this.currentBattle.player.currentAnima -= animaCost;
+        this.addBattleLog('🔮 Convergência Ânima ATIVA! Skills consecutivas com Ânima terão custo reduzido!', 'skill');
+        
+        this.updateBattleUI();
+        setTimeout(() => this.endPlayerTurn(), 1000);
+    }
+
+    activateAstralSystem() {
+        if (this.battleState !== 'player_turn') return;
+        
+        this.addBattleLog('🌟 Sistema Astral está ATIVO! Você possui cargas astrais para meditar e defender!', 'skill');
+        this.addBattleLog('💡 Cada meditação/defesa consome 1 carga astral. Ataques e skills são gratuitos!', 'info');
+    }
+
+    loadCharacterSpecificSkills() {
+        if (!this.playerCharacter) return;
+        
+        // Limpar skills existentes
+        this.skillsSection.innerHTML = '';
+        
+        // Mapeamento de skills por classe baseado nos dados encontrados
+        const classSkillMapping = {
+            'Lutador': [
+                {
+                    id: '7YUOFU26OF',
+                    name: '🐉 Cadência do Dragão',
+                    description: 'Scaling exponencial de dano com ataques consecutivos',
+                    type: 'devastador',
+                    animaCost: 0,
+                    isPassive: true
+                }
+            ],
+            'Armamentista': [
+                {
+                    id: '8AB7CDE5F9',
+                    name: '⚡ Arsenal Adaptativo',
+                    description: 'Versatilidade tática com alternância de ações',
+                    type: 'buff',
+                    animaCost: 20,
+                    isPassive: false
+                }
+            ],
+            'Arcano': [
+                {
+                    id: '9BC8DEF6G1',
+                    name: '🔮 Convergência Ânima',
+                    description: 'Redução de custo de ânima para skills consecutivas',
+                    type: 'buff',
+                    animaCost: 20,
+                    isPassive: false
+                }
+            ]
+        };
+        
+        // Adicionar skills universais
+        const universalSkills = [
+            {
+                id: 'ASTRAL0001',
+                name: '🌟 Sistema Astral',
+                description: 'Gerenciamento de cargas astrais para defesa e meditação',
+                type: 'sistema',
+                animaCost: 0,
+                isPassive: true
+            }
+        ];
+        
+        // Obter skills do personagem
+        const playerClass = this.playerCharacter.classe || 'Lutador';
+        const classSkills = classSkillMapping[playerClass] || [];
+        const allSkills = [...classSkills, ...universalSkills];
+        
+        // Verificar se o personagem tem skills específicas definidas no JSON
+        if (this.playerCharacter.skills && this.playerCharacter.skills.length > 0) {
+            // Filtrar apenas as skills que o personagem realmente possui
+            const characterSkillIds = this.playerCharacter.skills.map(skill => skill.skillId || skill.skillName);
+            const filteredSkills = allSkills.filter(skill => 
+                characterSkillIds.includes(skill.id) || 
+                characterSkillIds.includes(skill.name.replace(/[🐉⚡🔮🌟]/g, '').trim())
+            );
+            
+            if (filteredSkills.length > 0) {
+                this.renderCharacterSkills(filteredSkills);
+                this.addBattleLog(`${filteredSkills.length} skill(s) específica(s) de ${this.playerCharacter.name} carregada(s).`);
+                return;
+            }
+        }
+        
+        // Fallback: carregar skills da classe
+        this.renderCharacterSkills(allSkills);
+        this.addBattleLog(`Skills de ${playerClass} carregadas para ${this.playerCharacter.name}.`);
+    }
+
+    renderCharacterSkills(skills) {
+        skills.forEach(skill => {
+            const skillButton = document.createElement('button');
+            skillButton.className = `action-btn skill-btn ${skill.type}-skill`;
+            skillButton.id = `${skill.id}-btn`;
+            skillButton.dataset.skillId = skill.id;
+            skillButton.dataset.animaCost = skill.animaCost;
+            skillButton.title = `${skill.name} - ${skill.description}`;
+            skillButton.textContent = skill.name;
+            
+            // Adicionar event listener baseado no tipo de skill
+            skillButton.addEventListener('click', () => this.handleSkillClick(skill));
+            
+            this.skillsSection.appendChild(skillButton);
+        });
+    }
+
+    handleSkillClick(skill) {
+        switch(skill.id) {
+            case '7YUOFU26OF':
+                this.activateDragonCadence();
+                break;
+            case '8AB7CDE5F9':
+                this.activateArsenalAdaptativo();
+                break;
+            case '9BC8DEF6G1':
+                this.activateConvergenciaAnima();
+                break;
+            case 'ASTRAL0001':
+                this.activateAstralSystem();
+                break;
+            default:
+                this.addBattleLog(`Skill ${skill.name} não implementada ainda.`, 'info');
+        }
     }
 }
 

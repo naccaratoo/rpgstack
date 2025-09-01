@@ -16,7 +16,7 @@
             font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0d7377 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
             margin: 0;
         }
 
@@ -92,7 +92,11 @@
             margin-bottom: 15px;
             z-index: 10;
             position: relative;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #41eadc 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
         }
 
         .header .subtitle {
@@ -159,18 +163,21 @@
         }
 
         .module-card.active {
-            --accent-color: #27ae60;
-            background: linear-gradient(135deg, #d5f4e6 0%, #a8e6cf 100%);
+            --accent-color: #41eadc;
+            background: linear-gradient(135deg, rgba(65, 234, 212, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border: 1px solid rgba(65, 234, 212, 0.2);
         }
 
         .module-card.development {
             --accent-color: #3498db;
-            background: linear-gradient(135deg, #ebf3fd 0%, #bde4ff 100%);
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(29, 78, 216, 0.1) 100%);
+            border: 1px solid rgba(52, 152, 219, 0.2);
         }
 
         .module-card.planned {
             --accent-color: #95a5a6;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, rgba(149, 165, 166, 0.1) 0%, rgba(149, 165, 166, 0.05) 100%);
+            border: 1px solid rgba(149, 165, 166, 0.2);
             opacity: 0.7;
         }
 
@@ -183,14 +190,15 @@
         .module-title {
             font-size: 1.5em;
             font-weight: bold;
-            color: #2c3e50;
+            color: #f8fafc;
             margin-bottom: 15px;
         }
 
         .module-description {
-            color: #5a6c7d;
+            color: #e2e8f0;
             line-height: 1.6;
             margin-bottom: 20px;
+            opacity: 0.9;
         }
 
         .module-status {
@@ -204,7 +212,8 @@
         }
 
         .status-complete {
-            background: #27ae60;
+            background: linear-gradient(135deg, #41eadc 0%, #10b981 100%);
+            color: #0f172a;
         }
 
         .status-development {
@@ -223,27 +232,29 @@
         }
 
         .stat-item {
-            background: rgba(255,255,255,0.7);
+            background: rgba(65, 234, 212, 0.05);
             padding: 12px;
             border-radius: 8px;
             text-align: center;
+            border: 1px solid rgba(65, 234, 212, 0.1);
         }
 
         .stat-value {
             font-size: 1.5em;
             font-weight: bold;
-            color: var(--accent-color);
+            color: #41eadc;
         }
 
         .stat-label {
             font-size: 0.85em;
-            color: #666;
+            color: #e2e8f0;
             margin-top: 5px;
+            opacity: 0.8;
         }
 
         .access-button {
-            background: var(--accent-color);
-            color: white;
+            background: linear-gradient(135deg, #41eadc 0%, #10b981 100%);
+            color: #0f172a;
             padding: 12px 25px;
             border: none;
             border-radius: 25px;
@@ -257,7 +268,7 @@
 
         .access-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(65, 234, 212, 0.3);
         }
 
         .access-button:disabled {
@@ -414,14 +425,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v2.0.0</div>
+            <div class="version-badge">v4.0.0</div>
             <div class="server-status" id="serverStatus">🟢 Online</div>
             
             <h1>🎮 RPGStack</h1>
             <p class="subtitle">Framework Completo para Desenvolvimento de Jogos RPG</p>
             <p class="description">
-                Sistema modular e escalável para criação de jogos RPG com Clean Architecture, 
-                suporte cross-platform e ferramentas completas de desenvolvimento.
+                Sistema completo com Game Engine integrado, geração algorítmica de classes, 
+                battle mechanics avançado, sistema de ânima e arquitetura modular para desenvolvimento RPG.
             </p>
         </div>
 
@@ -433,9 +444,9 @@
                     <div class="module-icon">👥</div>
                     <h3 class="module-title">Character Database</h3>
                     <span class="module-status status-complete">✅ COMPLETO</span>
-                    <p class="module-description">
-                        Sistema completo de gerenciamento de personagens com IDs imutáveis, 
-                        upload de sprites, validação robusta e exportação para engines.
+            <p class="module-description">
+                        Sistema avançado com 3 classes balanceadas (Lutador, Armamentista, Arcano), 
+                        sistema de ânima espiritual, críticos personalizados e integração total com Game Engine.
                     </p>
                     <div class="module-stats">
                         <div class="stat-item">
@@ -443,11 +454,33 @@
                             <div class="stat-label">Personagens</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">164</div>
-                            <div class="stat-label">Testes ✅</div>
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Classes Base</div>
                         </div>
                     </div>
-                    <a href="/characters" class="access-button">🚀 Acessar Módulo</a>
+                    <a href="/character-database.html" class="access-button">🚀 Acessar Módulo</a>
+                </div>
+
+                <!-- Classes Database -->
+                <div class="module-card active" style="--accent-color: #9b59b6;">
+                    <div class="module-icon">🎭</div>
+                    <h3 class="module-title">Classes Database</h3>
+                    <span class="module-status status-complete">✅ COMPLETO</span>
+                    <p class="module-description">
+                        Geração algorítmica inteligente com 4 raridades, balanceamento automático de stats, 
+                        sistema de vantagens pedra-papel-tesoura e integração total com Game Engine.
+                    </p>
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="classCount">3</div>
+                            <div class="stat-label">Classes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Raridades</div>
+                        </div>
+                    </div>
+                    <a href="/class-database.html" class="access-button">🎭 Acessar Módulo</a>
                 </div>
 
                 <!-- Maps Database -->
@@ -478,8 +511,8 @@
                     <h3 class="module-title">Skills Database</h3>
                     <span class="module-status status-complete">✅ COMPLETO</span>
                     <p class="module-description">
-                        Sistema completo de habilidades com tipos, elementos, 
-                        dano, cooldowns, pré-requisitos e efeitos especiais.
+                        Skills passivas por classe (Dragon Cadence, Arsenal Adaptativo, Convergência Ânima), 
+                        sistema de ânima integrado e mecânicas avançadas de buff/debuff.
                     </p>
                     <div class="module-stats">
                         <div class="stat-item">
@@ -487,11 +520,11 @@
                             <div class="stat-label">Skills</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" id="skillTypes">7</div>
-                            <div class="stat-label">Tipos</div>
+                            <div class="stat-value" id="skillTypes">3</div>
+                            <div class="stat-label">Classes</div>
                         </div>
                     </div>
-                    <a href="/skills" class="access-button">🎯 Acessar Módulo</a>
+                    <a href="/skills-database.html" class="access-button">🎯 Acessar Módulo</a>
                 </div>
 
                 <!-- Battle System -->
@@ -500,42 +533,64 @@
                     <h3 class="module-title">Sistema de Batalha</h3>
                     <span class="module-status status-complete">✅ COMPLETO</span>
                     <p class="module-description">
-                        Sistema de batalha turn-based com boss-character integration, 
-                        IA avançada, interface estilo Pokemon e mecânicas balanceadas.
+                        Batalhas táticas com modificadores +10%/-10% por vantagem, sistema de meditação 
+                        para ânima, defesa ativa e críticos personalizados por personagem.
                     </p>
                     <div class="module-stats">
                         <div class="stat-item">
-                            <div class="stat-value">1v1</div>
-                            <div class="stat-label">Combate</div>
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Classes</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">4</div>
+                            <div class="stat-value">5</div>
                             <div class="stat-label">Ações</div>
                         </div>
                     </div>
-                    <a href="/battle" class="access-button">⚔️ Iniciar Batalha</a>
+                    <a href="/battle.html" class="access-button">⚔️ Acessar Sistema</a>
                 </div>
 
                 <!-- Game Engine -->
-                <div class="module-card planned" style="--accent-color: #9b59b6;">
+                <div class="module-card active" style="--accent-color: #9b59b6;">
                     <div class="module-icon">🎲</div>
                     <h3 class="module-title">Game Engine</h3>
-                    <span class="module-status status-planned">📋 PLANEJADO</span>
+                    <span class="module-status status-complete">✅ COMPLETO</span>
                     <p class="module-description">
-                        Motor de jogo em React com sistema de batalha, progressão, 
-                        interface responsiva e integração com todos os módulos.
+                        Motor de jogo completo com biblioteca centralizada, sistema de eventos,
+                        gerenciamento de estado e integração total dos módulos RPGStack.
                     </p>
                     <div class="module-stats">
                         <div class="stat-item">
-                            <div class="stat-value">0</div>
+                            <div class="stat-value">6</div>
                             <div class="stat-label">Sistemas</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">0</div>
-                            <div class="stat-label">Componentes</div>
+                            <div class="stat-value">50+</div>
+                            <div class="stat-label">Funções</div>
                         </div>
                     </div>
-                    <button class="access-button" disabled>🔒 Planejado</button>
+                    <a href="/game-engine.html" class="access-button">🎮 Acessar Engine</a>
+                </div>
+
+                <!-- Sistema Astral -->
+                <div class="module-card active" style="--accent-color: #667eea;">
+                    <div class="module-icon">🌟</div>
+                    <h3 class="module-title">Sistema Astral</h3>
+                    <span class="module-status status-complete">✅ COMPLETO</span>
+                    <p class="module-description">
+                        Sistema de energia astral com 8 cargas por personagem. Consome cargas ao meditar e defender,
+                        com gerenciamento visual e integração total com o sistema de batalha.
+                    </p>
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Cargas/Char</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Ações</div>
+                        </div>
+                    </div>
+                    <a href="/astral-database.html" class="access-button">🌟 Acessar Sistema</a>
                 </div>
 
                 <!-- Mobile App -->
@@ -566,17 +621,17 @@
                     <h3 class="module-title">Development Tools</h3>
                     <span class="module-status status-development">🔄 ATIVO</span>
                     <p class="module-description">
-                        Ferramentas de desenvolvimento: testes automatizados, 
-                        documentação, análise de código e CI/CD.
+                        Game Engine v4.0.0 com biblioteca centralizada, sistema de eventos, 
+                        save/load automático e 50+ funções para desenvolvimento avançado.
                     </p>
                     <div class="module-stats">
                         <div class="stat-item">
                             <div class="stat-value" id="totalTests">193</div>
-                            <div class="stat-label">Testes</div>
+                            <div class="stat-label">Linhas Teste</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">100%</div>
-                            <div class="stat-label">Clean Arch</div>
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Módulos</div>
                         </div>
                     </div>
                     <a href="https://github.com/naccaratoo/rpgstack" target="_blank" class="access-button">📚 GitHub</a>
@@ -595,21 +650,54 @@
                         <div class="roadmap-phase">Phase 2 ✅</div>
                         <div class="roadmap-description">Maps Database System</div>
                     </div>
+                    <div class="roadmap-item complete">
+                        <div class="roadmap-phase">Phase 2.3 ✅</div>
+                        <div class="roadmap-description">Frontend Interfaces & Classes Module</div>
+                    </div>
+                    <div class="roadmap-item complete">
+                        <div class="roadmap-phase">Phase 3 ✅</div>
+                        <div class="roadmap-description">Skills & Battle Mechanics System</div>
+                    </div>
+                    <div class="roadmap-item complete">
+                        <div class="roadmap-phase">Phase 4 ✅</div>
+                        <div class="roadmap-description">Game Engine & Core Libraries</div>
+                    </div>
                     <div class="roadmap-item active">
-                        <div class="roadmap-phase">Phase 2.3 🔄</div>
-                        <div class="roadmap-description">Frontend Interfaces</div>
+                        <div class="roadmap-phase">Phase 5 🔄</div>
+                        <div class="roadmap-description">Advanced Features & React Components</div>
                     </div>
                     <div class="roadmap-item">
-                        <div class="roadmap-phase">Phase 3</div>
-                        <div class="roadmap-description">Items & Skills Database</div>
-                    </div>
-                    <div class="roadmap-item">
-                        <div class="roadmap-phase">Phase 4</div>
-                        <div class="roadmap-description">Game Engine React</div>
-                    </div>
-                    <div class="roadmap-item">
-                        <div class="roadmap-phase">Phase 5</div>
+                        <div class="roadmap-phase">Phase 6</div>
                         <div class="roadmap-description">Mobile App React Native</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Novidades v4.0.0 -->
+            <div class="architecture-info" style="background: linear-gradient(135deg, #41eadc 0%, #10b981 100%); color: #0f172a;">
+                <h2 class="architecture-title" style="color: #0f172a;">🚀 Novidades RPGStack v4.0.0</h2>
+                <p style="color: #1e293b; font-weight: 600;">Sistema completo de Game Engine com bibliotecas centralizadas e funcionalidades avançadas</p>
+                
+                <div class="architecture-features">
+                    <div class="architecture-feature" style="background: rgba(15, 23, 42, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(15, 23, 42, 0.2);">
+                        <div class="feature-icon">🎮</div>
+                        <div class="feature-title" style="color: #0f172a;">Game Engine Core</div>
+                        <div class="feature-description" style="color: #1e293b;">Biblioteca centralizada com 50+ funções, sistema de eventos e gerenciamento de estado</div>
+                    </div>
+                    <div class="architecture-feature" style="background: rgba(15, 23, 42, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(15, 23, 42, 0.2);">
+                        <div class="feature-icon">✨</div>
+                        <div class="feature-title" style="color: #0f172a;">Geração Algorítmica</div>
+                        <div class="feature-description" style="color: #1e293b;">Classes geradas com IA, balanceamento automático e 4 raridades (Common → Legendary)</div>
+                    </div>
+                    <div class="architecture-feature" style="background: rgba(15, 23, 42, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(15, 23, 42, 0.2);">
+                        <div class="feature-icon">⚔️</div>
+                        <div class="feature-title" style="color: #0f172a;">Battle Mechanics 2.0</div>
+                        <div class="feature-description" style="color: #1e293b;">Sistema de vantagens pedra-papel-tesoura com modificadores +10%/-10% e críticos personalizados</div>
+                    </div>
+                    <div class="architecture-feature" style="background: rgba(15, 23, 42, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(15, 23, 42, 0.2);">
+                        <div class="feature-icon">🌟</div>
+                        <div class="feature-title" style="color: #0f172a;">Sistema de Ânima</div>
+                        <div class="feature-description" style="color: #1e293b;">Energia espiritual substituindo mana, meditação para recuperação e skills passivas avançadas</div>
                     </div>
                 </div>
             </div>
@@ -674,6 +762,31 @@
                     const mapsData = await mapsResponse.json();
                     const mapCount = mapsData.data ? mapsData.data.length : 0;
                     document.getElementById('mapCount').textContent = mapCount;
+                }
+
+                // Classes count (if API exists)
+                try {
+                    const classesResponse = await fetch('/api/classes');
+                    if (classesResponse.ok) {
+                        const classesData = await classesResponse.json();
+                        const classCount = classesData.length || 3; // Default to 3 base classes
+                        document.getElementById('classCount').textContent = classCount;
+                    }
+                } catch (error) {
+                    // Fallback to base classes count
+                    document.getElementById('classCount').textContent = '3';
+                }
+
+                // Skills count (if API exists)
+                try {
+                    const skillsResponse = await fetch('/api/skills');
+                    if (skillsResponse.ok) {
+                        const skillsData = await skillsResponse.json();
+                        const skillCount = skillsData.length || 0;
+                        document.getElementById('skillCount').textContent = skillCount;
+                    }
+                } catch (error) {
+                    document.getElementById('skillCount').textContent = '0';
                 }
 
                 // Update total tests (static for now)

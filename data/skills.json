@@ -2,26 +2,43 @@
   "skills": {
     "7YUOFU26OF": {
       "id": "7YUOFU26OF",
-      "name": "Cadência do Dragão",
-      "description": "O lutador entra no ritmo implacável do dragão, canalizando seu espírito de combate a cada golpe básico. O poder de cada ataque simples fortalece o próximo, mas a perda do ritmo faz com que ele precisa recomeçar sua construção de poder.\n\nAo usar um Ataque Básico, calcula-se um novo bônus de ataque: X = (Nº de Ataques Básicos Consecutivos) + 1.",
+      "name": "🐉 Cadência do Dragão v6.0.0 REWORK",
+      "description": "REWORK COMPLETO: O lutador ativa manualmente o estado aprimorado do dragão. Cada ataque básico consecutivo aumenta permanentemente o valor de Attack do personagem em +10% do valor base.\n\n⚡ ALGORITMO v6.0.0: Baseado no Attack do personagem\n• Ativar skill: Entra em estado aprimorado (custa 50 ânima)\n• Ataque básico 1: Attack +10% do valor base\n• Ataque básico 2: Attack +20% do valor base\n• Exemplo: Loki (Attack 50) → +5, +10, +15, +20 pontos...\n\n🎯 MECÂNICA: Usar skill para ativar → Atacar para acumular Attack permanente. Skills/defesa/meditação resetam contador mas mantêm estado ativo.",
       "type": "buff",
       "classe": "Lutador",
       "level": 1,
       "damage": 0,
       "sprite": null,
-      "anima_cost": 20,
+      "anima_cost": 50,
       "cooldown": 0,
-      "duration": 0,
+      "duration": 999,
       "prerequisites": [],
-      "effects": [],
+      "effects": [
+        {
+          "type": "attack_bonus",
+          "scaling": "linear",
+          "max_stacks": 999,
+          "stack_value": "10% of base attack"
+        }
+      ],
       "metadata": {
         "skillType": "dragon_cadence",
-        "isPassive": true,
-        "mechanic": "consecutive_basic_attacks",
-        "buffFormula": "X = (Consecutive Basic Attacks) + 1"
+        "isPassive": false,
+        "version": "6.0.0",
+        "mechanic": "attack_based_scaling",
+        "buffFormula": "attackBonus = baseAttack * 0.10 * consecutiveAttacks",
+        "maxDamage": "unlimited",
+        "activationRequired": true,
+        "persistentState": true,
+        "breakConditions": [
+          "skill",
+          "defend",
+          "meditate"
+        ],
+        "resetBehavior": "contador resetado, estado mantido"
       },
       "created_at": "2025-09-01T01:13:25.712Z",
-      "updated_at": "2025-09-01T04:45:12.518Z"
+      "updated_at": "2025-09-01T11:00:00.000Z"
     },
     "8AB7CDE5F9": {
       "id": "8AB7CDE5F9",

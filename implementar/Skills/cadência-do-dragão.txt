@@ -1,21 +1,38 @@
-Cadência do Dragão (Passiva)
+🐉 CADÊNCIA DO DRAGÃO v4.1.0 - DEVASTADOR (Passiva)
 
-O lutador entra no ritmo implacável do dragão, canalizando seu espírito de combate a cada golpe básico. O poder de cada ataque simples fortalece o próximo, mas a perda do ritmo faz com que ele precise recomeçar sua construção de poder from scratch, podendo resultar em um buff menor.
+O lutador desperta o espírito ancestral do dragão, cada ataque básico consecutivo alimenta uma fúria crescente que se torna exponencialmente mais destrutiva. Esta skill transformou Lutadores de classe mediana para DOMINADORES absolutos de batalhas prolongadas.
 
-Efeito Mechanicamente Exato:
+⚡ ALGORITMO BUFFADO v4.1.0 - SCALING EXPONENCIAL:
 
-Ao usar um Ataque Básico, calcula-se um novo bônus de ataque: X = (Nº de Ataques Básicos Consecutivos) + 1.
+ATAQUES 1-3 (⚡POWER): 25%, 50%, 75% damage bonus
+ATAQUES 4-6 (🔥FÚRIA): 100%, 125%, 150% damage bonus  
+ATAQUES 7-10 (💀MASSACRE): 175%, 200%, 225%, 250% damage bonus
+ATAQUES 11+ (☠️DEVASTAÇÃO): 300% + (25% por ataque adicional)
 
-Este novo bônus X% substitui o bônus anterior desta skill.
+🎯 MECÂNICA DEVASTADORA:
+- Cada ATAQUE BÁSICO consecutivo aplica o buff atual e calcula um novo buff exponencial
+- QUEBRA DE SEQUÊNCIA: Qualquer skill, defesa ou meditação zera o contador
+- RETOMADA BUFFADA: Ao retomar, começa com 50% do último buff (não do zero)
+- SCALING INFINITO: Não há limite máximo de dano (teoricamente +∞%)
 
-Se qualquer outra ação que não seja um Ataque Básico for realizada, o contador de sequência é zerado. O bônus de ataque atual permanece inalterado até que outro Ataque Básico seja realizado e calcule um novo valor X.
+💥 EXEMPLOS DEVASTADORES:
 
-Exemplo Revisado (Lógico):
+Ataque 1: Base damage * 1.25 = +25% ⚡
+Ataque 4: Base damage * 2.00 = DOBRA O DANO! 🔥
+Ataque 8: Base damage * 3.00 = TRIPLA O DANO! 💀💀  
+Ataque 12: Base damage * 4.00 = QUADRUPLA O DANO! ☠️☠️☠️
+Ataque 15: Base damage * 5.00 = 500% DEVASTAÇÃO TOTAL! 🌟
 
-Turno 1: Ataque Básico. X = 1 + 4 = 5%. Buff de Ataque: 5%.
+🚨 CONTRABALANCEAMENTOS:
+- Alto risco: Deve manter atacando para manter poder
+- Vulnerabilidade: Não pode defender ou usar skills sem perder buff
+- Target Priority: Inimigos DEVEM quebrar a sequência ou morrem
+- Strategic Depth: Criar decisões difíceis (buff vs sobrevivência)
 
-Turno 2: Ataque Básico. X = 2 + 4 = 6%. Buff de Ataque: 6% (substitui o 5%).
+🎮 IMPACTO NO META:
+- LUTADOR agora é class tier S+ em boss fights e batalhas longas
+- PvP: Adversários devem focar em quebrar sequências
+- PvE: Capable de solo content que antes requeria party
+- Endgame: Única classe com potential de dano infinito
 
-Turno 3: Usou uma Skill, Meditou ou Defendeu. Contador não é acionado. Buff de Ataque: 6% (permanece).
-
-Turno 4: Ataque Básico. X = 1 + 4 = 5%. O jogo compara: o novo valor (5%) com o valor gerado no penultímo calcúlo (6%). Buff de Ataque: 11% 
+STATUS: 🟢 ATIVO E DEVASTADOR - Integrado automaticamente com botão Attack! 

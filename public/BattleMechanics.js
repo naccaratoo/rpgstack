@@ -236,44 +236,100 @@ class BattleMechanics {
    * @param {string} characterId - ID do personagem
    * @returns {Object} Estado atual da cadência
    */
-  processDragonCadence(characterId) {
+  processDragonCadence(characterId, baseAttack = 50) {
     if (!this.skillStates.has(characterId)) {
       this.skillStates.set(characterId, {
         dragonCadence: {
           consecutiveBasicAttacks: 0,
           currentBuff: 0,
-          lastCalculation: 0,
-          sequenceBroken: false,
-          isActive: true
+          totalAttackBonus: 0,
+          isActive: false,
+          skillActivated: false,
+          baseAttack: baseAttack
         }
       });
     }
 
     const skillState = this.skillStates.get(characterId).dragonCadence;
     
-    // Aplicar buff atual no dano ANTES de incrementar
-    const currentBuffToApply = skillState.currentBuff;
-    
-    // Incrementar contador
-    skillState.consecutiveBasicAttacks++;
-    const newCalculation = skillState.consecutiveBasicAttacks + 1;
-    
-    if (skillState.sequenceBroken && skillState.consecutiveBasicAttacks === 1) {
-      skillState.currentBuff = newCalculation + skillState.lastCalculation;
-      skillState.sequenceBroken = false;
-    } else {
-      skillState.currentBuff = newCalculation;
+    // Atualizar base attack se fornecido
+    if (baseAttack && baseAttack !== skillState.baseAttack) {
+      skillState.baseAttack = baseAttack;
     }
     
-    skillState.lastCalculation = newCalculation;
+    // Só processa se a skill foi ativada
+    if (!skillState.skillActivated) {
+      return {
+        consecutiveAttacks: 0,
+        currentBuff: 0,
+        appliedBuff: 0,
+        attackBonus: 0,
+        message: `🐉 Cadência do Dragão está inativa. Use a skill para ativar o estado aprimorado!`
+      };
+    }
+    
+    // NOVO ALGORITMO v6.0.0: +10% do attack base por ataque consecutivo
+    skillState.consecutiveBasicAttacks++;
+    const attackBonus = Math.round(skillState.baseAttack * 0.10 * skillState.consecutiveBasicAttacks);
+    skillState.totalAttackBonus = attackBonus;
+    skillState.currentBuff = skillState.consecutiveBasicAttacks * 10; // Para UI (percentual)
+    
+    console.log('🐉 REWORK v6.0.0 DEBUG:', {
+      characterId,
+      baseAttack: skillState.baseAttack,
+      consecutiveAttacks: skillState.consecutiveBasicAttacks,
+      attackBonus,
+      percentualBuff: skillState.currentBuff
+    });
     
     return {
       consecutiveAttacks: skillState.consecutiveBasicAttacks,
       currentBuff: skillState.currentBuff,
-      appliedBuff: currentBuffToApply,
-      newCalculation: newCalculation,
-      message: `Cadência do Dragão: Buff aplicado +${currentBuffToApply}%. Próximo ataque: +${skillState.currentBuff}% (${skillState.consecutiveBasicAttacks} ataques consecutivos)`
+      appliedBuff: skillState.currentBuff,
+      attackBonus: attackBonus,
+      totalAttack: skillState.baseAttack + attackBonus,
+      message: `🐉 REWORK v6.0.0! Attack: ${skillState.baseAttack} → ${skillState.baseAttack + attackBonus} (+${attackBonus} pontos)`
     };
+  }
+
+  /**
+   * Ativar a Cadência do Dragão (usar a skill para entrar em estado aprimorado)
+   * @param {string} characterId - ID do personagem
+   * @returns {Object} Estado após ativação
+   */
+  activateDragonCadence(characterId) {
+    console.log('🔧 BattleMechanics.activateDragonCadence chamado para:', characterId);
+    
+    if (!this.skillStates.has(characterId)) {
+      console.log('🔧 Criando novo skillState para:', characterId);
+      this.skillStates.set(characterId, {
+        dragonCadence: {
+          consecutiveBasicAttacks: 0,
+          currentBuff: 0,
+          isActive: false,
+          skillActivated: false
+        }
+      });
+    }
+
+    const skillState = this.skillStates.get(characterId).dragonCadence;
+    console.log('🔧 Estado antes da ativação:', skillState);
+    
+    // Ativar o estado aprimorado
+    skillState.skillActivated = true;
+    skillState.isActive = true;
+    skillState.consecutiveBasicAttacks = 0;
+    skillState.currentBuff = 0;
+    
+    console.log('🔧 Estado após ativação:', skillState);
+    
+    const result = {
+      activated: true,
+      message: `🐉 CADÊNCIA DO DRAGÃO v6.0.0 ATIVADA! Personagem entrou em estado aprimorado. Cada ataque básico aumentará o poder de attack!`
+    };
+    
+    console.log('🔧 Retornando resultado:', result);
+    return result;
   }
 
   /**
@@ -282,20 +338,26 @@ class BattleMechanics {
    * @returns {Object} Estado após quebra
    */
   breakDragonCadence(characterId) {
+    console.log('🔧 BattleMechanics.breakDragonCadence chamado para:', characterId);
+    
     if (!this.skillStates.has(characterId)) {
+      console.log('🔧 Nenhum skillState encontrado para:', characterId);
       return { broken: false, currentBuff: 0 };
     }
 
     const skillState = this.skillStates.get(characterId).dragonCadence;
-    const previousBuff = skillState.currentBuff;
+    console.log('🔧 Estado antes do break:', skillState);
     
+    // Resetar contador mas manter skill ativa (não quebra mais o estado aprimorado)
     skillState.consecutiveBasicAttacks = 0;
-    skillState.sequenceBroken = true;
+    skillState.currentBuff = 0;
+    
+    console.log('🔧 Estado após break (mantém isActive):', skillState);
     
     return {
       broken: true,
-      currentBuff: skillState.currentBuff,
-      message: `Cadência interrompida! Buff atual mantido: +${previousBuff}% de ataque`
+      currentBuff: 0,
+      message: `🐉 Sequência de ataques resetada! Estado aprimorado continua ativo. Próximo ataque básico começará do +10% novamente.`
     };
   }
 
@@ -321,18 +383,30 @@ class BattleMechanics {
    * @returns {Object} Estado atual
    */
   getDragonCadenceState(characterId) {
+    // DEBUG: Log do estado interno do skill
+    console.log('🔍 BattleMechanics DEBUG - getDragonCadenceState:', {
+      characterId,
+      hasSkillStates: this.skillStates.has(characterId),
+      skillStatesSize: this.skillStates.size,
+      allCharacterIds: Array.from(this.skillStates.keys())
+    });
+    
     if (!this.skillStates.has(characterId) || !this.skillStates.get(characterId).dragonCadence) {
+      console.log('🐉 Nenhum estado de Cadência encontrado para:', characterId);
       return { isActive: false, currentBuff: 0, consecutiveAttacks: 0 };
     }
 
     const skillState = this.skillStates.get(characterId).dragonCadence;
-    return {
+    const result = {
       isActive: skillState.isActive,
       currentBuff: skillState.currentBuff,
       consecutiveAttacks: skillState.consecutiveBasicAttacks,
       lastCalculation: skillState.lastCalculation,
       sequenceBroken: skillState.sequenceBroken
     };
+    
+    console.log('🐉 Estado da Cadência encontrado:', result);
+    return result;
   }
 
   // ============= ARSENAL ADAPTATIVO (Armamentista) =============

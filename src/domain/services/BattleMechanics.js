@@ -34,7 +34,7 @@ export class BattleMechanics {
    * Valores de recuperação da meditação
    */
   static MEDITATION_ANIMA_RECOVERY = 0.10; // 10% do Ânima máximo
-  static MEDITATION_HP_RECOVERY = 0.05; // 5% da vida máxima
+  static MEDITATION_HP_RECOVERY = 0.50; // 50% da vida máxima
 
   /**
    * Estados de batalha
@@ -261,7 +261,7 @@ export class BattleMechanics {
    */
   
   /**
-   * Processar ataque básico para Cadência do Dragão
+   * Processar ataque básico para Cadência do Dragão (REWORK v5.0.0)
    * @param {string} characterId - ID do personagem
    * @returns {Object} Estado atual da cadência
    */
@@ -271,39 +271,66 @@ export class BattleMechanics {
         dragonCadence: {
           consecutiveBasicAttacks: 0,
           currentBuff: 0,
-          lastCalculation: 0,
-          sequenceBroken: false,
-          isActive: true
+          isActive: false,
+          skillActivated: false
         }
       });
     }
 
     const skillState = this.skillStates.get(characterId).dragonCadence;
     
+    // Só processa se a skill foi ativada
+    if (!skillState.skillActivated) {
+      return {
+        consecutiveAttacks: 0,
+        currentBuff: 0,
+        appliedBuff: 0,
+        message: `🐉 Cadência do Dragão está inativa. Use a skill para ativar o estado aprimorado!`
+      };
+    }
+    
     // Incrementar contador de ataques básicos consecutivos
     skillState.consecutiveBasicAttacks++;
     
-    // Calcular novo bônus: X = (Nº de Ataques Básicos Consecutivos) + 1
-    const newCalculation = skillState.consecutiveBasicAttacks + 1;
-    
-    // Se a sequência foi quebrada e está sendo retomada
-    if (skillState.sequenceBroken && skillState.consecutiveBasicAttacks === 1) {
-      // Comparar novo valor com o último cálculo e somar
-      skillState.currentBuff = newCalculation + skillState.lastCalculation;
-      skillState.sequenceBroken = false;
-    } else {
-      // Novo bônus substitui o anterior
-      skillState.currentBuff = newCalculation;
-    }
-    
-    // Armazenar cálculo atual para possível uso futuro
-    skillState.lastCalculation = newCalculation;
+    // NOVO ALGORITMO REWORK v5.0.0: +10% por ataque básico
+    skillState.currentBuff = skillState.consecutiveBasicAttacks * 10;
     
     return {
       consecutiveAttacks: skillState.consecutiveBasicAttacks,
       currentBuff: skillState.currentBuff,
-      newCalculation: newCalculation,
-      message: `Cadência do Dragão: +${skillState.currentBuff}% de ataque (${skillState.consecutiveBasicAttacks} ataques consecutivos)`
+      appliedBuff: skillState.currentBuff,
+      message: `🐉 CADÊNCIA DO DRAGÃO v5.0.0: Estado Aprimorado ATIVO! +${skillState.currentBuff}% de ataque (${skillState.consecutiveBasicAttacks} ataques básicos)`
+    };
+  }
+
+  /**
+   * Ativar a Cadência do Dragão (usar a skill para entrar em estado aprimorado)
+   * @param {string} characterId - ID do personagem
+   * @returns {Object} Estado após ativação
+   */
+  activateDragonCadence(characterId) {
+    if (!this.skillStates.has(characterId)) {
+      this.skillStates.set(characterId, {
+        dragonCadence: {
+          consecutiveBasicAttacks: 0,
+          currentBuff: 0,
+          isActive: false,
+          skillActivated: false
+        }
+      });
+    }
+
+    const skillState = this.skillStates.get(characterId).dragonCadence;
+    
+    // Ativar o estado aprimorado
+    skillState.skillActivated = true;
+    skillState.isActive = true;
+    skillState.consecutiveBasicAttacks = 0;
+    skillState.currentBuff = 0;
+    
+    return {
+      activated: true,
+      message: `🐉 CADÊNCIA DO DRAGÃO v5.0.0 ATIVADA! Personagem entrou em estado aprimorado. Cada ataque básico aumentará o poder em +10%!`
     };
   }
 
@@ -320,15 +347,14 @@ export class BattleMechanics {
     const skillState = this.skillStates.get(characterId).dragonCadence;
     const previousBuff = skillState.currentBuff;
     
-    // Marcar que a sequência foi quebrada e zerar contador
+    // Resetar contador mas manter skill ativa (não quebra mais o estado aprimorado)
     skillState.consecutiveBasicAttacks = 0;
-    skillState.sequenceBroken = true;
-    // O buff permanece inalterado até próximo ataque básico
+    skillState.currentBuff = 0;
     
     return {
       broken: true,
-      currentBuff: skillState.currentBuff,
-      message: `Cadência interrompida! Buff atual mantido: +${previousBuff}% de ataque`
+      currentBuff: 0,
+      message: `🐉 Sequência de ataques resetada! Estado aprimorado continua ativo. Próximo ataque básico começará do +10% novamente.`
     };
   }
 

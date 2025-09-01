@@ -1,4 +1,4 @@
-# 📋 RPGStack v3.3.0 - Development Milestones
+o# 📋 RPGStack v3.3.0 - Development Milestones
 
 **Status**: 🔄 Em Desenvolvimento  
 **Versão**: 3.3.0  

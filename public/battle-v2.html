@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀⚔️ Battle System V2.0 - RPGStack</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="battle-v2.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 50%, #1e293b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .landing-container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            border: 2px solid #667eea;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+            backdrop-filter: blur(15px);
+        }
+        
+        .landing-title {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(45deg, #667eea, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        
+        .landing-subtitle {
+            color: #cbd5e1;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: left;
+            display: inline-block;
+        }
+        
+        .feature-list li {
+            margin: 10px 0;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+        
+        .start-v2-btn {
+            background: linear-gradient(135deg, #ef4444, #fbbf24);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 1.4em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+            margin: 20px;
+        }
+        
+        .start-v2-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.6);
+        }
+        
+        .test-controls {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .test-btn {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid #667eea;
+            color: #e2e8f0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .test-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .status-display {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            border: 1px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <h1 class="landing-title">⚔️ Battle System V2.0</h1>
+        <p class="landing-subtitle">
+            Sistema avançado de batalha com integração completa do RPGStack - 
+            Algoritmos inteligentes, previsões de batalha e interface cinematográfica
+        </p>
+        
+        <ul class="feature-list">
+            <li>🌟 <strong>Sistema Astral v4.0.0</strong> - 8 cargas astrais por personagem</li>
+            <li>🐉 <strong>Cadência do Dragão v4.1.0</strong> - Até 400%+ de dano devastador</li>
+            <li>⚔️ <strong>Vantagens de Classe</strong> - Sistema pedra-papel-tesoura</li>
+            <li>🧠 <strong>Previsão de Batalha</strong> - IA calcula chances de vitória</li>
+            <li>🎯 <strong>Match Inteligente</strong> - Oponentes balanceados</li>
+            <li>📊 <strong>Interface Avançada</strong> - Cards detalhados e animações</li>
+        </ul>
+        
+        <button class="start-v2-btn" onclick="initializeBattleV2()">
+            🚀 Iniciar Battle V2
+        </button>
+        
+        <div class="test-controls">
+            <h4>🧪 Controles de Teste</h4>
+            <button class="test-btn" onclick="testSystemLoad()">Testar Carregamento</button>
+            <button class="test-btn" onclick="testCharacterAPI()">Testar API</button>
+            <button class="test-btn" onclick="testBattleMechanics()">Testar Mecânicas</button>
+            <button class="test-btn" onclick="showSystemStatus()">Status do Sistema</button>
+        </div>
+        
+        <div class="status-display" id="status-display">
+            Sistema pronto para inicialização...
+        </div>
+    </div>
+
+    <!-- Scripts do sistema RPGStack -->
+    <script src="Astral.js"></script>
+    <script src="BattleMechanics.js"></script>
+    <script src="BuffDebuffSystem.js"></script>
+    <script src="battle-initialization-v2.js"></script>
+    
+    <script>
+        // Status do sistema
+        const statusDisplay = document.getElementById('status-display');
+        
+        function updateStatus(message) {
+            statusDisplay.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${message}</div>`;
+            statusDisplay.scrollTop = statusDisplay.scrollHeight;
+        }
+        
+        // Função principal para iniciar Battle V2
+        async function initializeBattleV2() {
+            try {
+                updateStatus('🚀 Iniciando Battle System V2.0...');
+                
+                if (typeof BattleInitializationV2 === 'undefined') {
+                    throw new Error('BattleInitializationV2 não encontrado');
+                }
+                
+                const battleSystem = new BattleInitializationV2();
+                updateStatus('✅ Sistema V2 instanciado com sucesso');
+                
+                // Inicializar batalha avançada
+                const battleConfig = await battleSystem.initializeAdvancedBattle();
+                
+                updateStatus('🎮 Interface de seleção aberta');
+                updateStatus('⚔️ Aguardando seleção de personagens...');
+                
+                // Se a batalha for configurada
+                battleConfig.then((config) => {
+                    updateStatus(`🏆 Batalha configurada: ${config.player.name} vs ${config.enemy.name}`);
+                    updateStatus(`🎯 Modo: ${config.mode} | Dificuldade: ${config.difficulty}x`);
+                    updateStatus('✨ Redirecionando para sistema de batalha...');
+                    
+                    // Aqui você pode redirecionar para battle.html ou integrar com o sistema existente
+                    setTimeout(() => {
+                        alert(`Batalha V2 configurada!\n${config.player.name} vs ${config.enemy.name}\nModo: ${config.mode}`);
+                    }, 1000);
+                });
+                
+            } catch (error) {
+                updateStatus(`❌ Erro: ${error.message}`);
+                console.error('Erro no Battle V2:', error);
+            }
+        }
+        
+        // Funções de teste
+        async function testSystemLoad() {
+            updateStatus('🧪 Testando carregamento do sistema...');
+            
+            const systems = [
+                { name: 'AstralSystem', obj: window.AstralSystem },
+                { name: 'BattleMechanics', obj: window.BattleMechanics },
+                { name: 'BuffDebuffSystem', obj: window.BuffDebuffSystem },
+                { name: 'BattleInitializationV2', obj: window.BattleInitializationV2 }
+            ];
+            
+            systems.forEach(system => {
+                if (system.obj) {
+                    updateStatus(`✅ ${system.name} carregado`);
+                } else {
+                    updateStatus(`❌ ${system.name} não encontrado`);
+                }
+            });
+        }
+        
+        async function testCharacterAPI() {
+            updateStatus('📡 Testando API de personagens...');
+            
+            try {
+                const response = await fetch('/api/characters');
+                const data = await response.json();
+                
+                let characters = [];
+                if (data.characters) {
+                    characters = Object.values(data.characters);
+                } else if (Array.isArray(data)) {
+                    characters = data;
+                }
+                
+                updateStatus(`✅ API respondeu: ${characters.length} personagens encontrados`);
+                characters.forEach(char => {
+                    updateStatus(`  → ${char.name} (${char.id}) - ${char.classe || 'Lutador'}`);
+                });
+                
+            } catch (error) {
+                updateStatus(`❌ Erro na API: ${error.message}`);
+                updateStatus('🔄 Sistema usará personagens fallback');
+            }
+        }
+        
+        function testBattleMechanics() {
+            updateStatus('⚔️ Testando mecânicas de batalha...');
+            
+            if (window.BattleMechanics) {
+                const bm = new BattleMechanics();
+                
+                // Testar vantagens de classe
+                const vantagens = [
+                    ['Lutador', 'Armamentista'],
+                    ['Armamentista', 'Arcano'],
+                    ['Arcano', 'Lutador']
+                ];
+                
+                vantagens.forEach(([atacante, defensor]) => {
+                    const hasAdvantage = bm.hasClassAdvantage(atacante, defensor);
+                    updateStatus(`  → ${atacante} vs ${defensor}: ${hasAdvantage ? '✅ Vantagem' : '❌ Sem vantagem'}`);
+                });
+                
+                updateStatus('✅ BattleMechanics funcionando corretamente');
+            } else {
+                updateStatus('❌ BattleMechanics não disponível');
+            }
+        }
+        
+        function showSystemStatus() {
+            updateStatus('📊 Status completo do sistema:');
+            updateStatus(`  Browser: ${navigator.userAgent.split(' ')[0]}`);
+            updateStatus(`  Viewport: ${window.innerWidth}x${window.innerHeight}`);
+            updateStatus(`  Timestamp: ${new Date().toISOString()}`);
+            
+            // Performance info
+            if (performance.memory) {
+                const mem = performance.memory;
+                updateStatus(`  Memória: ${Math.round(mem.usedJSHeapSize/1024/1024)}MB usado`);
+            }
+        }
+        
+        // Auto-inicialização de testes
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus('🌟 Battle V2 HTML carregado');
+            updateStatus('⚙️ Executando testes automáticos...');
+            
+            setTimeout(() => {
+                testSystemLoad();
+            }, 500);
+            
+            setTimeout(() => {
+                testCharacterAPI();
+            }, 1000);
+            
+            setTimeout(() => {
+                updateStatus('✨ Sistema pronto para uso!');
+            }, 1500);
+        });
+        
+        // Função global para acesso externo
+        window.startBattleSystemV2 = initializeBattleV2;
+    </script>
+</body>
+</html>

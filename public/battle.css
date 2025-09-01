@@ -381,6 +381,89 @@ body {
     box-shadow: none;
 }
 
+/* ⚡ Skill Buttons - New Implementation */
+.skill-btn {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 2px 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* 🐉 Devastador Skills */
+.devastador-skill {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    border: 2px solid #f87171;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    animation: devastadorPulse 2s ease-in-out infinite alternate;
+}
+
+.devastador-skill:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5);
+}
+
+@keyframes devastadorPulse {
+    0% { box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3); }
+    100% { box-shadow: 0 4px 15px rgba(220, 38, 38, 0.6); }
+}
+
+/* ⚡ Buff Skills */
+.buff-skill {
+    background: linear-gradient(135deg, #059669, #047857);
+    border: 2px solid #10b981;
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.buff-skill:hover {
+    background: linear-gradient(135deg, #10b981, #059669);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+}
+
+/* 🌟 Sistema Skills */
+.sistema-skill {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 2px solid #a78bfa;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    animation: astralGlow 3s ease-in-out infinite alternate;
+}
+
+.sistema-skill:hover {
+    background: linear-gradient(135deg, #7c3aed, #667eea);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+@keyframes astralGlow {
+    0% { box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
+    100% { box-shadow: 0 4px 15px rgba(167, 139, 250, 0.5); }
+}
+
+/* Disabled State for Skills */
+.skill-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    animation: none;
+}
+
+.skill-btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
 .skill-damage {
     font-size: 11px;
     color: #ff6b6b;

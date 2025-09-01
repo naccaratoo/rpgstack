@@ -1077,6 +1077,29 @@
                             <option value="Lutador">Lutador</option>
                             <option value="Armamentista">Armamentista</option>
                             <option value="Arcano">Arcano</option>
+                            <option value="Assassino">Assassino</option>
+                            <option value="Paladino">Paladino</option>
+                            <option value="Druida">Druida</option>
+                            <option value="Necromante">Necromante</option>
+                            <option value="Bardo">Bardo</option>
+                            <option value="Ranger">Ranger</option>
+                            <option value="Monge">Monge</option>
+                            <option value="Universal">Universal</option>
+                            <option value="Guerreiro">Guerreiro</option>
+                            <option value="Mago">Mago</option>
+                            <option value="Clérigo">Clérigo</option>
+                            <option value="Ladino">Ladino</option>
+                            <option value="Bárbaro">Bárbaro</option>
+                            <option value="Feiticeiro">Feiticeiro</option>
+                            <option value="Bruxo">Bruxo</option>
+                            <option value="Explorador">Explorador</option>
+                            <option value="Caçador">Caçador</option>
+                            <option value="Guardião">Guardião</option>
+                            <option value="Místico">Místico</option>
+                            <option value="Elementalista">Elementalista</option>
+                            <option value="Invocador">Invocador</option>
+                            <option value="Templário">Templário</option>
+                            <option value="Xamã">Xamã</option>
                         </select>
                     </div>
 
@@ -1303,6 +1326,29 @@
                             <option value="Lutador">Lutador</option>
                             <option value="Armamentista">Armamentista</option>
                             <option value="Arcano">Arcano</option>
+                            <option value="Assassino">Assassino</option>
+                            <option value="Paladino">Paladino</option>
+                            <option value="Druida">Druida</option>
+                            <option value="Necromante">Necromante</option>
+                            <option value="Bardo">Bardo</option>
+                            <option value="Ranger">Ranger</option>
+                            <option value="Monge">Monge</option>
+                            <option value="Universal">Universal</option>
+                            <option value="Guerreiro">Guerreiro</option>
+                            <option value="Mago">Mago</option>
+                            <option value="Clérigo">Clérigo</option>
+                            <option value="Ladino">Ladino</option>
+                            <option value="Bárbaro">Bárbaro</option>
+                            <option value="Feiticeiro">Feiticeiro</option>
+                            <option value="Bruxo">Bruxo</option>
+                            <option value="Explorador">Explorador</option>
+                            <option value="Caçador">Caçador</option>
+                            <option value="Guardião">Guardião</option>
+                            <option value="Místico">Místico</option>
+                            <option value="Elementalista">Elementalista</option>
+                            <option value="Invocador">Invocador</option>
+                            <option value="Templário">Templário</option>
+                            <option value="Xamã">Xamã</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -2770,7 +2816,16 @@
                 // Carregar skills existentes do personagem
                 await loadExistingSkills(character.skills || []);
 
-                // Armazenar informações da sprite original
+                // RESET: Limpar dados de imagem de outros personagens antes de carregar o atual
+                editCurrentImageData = null;
+                originalSpriteFilename = null;
+                
+                // Limpar input de arquivo e preview
+                document.getElementById('editSpriteInput').value = '';
+                document.getElementById('editSpritePreview').style.display = 'none';
+                document.getElementById('editRemoveFileBtn').style.display = 'none';
+                
+                // Armazenar informações da sprite original do personagem atual
                 originalSpriteFilename = character.sprite ? character.sprite.split('/').pop() : null;
                 
                 // Preencher campo do nome do arquivo sprite

@@ -9,19 +9,19 @@
     <style>
         :root {
             --primary-color: #0d7377;
-            --primary-dark: #14a085;
-            --primary-light: #41ead4;
-            --success-color: #0f766e;
+            --primary-dark: #10b981;
+            --primary-light: #41eadc;
+            --success-color: #10b981;
             --warning-color: #d97706;
             --danger-color: #991b1b;
             --dark-bg: #0f172a;
             --darker-bg: #020617;
             --card-bg: #1e293b;
             --text-light: #f8fafc;
-            --text-gray: #cbd5e1;
+            --text-gray: #e2e8f0;
             --text-muted: #64748b;
             --border-color: #334155;
-            --accent-color: #155e75;
+            --accent-color: #41eadc;
             --hover-bg: #334155;
         }
 
@@ -298,6 +298,74 @@
             border-color: var(--primary-light);
         }
 
+        /* Skills Especiais */
+        .skill-card-devastador {
+            background: linear-gradient(135deg, #dc2626 10%, #7f1d1d 90%);
+            border: 2px solid #ef4444;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+        }
+
+        .skill-card-devastador::before {
+            background: linear-gradient(90deg, #ff6b6b, #ffdd59, #ff6b6b);
+            height: 6px;
+            animation: devastadorGlow 2s ease-in-out infinite alternate;
+        }
+
+        .skill-card-devastador:hover {
+            transform: translateY(-12px) scale(1.05);
+            box-shadow: 0 25px 80px rgba(239, 68, 68, 0.6), 0 0 0 2px rgba(255, 107, 107, 0.5);
+            border-color: #ff6b6b;
+        }
+
+        .skill-card-sistema {
+            background: linear-gradient(135deg, #667eea 10%, #764ba2 90%);
+            border: 2px solid #667eea;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .skill-card-sistema::before {
+            background: linear-gradient(90deg, #41eadc, #667eea, #41eadc);
+            height: 6px;
+            animation: astralGlow 3s ease-in-out infinite alternate;
+        }
+
+        .skill-card-sistema:hover {
+            transform: translateY(-12px) scale(1.05);
+            box-shadow: 0 25px 80px rgba(102, 126, 234, 0.6), 0 0 0 2px rgba(65, 234, 212, 0.5);
+            border-color: #41eadc;
+        }
+
+        @keyframes devastadorGlow {
+            0% { filter: brightness(1) saturate(1); }
+            100% { filter: brightness(1.3) saturate(1.5); }
+        }
+
+        @keyframes astralGlow {
+            0% { filter: brightness(1) saturate(1); }
+            100% { filter: brightness(1.2) saturate(1.3); }
+        }
+
+        /* Tipos de skill com cores específicas */
+        .skill-type-devastador {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            font-weight: 900;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            animation: pulse 1.5s infinite;
+        }
+
+        .skill-type-sistema {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         .skill-header {
             display: flex;
             justify-content: space-between;
@@ -310,6 +378,34 @@
             font-weight: 600;
             color: var(--text-light);
             margin-bottom: 0.25rem;
+        }
+
+        .skill-id {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-id code {
+            background: rgba(2, 6, 23, 0.8);
+            color: var(--primary-light);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.7rem;
+            border: 1px solid rgba(65, 234, 212, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: all;
+        }
+
+        .skill-id code:hover {
+            background: rgba(65, 234, 212, 0.1);
+            border-color: var(--primary-light);
+            transform: scale(1.05);
         }
 
         .skill-type {
@@ -654,24 +750,52 @@
             <button class="btn btn-success" onclick="loadStats()">
                 <i class="fas fa-chart-bar"></i> Estatísticas
             </button>
+            <a href="/astral-database.html" class="btn" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-star"></i> 🌟 Sistema Astral
+            </a>
             
             <div class="search-container">
                 <input type="text" class="search-input" id="searchInput" placeholder="Buscar skills...">
                 <select class="filter-select" id="typeFilter">
                     <option value="">Todos os Tipos</option>
+                    <option value="devastador">🐉 Devastador</option>
+                    <option value="sistema">🌟 Sistema</option>
+                    <option value="buff">⚡ Buff</option>
                     <option value="combat">Combate</option>
                     <option value="magic">Magia</option>
                     <option value="passive">Passiva</option>
                     <option value="utility">Utilidade</option>
                     <option value="healing">Cura</option>
-                    <option value="buff">Buff</option>
                     <option value="debuff">Debuff</option>
                 </select>
                 <select class="filter-select" id="classeFilter">
                     <option value="">Todas as Classes</option>
-                    <option value="Lutador">Lutador</option>
-                    <option value="Armamentista">Armamentista</option>
-                    <option value="Arcano">Arcano</option>
+                    <option value="Universal">🌟 Universal</option>
+                    <option value="Lutador">🥊 Lutador</option>
+                    <option value="Armamentista">🏹 Armamentista</option>
+                    <option value="Arcano">✨ Arcano</option>
+                    <option value="Assassino">🗡️ Assassino</option>
+                    <option value="Paladino">⚔️ Paladino</option>
+                    <option value="Druida">🌿 Druida</option>
+                    <option value="Necromante">💀 Necromante</option>
+                    <option value="Bardo">🎵 Bardo</option>
+                    <option value="Ranger">🏹 Ranger</option>
+                    <option value="Monge">🥋 Monge</option>
+                    <option value="Guerreiro">⚔️ Guerreiro</option>
+                    <option value="Mago">🔮 Mago</option>
+                    <option value="Clérigo">✨ Clérigo</option>
+                    <option value="Ladino">🔓 Ladino</option>
+                    <option value="Bárbaro">🪓 Bárbaro</option>
+                    <option value="Feiticeiro">⚡ Feiticeiro</option>
+                    <option value="Bruxo">🌙 Bruxo</option>
+                    <option value="Explorador">🗺️ Explorador</option>
+                    <option value="Caçador">🏹 Caçador</option>
+                    <option value="Guardião">🛡️ Guardião</option>
+                    <option value="Místico">🔮 Místico</option>
+                    <option value="Elementalista">🌊 Elementalista</option>
+                    <option value="Invocador">👹 Invocador</option>
+                    <option value="Templário">⛪ Templário</option>
+                    <option value="Xamã">🌟 Xamã</option>
                 </select>
             </div>
         </div>
@@ -708,6 +832,10 @@
                     <div class="form-group" style="flex: 1;">
                         <label class="form-label" for="skillName">Nome da Skill</label>
                         <input type="text" id="skillName" class="form-input" required>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 200px;">
+                        <label class="form-label" for="skillId">ID da Skill</label>
+                        <input type="text" id="skillId" class="form-input" placeholder="Auto-gerado" readonly style="background: rgba(2, 6, 23, 0.5); cursor: not-allowed;">
                     </div>
                     <div class="form-group" style="flex: 0 0 120px;">
                         <label class="form-label">Sprite</label>
@@ -749,6 +877,29 @@
                             <option value="Lutador">Lutador</option>
                             <option value="Armamentista">Armamentista</option>
                             <option value="Arcano">Arcano</option>
+                            <option value="Assassino">Assassino</option>
+                            <option value="Paladino">Paladino</option>
+                            <option value="Druida">Druida</option>
+                            <option value="Necromante">Necromante</option>
+                            <option value="Bardo">Bardo</option>
+                            <option value="Ranger">Ranger</option>
+                            <option value="Monge">Monge</option>
+                            <option value="Universal">Universal</option>
+                            <option value="Guerreiro">Guerreiro</option>
+                            <option value="Mago">Mago</option>
+                            <option value="Clérigo">Clérigo</option>
+                            <option value="Ladino">Ladino</option>
+                            <option value="Bárbaro">Bárbaro</option>
+                            <option value="Feiticeiro">Feiticeiro</option>
+                            <option value="Bruxo">Bruxo</option>
+                            <option value="Explorador">Explorador</option>
+                            <option value="Caçador">Caçador</option>
+                            <option value="Guardião">Guardião</option>
+                            <option value="Místico">Místico</option>
+                            <option value="Elementalista">Elementalista</option>
+                            <option value="Invocador">Invocador</option>
+                            <option value="Templário">Templário</option>
+                            <option value="Xamã">Xamã</option>
                         </select>
                     </div>
                 </div>
@@ -895,11 +1046,24 @@
             skillsGrid.style.display = 'grid';
             document.getElementById('emptyState').style.display = 'none';
 
-            skillsGrid.innerHTML = skillsToRender.map(skill => `
-                <div class="skill-card">
+            skillsGrid.innerHTML = skillsToRender.map(skill => {
+                // Determinar classes especiais baseado no tipo
+                const specialClass = skill.type === 'devastador' ? 'skill-card-devastador' : 
+                                   skill.type === 'sistema' ? 'skill-card-sistema' : '';
+                
+                // Determinar emoji baseado no tipo
+                const typeEmoji = skill.type === 'devastador' ? '🐉' : 
+                                skill.type === 'sistema' ? '🌟' : 
+                                skill.type === 'buff' ? '⚡' : '✨';
+                
+                return `
+                <div class="skill-card ${specialClass}">
                     <div class="skill-header">
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="skill-name">${skill.name}</div>
+                        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                            <div>
+                                <div class="skill-name">${typeEmoji} ${skill.name}</div>
+                                <div class="skill-id">ID: <code onclick="copyToClipboard('${skill.id}')" title="Clique para copiar">${skill.id}</code></div>
+                            </div>
                             <div class="skill-sprite-container">
                                 ${skill.sprite ? 
                                     `<img src="/${skill.sprite}" alt="${skill.name}" class="skill-sprite">` :
@@ -908,8 +1072,8 @@
                             </div>
                         </div>
                         <div>
-                            <span class="skill-type">${skill.type}</span>
-                            <span class="skill-classe">${skill.classe || 'Lutador'}</span>
+                            <span class="skill-type skill-type-${skill.type}">${skill.type.toUpperCase()}</span>
+                            <span class="skill-classe">${skill.classe || 'Universal'}</span>
                         </div>
                     </div>
                     
@@ -921,8 +1085,8 @@
                             <span class="skill-stat-value">${skill.level}</span>
                         </div>
                         <div class="skill-stat">
-                            <span class="skill-stat-label">Mana</span>
-                            <span class="skill-stat-value">${skill.anima_cost}</span>
+                            <span class="skill-stat-label">Ânima</span>
+                            <span class="skill-stat-value">${skill.anima_cost || 0}</span>
                         </div>
                         <div class="skill-stat">
                             <span class="skill-stat-label">Dano</span>
@@ -943,7 +1107,8 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+                `
+            }).join('');
         }
 
         function filterSkills() {
@@ -967,6 +1132,7 @@
             currentSkillId = null;
             document.getElementById('modalTitle').textContent = 'Nova Skill';
             document.getElementById('skillForm').reset();
+            document.getElementById('skillId').value = ''; // Limpar ID para nova skill
             document.getElementById('skillModal').style.display = 'block';
         }
 
@@ -978,6 +1144,7 @@
             document.getElementById('modalTitle').textContent = 'Editar Skill';
             
             // Fill form
+            document.getElementById('skillId').value = skill.id;
             document.getElementById('skillName').value = skill.name;
             document.getElementById('skillDescription').value = skill.description;
             document.getElementById('skillType').value = skill.type;
@@ -1173,6 +1340,41 @@
                 console.error('Error uploading sprite:', error);
                 throw error;
             }
+        }
+
+        // Função para copiar ID para clipboard
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showToast(`ID "${text}" copiado para a área de transferência!`, 'success');
+                }).catch(function(err) {
+                    console.error('Erro ao copiar: ', err);
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
+                fallbackCopyToClipboard(text);
+            }
+        }
+
+        // Fallback para browsers mais antigos
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast(`ID "${text}" copiado para a área de transferência!`, 'success');
+            } catch (err) {
+                showToast('Erro ao copiar ID. Selecione o texto manualmente.', 'error');
+            }
+            
+            document.body.removeChild(textArea);
         }
 
         // Close modal when clicking outside

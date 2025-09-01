@@ -122,13 +122,36 @@ class BuffDebuffSystem {
    */
   checkDragonCadence(characterId) {
     const cadenceState = this.battleMechanics.getDragonCadenceState(characterId);
-    if (cadenceState.isActive && cadenceState.currentBuff > 0) {
+    
+    // DEBUG: Log do estado da Cadência do Dragão
+    console.log('🐉 BuffSystem DEBUG - Cadência do Dragão:', {
+      characterId,
+      cadenceState,
+      isActive: cadenceState.isActive,
+      currentBuff: cadenceState.currentBuff
+    });
+    
+    // REWORK v6.0.0: Mostrar valores de attack em vez de percentual
+    if (cadenceState.isActive) {
+      const attackBonus = cadenceState.attackBonus || 0;
+      const buffValue = attackBonus > 0 ? `+${attackBonus}` : 'Pronto';
+      const totalAttack = cadenceState.totalAttack || (cadenceState.baseAttack + attackBonus);
+      
+      const description = attackBonus > 0 
+        ? `Attack: ${cadenceState.baseAttack || 50} → ${totalAttack} (+${attackBonus} pontos)` 
+        : 'Estado aprimorado ativo - próximo ataque ganhará +10% do attack base';
+        
+      console.log('🐉 Adicionando buff da Cadência do Dragão v6.0.0:', buffValue);
       this.addBuff(characterId, 'dragonCadence', {
-        value: `+${cadenceState.currentBuff}%`,
-        description: `Ataque aumentado em ${cadenceState.currentBuff}%`,
-        stacks: cadenceState.consecutiveAttacks,
-        additionalInfo: `${cadenceState.consecutiveAttacks} ataques consecutivos`
+        value: buffValue,
+        description: description,
+        stacks: cadenceState.consecutiveAttacks || 0,
+        additionalInfo: attackBonus > 0 
+          ? `${cadenceState.consecutiveAttacks} ataques - Attack total: ${totalAttack}`
+          : 'Aguardando primeiro ataque'
       });
+    } else {
+      console.log('🐉 Cadência do Dragão não ativa - não adicionando buff');
     }
   }
 
