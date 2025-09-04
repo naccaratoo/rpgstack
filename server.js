@@ -35,8 +35,13 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
+    // Extract character name from the request
+    const characterName = req.body.name || 'character';
+    const extension = file.originalname.split('.').pop().toLowerCase();
+    
+    // Use spriteFilename if provided, otherwise generate from character name
     const filename = req.body.spriteFilename || 
-                    `character.${file.originalname.split('.').pop()}`;
+                    `${characterName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}.${extension}`;
     cb(null, filename);
   },
 });
@@ -166,6 +171,7 @@ async function saveDatabase(data) {
     // Garantir que nextId não seja salvo
     const dataToSave = {
       characters: data.characters || {},
+      system_classes: data.system_classes || [],
     };
     
     await fs.writeFile(DB_PATH, JSON.stringify(dataToSave, null, 2));
@@ -526,7 +532,7 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
     const data = await loadDatabase();
     
     const {
-      name, level, hp, attack, defense, experience,
+      name, level, hp, attack, defense, defesa_especial, experience,
       goldMin, goldMax, aiType, spawnWeight, description,
       drops, skills, spriteFilename, classe, anima, critico,
     } = req.body;
@@ -556,6 +562,7 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
       maxHP: parseInt(hp),
       attack: parseInt(attack),
       defense: parseInt(defense),
+      defesa_especial: parseInt(defesa_especial) || 10,
       sprite: spritePath,
       color: 0x4a5d23,
       borderColor: 0x2d3614,
@@ -745,7 +752,7 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
     console.log(`🔄 Atualizando personagem: ${existingCharacter.name} (ID: ${id})`);
     
     const {
-      name, level, hp, attack, defense, experience,
+      name, level, hp, attack, defense, defesa_especial, experience,
       goldMin, goldMax, aiType, spawnWeight, description,
       drops, skills, spriteFilename, classe, anima, critico,
     } = req.body;
@@ -779,6 +786,7 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       maxHP: hp ? parseInt(hp) : existingCharacter.maxHP,
       attack: attack ? parseInt(attack) : existingCharacter.attack,
       defense: defense ? parseInt(defense) : existingCharacter.defense,
+      defesa_especial: defesa_especial ? parseInt(defesa_especial) : (existingCharacter.defesa_especial || 10),
       sprite: spritePath,
       experience: experience ? parseInt(experience) : existingCharacter.experience,
       goldRange: goldMin && goldMax ? [parseInt(goldMin), parseInt(goldMax)] : existingCharacter.goldRange,
@@ -859,6 +867,130 @@ app.get('/api/generate-id', async (req, res) => {
       example: `Character ID: ${newId}`,
     });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// **NOVA ROTA**: Obter classes disponíveis
+app.get('/api/classes', async (req, res) => {
+  try {
+    const data = await loadDatabase();
+    
+    // Extrair classes únicas dos personagens
+    const classes = new Set();
+    Object.values(data.characters || {}).forEach(char => {
+      if (char.classe) {
+        classes.add(char.classe);
+      }
+    });
+    
+    // Adicionar classes persistentes do sistema (se existir)
+    if (data.system_classes && Array.isArray(data.system_classes)) {
+      data.system_classes.forEach(classe => classes.add(classe));
+    }
+    
+    res.json({
+      success: true,
+      classes: Array.from(classes).sort(),
+      total: classes.size
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// **NOVA ROTA**: Adicionar nova classe ao sistema
+app.post('/api/classes', async (req, res) => {
+  try {
+    const { className } = req.body;
+    
+    if (!className || typeof className !== 'string') {
+      return res.status(400).json({ error: 'Nome da classe é obrigatório' });
+    }
+    
+    const cleanClassName = className.trim();
+    if (!cleanClassName) {
+      return res.status(400).json({ error: 'Nome da classe não pode estar vazio' });
+    }
+    
+    const data = await loadDatabase();
+    
+    // Inicializar array de classes do sistema se não existir
+    if (!data.system_classes) {
+      data.system_classes = [];
+    }
+    
+    // Verificar se a classe já existe
+    const existingClasses = new Set();
+    Object.values(data.characters || {}).forEach(char => {
+      if (char.classe) existingClasses.add(char.classe);
+    });
+    data.system_classes.forEach(classe => existingClasses.add(classe));
+    
+    if (existingClasses.has(cleanClassName)) {
+      return res.status(409).json({ error: 'Classe já existe no sistema' });
+    }
+    
+    // Adicionar nova classe
+    data.system_classes.push(cleanClassName);
+    await saveDatabase(data);
+    
+    console.log(`✅ Nova classe adicionada: ${cleanClassName}`);
+    
+    res.json({
+      success: true,
+      message: `Classe '${cleanClassName}' adicionada com sucesso`,
+      className: cleanClassName
+    });
+  } catch (error) {
+    console.error('❌ Erro ao adicionar classe:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// **NOVA ROTA**: Deletar classe do sistema
+app.delete('/api/classes/:className', async (req, res) => {
+  try {
+    const { className } = req.params;
+    
+    if (!className || typeof className !== 'string') {
+      return res.status(400).json({ error: 'Nome da classe é obrigatório' });
+    }
+    
+    const cleanClassName = decodeURIComponent(className.trim());
+    if (!cleanClassName) {
+      return res.status(400).json({ error: 'Nome da classe não pode estar vazio' });
+    }
+    
+    const data = await loadDatabase();
+    
+    // Verificar se a classe está sendo usada por personagens
+    const charactersUsingClass = Object.values(data.characters || {}).filter(char => char.classe === cleanClassName);
+    if (charactersUsingClass.length > 0) {
+      return res.status(409).json({ 
+        error: `Não é possível deletar a classe "${cleanClassName}" pois está sendo usada por ${charactersUsingClass.length} personagem(s)`,
+        charactersCount: charactersUsingClass.length
+      });
+    }
+    
+    // Verificar se a classe existe no sistema
+    if (!data.system_classes || !data.system_classes.includes(cleanClassName)) {
+      return res.status(404).json({ error: 'Classe não encontrada no sistema' });
+    }
+    
+    // Remover classe do array
+    data.system_classes = data.system_classes.filter(classe => classe !== cleanClassName);
+    await saveDatabase(data);
+    
+    console.log(`🗑️ Classe removida: ${cleanClassName}`);
+    
+    res.json({
+      success: true,
+      message: `Classe '${cleanClassName}' removida com sucesso`,
+      className: cleanClassName
+    });
+  } catch (error) {
+    console.error('❌ Erro ao remover classe:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -946,6 +1078,7 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
           maxHP: parseInt(character.hp) || 10,
           attack: parseInt(character.attack) || 1,
           defense: parseInt(character.defense) || 1,
+          defesa_especial: parseInt(character.defesa_especial) || 10,
           sprite: character.sprite || null,
           color: character.color || 0x4a5d23,
           borderColor: character.borderColor || 0x2d3614,
@@ -1140,6 +1273,11 @@ app.get('/characters', (req, res) => {
 // Skills Database Module
 app.get('/skills', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'skills-database.html'));
+});
+
+// Classes Database Module
+app.get('/class-database', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'class-database.html'));
 });
 
 // Maps Database Module

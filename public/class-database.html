@@ -828,14 +828,50 @@
             try {
                 showLoading(true);
                 
-                // For now, load base classes (will be replaced with actual API)
-                allClasses = getBaseClasses();
-                renderClasses(allClasses);
+                // Load classes from new API endpoint
+                const response = await fetch(`${API_BASE}/classes`);
+                const data = await response.json();
                 
-                showNotification('Classes carregadas com sucesso!', 'success');
+                if (data.success && data.classes && Array.isArray(data.classes)) {
+                    // Convert class names to full class objects
+                    allClasses = {};
+                    data.classes.forEach((className, index) => {
+                        const id = `CLASS_${String(index + 1).padStart(3, '0')}`;
+                        allClasses[id] = {
+                            id: id,
+                            name: className,
+                            description: `Classe ${className}`,
+                            archetype: 'custom',
+                            rarity: 'common',
+                            stats: {
+                                attack: 1.0,
+                                defense: 1.0,
+                                hp: 1.0,
+                                mana: 1.0
+                            },
+                            advantages: [],
+                            disadvantages: [],
+                            skills: [],
+                            abilities: []
+                        };
+                    });
+                    
+                    renderClasses(allClasses);
+                    showNotification(`${data.classes.length} classes carregadas com sucesso!`, 'success');
+                } else if (data.success) {
+                    // Caso sucesso mas sem classes ou classes inválidas
+                    allClasses = {};
+                    renderClasses(allClasses);
+                    showNotification('Nenhuma classe encontrada', 'info');
+                } else {
+                    throw new Error(data.error || 'Erro ao carregar classes');
+                }
             } catch (error) {
                 console.error('Erro ao carregar classes:', error);
-                showNotification('Erro ao carregar classes', 'error');
+                showNotification('Erro ao carregar classes: ' + error.message, 'error');
+                // Fallback para classes base
+                allClasses = getBaseClasses();
+                renderClasses(allClasses);
             } finally {
                 showLoading(false);
             }
@@ -956,15 +992,15 @@
                     
                     <div class="class-advantages">
                         <strong style="color: #94a3b8; font-size: 0.9em;">Vantagens:</strong><br>
-                        ${classData.advantages.map(adv => `<span class="advantage-badge">+${adv}</span>`).join('')}
+                        ${(classData.advantages || []).map(adv => `<span class="advantage-badge">+${adv}</span>`).join('') || '<span style="color: #64748b;">Nenhuma</span>'}
                         <br>
                         <strong style="color: #94a3b8; font-size: 0.9em;">Desvantagens:</strong><br>
-                        ${classData.disadvantages.map(dis => `<span class="disadvantage-badge">-${dis}</span>`).join('')}
+                        ${(classData.disadvantages || []).map(dis => `<span class="disadvantage-badge">-${dis}</span>`).join('') || '<span style="color: #64748b;">Nenhuma</span>'}
                     </div>
                     
                     <div class="class-skills">
                         <div class="skills-title">Skills Exclusivas:</div>
-                        ${classData.skills.map(skill => `<span class="skill-item">${skill}</span>`).join('')}
+                        ${(classData.skills || []).map(skill => `<span class="skill-item">${skill}</span>`).join('') || '<span style="color: #64748b; font-size: 0.9em;">Nenhuma skill exclusiva</span>'}
                     </div>
                     
                     <div class="class-actions">
@@ -1108,32 +1144,47 @@
         async function handleManualSubmit(e) {
             e.preventDefault();
             
+            if (!serverOnline) {
+                showNotification('Servidor offline! Não é possível criar classe.', 'error');
+                return;
+            }
+            
             const name = document.getElementById('manualName').value;
             const description = document.getElementById('manualDescription').value;
             
-            const newClass = {
-                id: `CLASS_${Date.now().toString().slice(-6)}`,
-                name: name,
-                description: description,
-                archetype: 'manual',
-                rarity: 'common',
-                stats: {
-                    attack: 1.0,
-                    defense: 1.0,
-                    anima: 1.0,
-                    speed: 1.0
-                },
-                advantages: [],
-                disadvantages: [],
-                skills: [],
-                created_at: new Date().toISOString()
-            };
-            
-            allClasses[newClass.id] = newClass;
-            renderClasses(allClasses);
-            
-            document.getElementById('manualClassForm').reset();
-            showNotification(`Classe "${name}" criada com sucesso!`, 'success');
+            try {
+                showLoading(true);
+                
+                // Save class to database via API
+                const response = await fetch(`${API_BASE}/classes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        className: name
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`✅ Classe "${name}" criada com sucesso!`, 'success');
+                    
+                    // Reload classes to sync with database
+                    await loadClasses();
+                    
+                    document.getElementById('manualClassForm').reset();
+                } else {
+                    showNotification(`❌ Erro ao criar classe: ${result.error}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao criar classe:', error);
+                showNotification('Erro de conexão ao criar classe', 'error');
+            } finally {
+                showLoading(false);
+            }
         }
 
         // Generate class with algorithm (mock implementation)
@@ -1214,15 +1265,121 @@
             });
         }
 
-        function editClass(id) {
-            showNotification('Função de edição em desenvolvimento', 'info');
+        async function editClass(id) {
+            if (!serverOnline) {
+                showNotification('Servidor offline! Não é possível editar classe.', 'error');
+                return;
+            }
+            
+            const classData = allClasses[id];
+            if (!classData) {
+                showNotification('Classe não encontrada', 'error');
+                return;
+            }
+            
+            const newName = prompt(`Renomear classe "${classData.name}":`, classData.name);
+            if (!newName || newName.trim() === '' || newName.trim() === classData.name) {
+                return; // Cancelado ou mesmo nome
+            }
+            
+            const cleanName = newName.trim();
+            
+            // Verificar se já existe uma classe com esse nome
+            const existingClass = Object.values(allClasses).find(c => c.name.toLowerCase() === cleanName.toLowerCase());
+            if (existingClass && existingClass.id !== id) {
+                showNotification('Já existe uma classe com esse nome!', 'error');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                // Abordagem para renomear: deletar antiga e criar nova
+                // 1. Primeiro, criar a nova classe
+                const createResponse = await fetch(`${API_BASE}/classes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        className: cleanName
+                    })
+                });
+                
+                const createResult = await createResponse.json();
+                
+                if (createResult.success) {
+                    // 2. Se criou com sucesso, tentar deletar a antiga (apenas se for uma classe do sistema)
+                    try {
+                        const deleteResponse = await fetch(`${API_BASE}/classes/${encodeURIComponent(classData.name)}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        const deleteResult = await deleteResponse.json();
+                        
+                        if (deleteResult.success) {
+                            showNotification(`✅ Classe renomeada de "${classData.name}" para "${cleanName}" com sucesso!`, 'success');
+                        } else {
+                            // Se não conseguiu deletar a antiga, avisar mas manter a nova
+                            showNotification(`✅ Nova classe "${cleanName}" criada! (Não foi possível remover a antiga: ${deleteResult.error})`, 'warning');
+                        }
+                    } catch (deleteError) {
+                        showNotification(`✅ Nova classe "${cleanName}" criada! (Antiga mantida)`, 'warning');
+                    }
+                    
+                    // Recarregar classes para sincronizar
+                    await loadClasses();
+                } else {
+                    showNotification(`❌ Erro ao criar nova classe: ${createResult.error}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao renomear classe:', error);
+                showNotification('Erro de conexão ao renomear classe', 'error');
+            } finally {
+                showLoading(false);
+            }
         }
 
-        function deleteClass(id) {
-            if (confirm(`Tem certeza que deseja excluir a classe ${allClasses[id]?.name}?`)) {
-                delete allClasses[id];
-                renderClasses(allClasses);
-                showNotification('Classe excluída com sucesso', 'success');
+        async function deleteClass(id) {
+            if (!serverOnline) {
+                showNotification('Servidor offline! Não é possível deletar classe.', 'error');
+                return;
+            }
+            
+            const classData = allClasses[id];
+            if (!classData) {
+                showNotification('Classe não encontrada', 'error');
+                return;
+            }
+            
+            if (!confirm(`Tem certeza que deseja excluir a classe "${classData.name}"?\n\nATENÇÃO: Não será possível deletar se estiver sendo usada por personagens.`)) {
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`${API_BASE}/classes/${encodeURIComponent(classData.name)}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`✅ Classe "${classData.name}" excluída com sucesso!`, 'success');
+                    
+                    // Recarregar classes para sincronizar
+                    await loadClasses();
+                } else {
+                    showNotification(`❌ Erro ao excluir classe: ${result.error}`, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao excluir classe:', error);
+                showNotification('Erro de conexão ao excluir classe', 'error');
+            } finally {
+                showLoading(false);
             }
         }
 

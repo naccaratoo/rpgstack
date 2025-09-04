@@ -1055,6 +1055,13 @@
                             <input type="number" id="defense" name="defense" min="0" value="5" required>
                         </div>
                         <div class="form-group">
+                            <label for="defesa_especial">Defesa Especial</label>
+                            <input type="number" id="defesa_especial" name="defesa_especial" min="0" value="10" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
                             <label for="experience">Experiência</label>
                             <input type="number" id="experience" name="experience" min="1" value="25" required>
                         </div>
@@ -1074,32 +1081,8 @@
                     <div class="form-group">
                         <label for="classe">Classe</label>
                         <select id="classe" name="classe" required>
-                            <option value="Lutador">Lutador</option>
-                            <option value="Armamentista">Armamentista</option>
-                            <option value="Arcano">Arcano</option>
-                            <option value="Assassino">Assassino</option>
-                            <option value="Paladino">Paladino</option>
-                            <option value="Druida">Druida</option>
-                            <option value="Necromante">Necromante</option>
-                            <option value="Bardo">Bardo</option>
-                            <option value="Ranger">Ranger</option>
-                            <option value="Monge">Monge</option>
-                            <option value="Universal">Universal</option>
-                            <option value="Guerreiro">Guerreiro</option>
-                            <option value="Mago">Mago</option>
-                            <option value="Clérigo">Clérigo</option>
-                            <option value="Ladino">Ladino</option>
-                            <option value="Bárbaro">Bárbaro</option>
-                            <option value="Feiticeiro">Feiticeiro</option>
-                            <option value="Bruxo">Bruxo</option>
-                            <option value="Explorador">Explorador</option>
-                            <option value="Caçador">Caçador</option>
-                            <option value="Guardião">Guardião</option>
-                            <option value="Místico">Místico</option>
-                            <option value="Elementalista">Elementalista</option>
-                            <option value="Invocador">Invocador</option>
-                            <option value="Templário">Templário</option>
-                            <option value="Xamã">Xamã</option>
+                            <option value="">Selecione uma classe...</option>
+                            <!-- Classes serão carregadas dinamicamente -->
                         </select>
                     </div>
 
@@ -1209,6 +1192,7 @@
                                 <th>HP</th>
                                 <th>ATK</th>
                                 <th>DEF</th>
+                                <th>DEF ESP</th>
                                 <th>Classe</th>
                                 <th>Ânima</th>
                                 <th>Crítico</th>
@@ -1303,6 +1287,13 @@
                         <input type="number" id="editDefense" name="defense" min="0" required>
                     </div>
                     <div class="form-group">
+                        <label for="editDefesaEspecial">Defesa Especial</label>
+                        <input type="number" id="editDefesaEspecial" name="defesa_especial" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="editExperience">Experiência</label>
                         <input type="number" id="editExperience" name="experience" min="1" required>
                     </div>
@@ -1323,32 +1314,8 @@
                     <div class="form-group">
                         <label for="editClasse">Classe</label>
                         <select id="editClasse" name="classe" required>
-                            <option value="Lutador">Lutador</option>
-                            <option value="Armamentista">Armamentista</option>
-                            <option value="Arcano">Arcano</option>
-                            <option value="Assassino">Assassino</option>
-                            <option value="Paladino">Paladino</option>
-                            <option value="Druida">Druida</option>
-                            <option value="Necromante">Necromante</option>
-                            <option value="Bardo">Bardo</option>
-                            <option value="Ranger">Ranger</option>
-                            <option value="Monge">Monge</option>
-                            <option value="Universal">Universal</option>
-                            <option value="Guerreiro">Guerreiro</option>
-                            <option value="Mago">Mago</option>
-                            <option value="Clérigo">Clérigo</option>
-                            <option value="Ladino">Ladino</option>
-                            <option value="Bárbaro">Bárbaro</option>
-                            <option value="Feiticeiro">Feiticeiro</option>
-                            <option value="Bruxo">Bruxo</option>
-                            <option value="Explorador">Explorador</option>
-                            <option value="Caçador">Caçador</option>
-                            <option value="Guardião">Guardião</option>
-                            <option value="Místico">Místico</option>
-                            <option value="Elementalista">Elementalista</option>
-                            <option value="Invocador">Invocador</option>
-                            <option value="Templário">Templário</option>
-                            <option value="Xamã">Xamã</option>
+                            <option value="">Selecione uma classe...</option>
+                            <!-- Classes serão carregadas dinamicamente -->
                         </select>
                     </div>
                     <div class="form-group">
@@ -1574,6 +1541,120 @@
             }
         }
 
+        // Carregar classes únicas do banco de dados
+        async function loadClasses() {
+            if (!serverOnline) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/classes`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Atualizar selects de classe
+                    updateClassSelects(data.classes);
+                } else {
+                    throw new Error(data.error || 'Erro ao carregar classes');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao carregar classes:', error);
+                // Fallback para classes padrão se houver erro
+                updateClassSelects(['Lutador', 'Armamentista', 'Arcano']);
+            }
+        }
+        
+        // Atualizar os selects de classe
+        function updateClassSelects(classes) {
+            const createSelect = document.getElementById('classe');
+            const editSelect = document.getElementById('editClasse');
+            
+            // Limpar e adicionar opção padrão
+            createSelect.innerHTML = '<option value="">Selecione uma classe...</option>';
+            editSelect.innerHTML = '<option value="">Selecione uma classe...</option>';
+            
+            // Adicionar classes do banco
+            classes.forEach(classe => {
+                const optionCreate = document.createElement('option');
+                optionCreate.value = classe;
+                optionCreate.textContent = classe;
+                createSelect.appendChild(optionCreate);
+                
+                const optionEdit = document.createElement('option');
+                optionEdit.value = classe;
+                optionEdit.textContent = classe;
+                editSelect.appendChild(optionEdit);
+            });
+            
+            // Adicionar opção para nova classe
+            const newClassOption1 = document.createElement('option');
+            newClassOption1.value = 'NOVA_CLASSE';
+            newClassOption1.textContent = '+ Criar nova classe';
+            createSelect.appendChild(newClassOption1);
+            
+            const newClassOption2 = document.createElement('option');
+            newClassOption2.value = 'NOVA_CLASSE';
+            newClassOption2.textContent = '+ Criar nova classe';
+            editSelect.appendChild(newClassOption2);
+        }
+        
+        // Salvar nova classe diretamente no banco de dados
+        async function saveClassToDatabase(className) {
+            if (!serverOnline) {
+                showNotification('Servidor offline! Não é possível salvar a classe.', 'error');
+                return false;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/classes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        className: className
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`✅ Classe '${className}' criada com sucesso!`, 'success');
+                    return true;
+                } else {
+                    showNotification(`❌ Erro ao criar classe: ${result.error}`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Erro ao salvar classe:', error);
+                showNotification('Erro de conexão ao salvar classe', 'error');
+                return false;
+            }
+        }
+        
+        // Lidar com seleção de nova classe
+        async function handleClassSelection(selectElement) {
+            if (selectElement.value === 'NOVA_CLASSE') {
+                const newClassName = prompt('Digite o nome da nova classe:');
+                if (newClassName && newClassName.trim()) {
+                    const cleanClassName = newClassName.trim();
+                    
+                    // Salvar classe diretamente no banco
+                    const success = await saveClassToDatabase(cleanClassName);
+                    
+                    if (success) {
+                        // Recarregar classes para sincronizar
+                        await loadClasses();
+                        // Selecionar a nova classe
+                        selectElement.value = cleanClassName;
+                    } else {
+                        selectElement.value = '';
+                    }
+                } else {
+                    selectElement.value = '';
+                }
+            }
+        }
+
         // Carregar personagens do servidor
         // **FUNÇÃO ATUALIZADA**: Carregar personagens do servidor com paginação
         async function loadCharacters(retries = 3) {
@@ -1657,9 +1738,8 @@
             const extension = originalName.split('.').pop().toLowerCase();
             const suggestedName = `${nameInput.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}.${extension}`;
             
-            if (!filenameInput.value.trim()) {
-                filenameInput.value = suggestedName;
-            }
+            // Sempre usar o nome sugerido baseado no nome do personagem
+            filenameInput.value = suggestedName;
 
             try {
                 const response = await fetch(`${API_BASE}/upload-sprite`, {
@@ -2148,6 +2228,7 @@
                 formData.append('hp', document.getElementById('hp').value);
                 formData.append('attack', document.getElementById('attack').value);
                 formData.append('defense', document.getElementById('defense').value);
+                formData.append('defesa_especial', document.getElementById('defesa_especial').value);
                 formData.append('classe', classe);
                 formData.append('anima', document.getElementById('anima').value);
                 formData.append('critico', document.getElementById('critico').value);
@@ -2399,6 +2480,10 @@
                             <div class="stat-value">${char.defense}</div>
                         </div>
                         <div class="stat-item">
+                            <div class="stat-label">DEF ESP</div>
+                            <div class="stat-value">${char.defesa_especial || 'N/A'}</div>
+                        </div>
+                        <div class="stat-item">
                             <div class="stat-label">Classe</div>
                             <div class="stat-value class-badge">${char.classe || 'Lutador'}</div>
                         </div>
@@ -2514,6 +2599,7 @@
                     <td>${char.hp}</td>
                     <td>${char.attack}</td>
                     <td>${char.defense}</td>
+                    <td>${char.defesa_especial || 'N/A'}</td>
                     <td><span class="class-badge">${char.classe || 'Lutador'}</span></td>
                     <td>${char.anima || 100}</td>
                     <td>${char.critico || 1.0}</td>
@@ -2803,7 +2889,8 @@
                 document.getElementById('editHp').value = character.hp;
                 document.getElementById('editAttack').value = character.attack;
                 document.getElementById('editDefense').value = character.defense;
-                document.getElementById('editClasse').value = character.classe || 'Lutador';
+                document.getElementById('editDefesaEspecial').value = character.defesa_especial || 10;
+                document.getElementById('editClasse').value = character.classe || '';
                 document.getElementById('editAnima').value = character.anima || 100;
                 document.getElementById('editCritico').value = character.critico || 1.0;
                 document.getElementById('editExperience').value = character.experience;
@@ -3154,6 +3241,7 @@
                         message += `\n🖼️ Sprite atualizada: ${result.sprite_path || 'mantida'}`;
                     }
                     showNotification(message, 'success');
+                    
                     closeEditModal();
                     // Aguardar um momento para garantir que o servidor terminou de salvar
                     setTimeout(() => loadCharacters(), 300);
@@ -3587,7 +3675,17 @@
 
         async function initApp() {
             await checkServerStatus();
+            await loadClasses(); // Carregar classes disponíveis
             setInterval(checkServerStatus, 30000); // Verificar a cada 30s
+            
+            // Configurar event listeners para os selects de classe
+            document.getElementById('classe').addEventListener('change', function() {
+                handleClassSelection(this);
+            });
+            
+            document.getElementById('editClasse').addEventListener('change', function() {
+                handleClassSelection(this);
+            });
             
             // Configurar drag and drop para a área de edição de sprite
             const editUploadContainer = document.getElementById('editSpriteContainer');
