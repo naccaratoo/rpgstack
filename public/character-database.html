@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPGStack - Character Database Manager v3.1.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>⟨ ❦ ⟩ RPGStack - Compêndio de Personagens Ancestrais ⟨ ❦ ⟩</title>
+    
+    <!-- Google Fonts - Art Nouveau Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@500;600&family=Georgia:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,57 +14,94 @@
             box-sizing: border-box;
         }
 
+        /* CSS Variables - Éclat Mystique Art Nouveau Palette */
+        :root {
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E98E;
+            --gold-dark: #B8860B;
+            --burgundy: #722F37;
+            --burgundy-light: #8B4B5C;
+            --burgundy-dark: #5A252A;
+            --emerald: #355E3B;
+            --emerald-light: #4A7C59;
+            --emerald-dark: #2A4A30;
+            --parchment: #FDF5E6;
+            --sepia-base: #F5F5DC;
+            --aged-paper: #F0E68C;
+            --charcoal: #36454F;
+        }
+
         body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0d7377 100%);
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--burgundy) 50%, var(--emerald) 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 20px;
             margin: 0;
-            box-sizing: border-box;
+            color: var(--parchment);
+            line-height: 1.6;
         }
 
         .container {
             width: 100%;
             max-width: none;
             margin: 0 auto;
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border-radius: 20px;
-            box-shadow: 0 25px 75px rgba(0,0,0,0.4);
+            background: rgba(253, 245, 230, 0.98);
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow-x: auto;
-            min-height: calc(100vh - 20px);
+            min-height: calc(100vh - 40px);
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(65, 234, 212, 0.1);
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #f8fafc;
-            padding: 30px;
-            text-align: center;
+            color: var(--charcoal);
             position: relative;
         }
 
+        .header {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            color: var(--gold-light);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-ornament {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2em;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: var(--gold-primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
         }
 
         .header p {
+            font-family: 'Dancing Script', cursive;
             opacity: 0.9;
-            font-size: 1.1em;
+            font-size: 1.3em;
+            color: var(--gold-light);
         }
 
         .version-badge {
             position: absolute;
-            top: 15px;
-            left: 20px;
-            background: #e74c3c;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: bold;
+            top: 20px;
+            left: 30px;
+            background: var(--burgundy);
+            color: var(--gold-light);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+            border: 1px solid var(--gold-dark);
         }
 
         @media (max-width: 768px) {
@@ -81,21 +120,24 @@
         }
 
         .nav-link {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold-light);
+            padding: 10px 18px;
+            border-radius: 8px;
             text-decoration: none;
+            font-family: 'Cinzel', serif;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 600;
             margin-left: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
+            border: 1px solid var(--gold-dark);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-link:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-1px);
+            background: var(--gold-primary);
+            color: var(--charcoal);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .server-status {
@@ -117,14 +159,22 @@
             }
         }
 
+        .server-status {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            border: 1px solid var(--emerald-light);
+            border-radius: 8px;
+        }
+
         .server-status.online {
-            background: #28a745;
-            color: white;
+            background: var(--emerald);
+            color: var(--parchment);
         }
 
         .server-status.offline {
-            background: #dc3545;
-            color: white;
+            background: var(--burgundy-dark);
+            color: var(--gold-light);
+            border-color: var(--burgundy);
         }
 
         .main-content {
@@ -140,13 +190,25 @@
         }
 
         .form-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-right: 1px solid #dee2e6;
+            background: rgba(245, 245, 220, 0.95);
+            padding: 30px;
+            border-right: 2px solid var(--gold-dark);
             flex: 0 0 420px;
             min-width: 380px;
             max-width: 500px;
             overflow-y: auto;
+            position: relative;
+        }
+
+        .form-section::before {
+            content: '◊';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            font-size: 1.5em;
+            opacity: 0.6;
         }
 
         @media (max-width: 1024px) {
@@ -184,28 +246,35 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-family: 'Cinzel', serif;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--burgundy);
             font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
+            padding: 14px;
+            border: 2px solid var(--gold-dark);
             border-radius: 8px;
+            font-family: 'Georgia', serif;
             font-size: 14px;
-            transition: border-color 0.3s ease;
+            background: rgba(253, 245, 230, 0.9);
+            color: var(--charcoal);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+            background: var(--parchment);
         }
 
         .form-row {
@@ -222,18 +291,20 @@
         }
 
         .sprite-file-container {
-            border: 2px dashed #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
+            border: 2px dashed var(--gold-dark);
+            border-radius: 10px;
+            padding: 25px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(253, 245, 230, 0.7);
         }
 
         .sprite-file-container:hover {
-            border-color: #667eea;
-            background: #f8f9fa;
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
         }
 
         .sprite-file-container.dragover {
@@ -289,27 +360,39 @@
         }
 
         .remove-file-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
+            background: var(--burgundy);
+            color: var(--gold-light);
+            border: 1px solid var(--burgundy-dark);
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
+            font-family: 'Cinzel', serif;
             font-size: 12px;
-            margin-top: 10px;
+            font-weight: 600;
+            margin-top: 12px;
             display: none;
+            transition: all 0.3s ease;
+        }
+
+        .remove-file-btn:hover {
+            background: var(--burgundy-dark);
+            transform: translateY(-1px);
         }
 
         .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
+            padding: 14px 28px;
+            border: 2px solid var(--gold-dark);
+            border-radius: 10px;
             cursor: pointer;
+            font-family: 'Cinzel', serif;
             font-size: 16px;
             font-weight: 600;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: none;
             letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+            color: var(--charcoal);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         @media (max-width: 768px) {
@@ -983,8 +1066,9 @@
                 <a href="/characters" class="nav-link">👥 Characters</a>
                 <a href="/maps" class="nav-link">🗺️ Maps</a>
             </div>
-            <h1>RPGStack - Characters</h1>
-            <p>Sistema de gerenciamento com IDs hexadecimais únicos</p>
+            <div class="header-ornament">⟨ ❦ ⟩</div>
+            <h1>Compêndio de Personagens Ancestrais</h1>
+            <p>Sistema de gerenciamento aristocrático com catalogação completa de heróis únicos</p>
             <div class="server-status" id="serverStatus">Verificando...</div>
         </div>
 

@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Skins - RPGStack</title>
+    <title>⟨ ❦ ⟩ RPGStack - Galería de Estéticas Aristocráticas ⟨ ❦ ⟩</title>
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Art Nouveau Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@500;600&family=Georgia:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -16,38 +16,72 @@
         }
 
         :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a2e;
-            --bg-card: #16213e;
-            --accent: #7c3aed;
-            --accent-light: #a78bfa;
-            --text-primary: #ffffff;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --border: #334155;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --radius: 12px;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E98E;
+            --gold-dark: #B8860B;
+            --burgundy: #722F37;
+            --burgundy-light: #8B4B5C;
+            --burgundy-dark: #5A252A;
+            --emerald: #355E3B;
+            --emerald-light: #4A7C59;
+            --emerald-dark: #2A4A30;
+            --parchment: #FDF5E6;
+            --sepia-base: #F5F5DC;
+            --aged-paper: #F0E68C;
+            --charcoal: #36454F;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            color: var(--text-primary);
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--burgundy) 50%, var(--emerald) 100%);
+            color: var(--parchment);
             min-height: 100vh;
             padding: 2rem;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            background: rgba(253, 245, 230, 0.98);
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            color: var(--charcoal);
+            padding: 2rem;
         }
 
         .header {
             text-align: center;
             margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            color: var(--gold-light);
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+
+        .header-ornament {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2em;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: var(--gold-primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3em;
+            color: var(--gold-light);
+            opacity: 0.9;
         }
 
         .header h1 {
@@ -532,8 +566,9 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🎨 Gerenciador de Skins</h1>
-            <p>Gerencie e personalize as skins do seu sistema de batalha</p>
+            <div class="header-ornament">⟨ ❦ ⟩</div>
+            <h1>Galería de Estéticas Aristocráticas</h1>
+            <p>Gerencie e personalize as estéticas nobres do seu sistema de duelos ancestrais</p>
         </div>
 
         <!-- Actions Bar -->

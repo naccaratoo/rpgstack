@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPGStack - Classes Database Manager v4.0.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>⟨ ❦ ⟩ RPGStack - Compendium das Classes Aristocráticas ⟨ ❦ ⟩</title>
+    
+    <!-- Google Fonts - Art Nouveau Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@500;600&family=Georgia:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,49 +14,80 @@
             box-sizing: border-box;
         }
 
+        /* CSS Variables - Éclat Mystique Art Nouveau Palette */
+        :root {
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E98E;
+            --gold-dark: #B8860B;
+            --burgundy: #722F37;
+            --burgundy-light: #8B4B5C;
+            --burgundy-dark: #5A252A;
+            --emerald: #355E3B;
+            --emerald-light: #4A7C59;
+            --emerald-dark: #2A4A30;
+            --parchment: #FDF5E6;
+            --sepia-base: #F5F5DC;
+            --aged-paper: #F0E68C;
+            --charcoal: #36454F;
+        }
+
         body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0d7377 100%);
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--burgundy) 50%, var(--emerald) 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 20px;
             margin: 0;
+            color: var(--parchment);
+            line-height: 1.6;
         }
 
         .container {
             width: 100%;
             max-width: none;
             margin: 0 auto;
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border-radius: 20px;
-            box-shadow: 0 25px 75px rgba(0,0,0,0.4);
-            min-height: calc(100vh - 20px);
+            background: rgba(253, 245, 230, 0.98);
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            min-height: calc(100vh - 40px);
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(65, 234, 212, 0.1);
+            color: var(--charcoal);
+            position: relative;
         }
 
         .header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #f8fafc;
-            padding: 30px;
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            color: var(--gold-light);
+            padding: 40px 30px;
             text-align: center;
             position: relative;
-            border-radius: 20px 20px 0 0;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+        }
+
+        .header-ornament {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2em;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #41eadc 0%, #10b981 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: var(--gold-primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
         }
 
         .header .subtitle {
-            font-size: 1.1em;
-            opacity: 0.8;
-            margin-bottom: 15px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            color: var(--gold-light);
         }
 
         .nav-links {
@@ -630,8 +663,9 @@
         <!-- Header -->
         <header class="header">
             <div class="server-status" id="serverStatus">🔄 Conectando...</div>
-            <h1>Classes Database</h1>
-            <p class="subtitle">Sistema Inteligente de Gestão de Classes v4.0.0</p>
+            <div class="header-ornament">⟨ ❦ ⟩</div>
+            <h1>Compendium das Classes Aristocráticas</h1>
+            <p class="subtitle">Sistema Inteligente de Gestão de Linhagens Nobres v4.0.0</p>
             
             <nav class="nav-links">
                 <a href="/" class="nav-link">🏠 Home</a>

@@ -8,7 +8,7 @@
       "maxHP": 300,
       "attack": 50,
       "defense": 10,
-      "sprite": "assets/sprites/character.png",
+      "sprite": "assets/sprites/milo_eleznikov.webp",
       "color": 4873507,
       "borderColor": 2962964,
       "size": 12,
@@ -23,20 +23,17 @@
       "drops": [],
       "skills": [
         {
-          "skillId": "SLAVA001",
           "skillName": "🔨 Forja do Dragão Eslavo",
           "skillDamage": 95,
-          "skillMana": 40,
-          "skillType": "weapon_mastery",
-          "source": "slavic_forge",
-          "description": "Invoca técnicas ancestrais eslavas para forjar uma arma temporária de escamas de dragão, aumentando significativamente o próximo ataque."
+          "skillCost": 0,
+          "source": "legacy"
         }
       ],
       "classe": "Armamentista",
       "anima": 100,
       "critico": 70,
       "created_at": "2025-08-25T23:57:38.589Z",
-      "updated_at": "2025-09-04T18:04:11.886Z",
+      "updated_at": "2025-09-04T18:27:11.202Z",
       "defesa_especial": 28,
       "cultura": "Eslava",
       "artefato": "Koljčuga Drakonova - Armadura forjada com escamas de dragão eslavo, oferece resistência contra magia e frio ancestral.",
@@ -50,7 +47,7 @@
       "maxHP": 300,
       "attack": 50,
       "defense": 10,
-      "sprite": "assets/sprites/character.webp",
+      "sprite": "assets/sprites/shi_wuxing.webp",
       "color": 4873507,
       "borderColor": 2962964,
       "size": 12,
@@ -65,20 +62,17 @@
       "drops": [],
       "skills": [
         {
-          "skillId": "WUXING001",
           "skillName": "🌊 Ciclo dos Cinco Elementos",
           "skillDamage": 85,
-          "skillMana": 35,
-          "skillType": "elemental_cycle",
-          "source": "chinese_philosophy",
-          "description": "Canaliza o Wu Xing (五行) em sequência: Madeira alimenta Fogo, Fogo cria Terra, Terra gera Metal, Metal coleta Água, Água nutre Madeira."
+          "skillCost": 0,
+          "source": "legacy"
         }
       ],
       "classe": "Lutador",
       "anima": 100,
       "critico": 50,
       "created_at": "2025-08-31T17:47:13.246Z",
-      "updated_at": "2025-09-04T18:04:11.887Z",
+      "updated_at": "2025-09-04T18:26:59.721Z",
       "defesa_especial": 32,
       "cultura": "Chinesa",
       "artefato": "Amuleto dos Cinco Elementos - Talismã que canaliza Wu Xing (五行), permitindo harmonizar as forças naturais em combate.",
@@ -92,7 +86,7 @@
       "maxHP": 300,
       "attack": 25,
       "defense": 10,
-      "sprite": "assets/sprites/character.webp",
+      "sprite": "assets/sprites/aurelius_ignisvox.webp",
       "color": 8388736,
       "borderColor": 5592405,
       "size": 12,
@@ -107,20 +101,17 @@
       "drops": [],
       "skills": [
         {
-          "skillId": "SENATUS001",
           "skillName": "🏛️ Decreto Senatorial Arcano",
           "skillDamage": 110,
-          "skillMana": 50,
-          "skillType": "command_magic",
-          "source": "roman_authority",
-          "description": "Combina autoridade política romana com poder arcano, emitindo um decreto mágico que obriga o cumprimento através da força mística."
+          "skillCost": 0,
+          "source": "legacy"
         }
       ],
       "classe": "Arcano",
       "anima": 120,
       "critico": 100,
       "created_at": "2025-09-01T10:00:00.000Z",
-      "updated_at": "2025-09-04T18:04:11.887Z",
+      "updated_at": "2025-09-04T18:26:49.532Z",
       "defesa_especial": 47,
       "cultura": "Romana",
       "artefato": "Báculo do Senatus - Cetro consular que amplifica autoridade e poder de comando sobre elementos arcanos.",

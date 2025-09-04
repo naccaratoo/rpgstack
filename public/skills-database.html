@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skills Database - RPG Stack</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>⟨ ❦ ⟩ RPGStack - Grimório das Habilidades Ancestrais ⟨ ❦ ⟩</title>
+    
+    <!-- Google Fonts - Art Nouveau Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@500;600&family=Georgia:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #0d7377;
-            --primary-dark: #10b981;
-            --primary-light: #41eadc;
-            --success-color: #10b981;
-            --warning-color: #d97706;
-            --danger-color: #991b1b;
-            --dark-bg: #0f172a;
-            --darker-bg: #020617;
-            --card-bg: #1e293b;
-            --text-light: #f8fafc;
-            --text-gray: #e2e8f0;
-            --text-muted: #64748b;
-            --border-color: #334155;
-            --accent-color: #41eadc;
-            --hover-bg: #334155;
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E98E;
+            --gold-dark: #B8860B;
+            --burgundy: #722F37;
+            --burgundy-light: #8B4B5C;
+            --burgundy-dark: #5A252A;
+            --emerald: #355E3B;
+            --emerald-light: #4A7C59;
+            --emerald-dark: #2A4A30;
+            --parchment: #FDF5E6;
+            --sepia-base: #F5F5DC;
+            --aged-paper: #F0E68C;
+            --charcoal: #36454F;
         }
 
         * {
@@ -32,10 +32,11 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 50%, var(--accent-color) 100%);
-            color: var(--text-light);
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--burgundy) 50%, var(--emerald) 100%);
+            color: var(--parchment);
             min-height: 100vh;
+            padding: 20px;
             line-height: 1.6;
         }
 
@@ -46,27 +47,38 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--card-bg) 0%, var(--hover-bg) 100%);
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
             padding: 3rem 2rem;
-            border-radius: 20px;
+            border-radius: 15px;
             margin-bottom: 2rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(65, 234, 212, 0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
-            border: 1px solid var(--border-color);
+            color: var(--gold-light);
+            position: relative;
+        }
+
+        .header-ornament {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2em;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header h1 {
+            font-family: 'Playfair Display', serif;
             font-size: 3rem;
             margin-bottom: 1rem;
-            color: var(--primary-light);
+            color: var(--gold-primary);
             font-weight: 700;
-            text-shadow: 0 0 20px rgba(65, 234, 212, 0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header p {
-            color: var(--text-gray);
+            font-family: 'Dancing Script', cursive;
+            color: var(--gold-light);
             font-size: 1.2rem;
-            font-weight: 300;
+            font-weight: 500;
         }
 
         .nav-links {
@@ -734,8 +746,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-magic"></i> Skills Database</h1>
-            <p>Gerencie todas as habilidades do seu RPG</p>
+            <div class="header-ornament">⟨ ❦ ⟩</div>
+            <h1>Grimório das Habilidades Ancestrais</h1>
+            <p>Catalogação completa de todas as artes místicas e técnicas nobres</p>
             <div class="nav-links">
                 <a href="/" class="nav-link"><i class="fas fa-home"></i> Home</a>
                 <a href="/characters" class="nav-link"><i class="fas fa-users"></i> Personagens</a>

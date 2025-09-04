@@ -1,5 +1,5 @@
 // RPGStack Characters - Generated automatically
-// Generated at: 2025-09-04T17:58:09.815Z
+// Generated at: 2025-09-04T18:27:11.203Z
 // Mixed ID System: Legacy IDs preserved + New Hexadecimal IDs
 
 const CharacterDatabase = {
@@ -12,7 +12,7 @@ const CharacterDatabase = {
     "maxHP": 300,
     "attack": 50,
     "defense": 10,
-    "sprite": "assets/sprites/character.png",
+    "sprite": "assets/sprites/milo_eleznikov.webp",
     "color": 4873507,
     "borderColor": 2962964,
     "size": 12,
@@ -27,19 +27,17 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "8AB7CDE5F9",
-            "skillName": "💀 Arsenal Adaptativo v4.0.0 CAPCRIT BALANCED",
-            "skillDamage": 9999,
-            "skillMana": 0,
-            "skillType": "buff",
-            "source": "skills_module"
+            "skillName": "🔨 Forja do Dragão Eslavo",
+            "skillDamage": 95,
+            "skillCost": 0,
+            "source": "legacy"
         }
     ],
     "classe": "Armamentista",
     "anima": 100,
     "critico": 70,
     "created_at": "2025-08-25T23:57:38.589Z",
-    "updated_at": "2025-09-04T17:58:09.812Z",
+    "updated_at": "2025-09-04T18:27:11.202Z",
     "defesa_especial": 28,
     "cultura": "Eslava",
     "artefato": "Koljčuga Drakonova - Armadura forjada com escamas de dragão eslavo, oferece resistência contra magia e frio ancestral.",
@@ -55,7 +53,7 @@ const CharacterDatabase = {
     "maxHP": 300,
     "attack": 50,
     "defense": 10,
-    "sprite": "assets/sprites/character.webp",
+    "sprite": "assets/sprites/shi_wuxing.webp",
     "color": 4873507,
     "borderColor": 2962964,
     "size": 12,
@@ -70,19 +68,17 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "7YUOFU26OF",
-            "skillName": "🐉 Cadência do Dragão v6.0.0 REWORK",
-            "skillDamage": 0,
-            "skillMana": 0,
-            "skillType": "buff",
-            "source": "skills_module"
+            "skillName": "🌊 Ciclo dos Cinco Elementos",
+            "skillDamage": 85,
+            "skillCost": 0,
+            "source": "legacy"
         }
     ],
     "classe": "Lutador",
     "anima": 100,
     "critico": 50,
     "created_at": "2025-08-31T17:47:13.246Z",
-    "updated_at": "2025-09-04T17:55:54.412Z",
+    "updated_at": "2025-09-04T18:26:59.721Z",
     "defesa_especial": 32,
     "cultura": "Chinesa",
     "artefato": "Amuleto dos Cinco Elementos - Talismã que canaliza Wu Xing (五行), permitindo harmonizar as forças naturais em combate.",
@@ -98,7 +94,7 @@ const CharacterDatabase = {
     "maxHP": 300,
     "attack": 25,
     "defense": 10,
-    "sprite": "assets/sprites/character.webp",
+    "sprite": "assets/sprites/aurelius_ignisvox.webp",
     "color": 8388736,
     "borderColor": 5592405,
     "size": 12,
@@ -113,19 +109,17 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "9BC8DEF6G1",
-            "skillName": "🛡️ Convergência Ânima v2.3.0 BALANCED PROTECTION",
-            "skillDamage": 0,
-            "skillMana": 0,
-            "skillType": "buff",
-            "source": "skills_module"
+            "skillName": "🏛️ Decreto Senatorial Arcano",
+            "skillDamage": 110,
+            "skillCost": 0,
+            "source": "legacy"
         }
     ],
     "classe": "Arcano",
     "anima": 120,
     "critico": 100,
     "created_at": "2025-09-01T10:00:00.000Z",
-    "updated_at": "2025-09-04T17:55:54.412Z",
+    "updated_at": "2025-09-04T18:26:49.532Z",
     "defesa_especial": 47,
     "cultura": "Romana",
     "artefato": "Báculo do Senatus - Cetro consular que amplifica autoridade e poder de comando sobre elementos arcanos.",
@@ -156,13 +150,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "PREMONITION01",
-            "skillName": "🔮 Premonição Trágica",
-            "skillDamage": 60,
+            "skillId": "PYTHIA001",
+            "skillName": "🔮 Visão Oracular Délfica",
+            "skillDamage": 0,
             "skillMana": 25,
-            "skillType": "debuff",
-            "source": "cultural_oracle",
-            "description": "Vê a morte dos inimigos mas sofre dano psíquico"
+            "skillType": "prediction",
+            "source": "cultural_oracle"
         }
     ],
     "classe": "Oráculo",
@@ -172,7 +165,7 @@ const CharacterDatabase = {
     "artefato": "Trípode de bronze com inscrições délficas",
     "elemento_cultural": "Templo de Delphi, vapores oraculares sagrados",
     "created_at": "2025-09-04T17:30:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.218Z",
+    "updated_at": "2025-09-04T18:02:03.107Z",
     "defesa_especial": 70
 },
 
@@ -200,13 +193,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "OBSIDIAN01",
-            "skillName": "🪞 Visão do Espelho Fumegante",
-            "skillDamage": 80,
-            "skillMana": 35,
-            "skillType": "revelation",
-            "source": "cultural_aztec",
-            "description": "Revela verdades ocultas através de sacrifício"
+            "skillId": "NAHUALLI01",
+            "skillName": "🐆 Transformação Jaguar",
+            "skillDamage": 85,
+            "skillMana": 30,
+            "skillType": "transform",
+            "source": "cultural_aztec"
         }
     ],
     "classe": "Oráculo",
@@ -216,7 +208,7 @@ const CharacterDatabase = {
     "artefato": "Espelho de obsidiana de Tezcatlipoca",
     "elemento_cultural": "Códices astecas, calendário de 260 dias, obsidiana ritual",
     "created_at": "2025-09-04T17:35:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.219Z",
+    "updated_at": "2025-09-04T18:02:03.108Z",
     "defesa_especial": 73
 },
 
@@ -244,13 +236,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "DIVINE_MECH01",
-            "skillName": "⚙️ Mecanismo Divino",
-            "skillDamage": 70,
+            "skillId": "ARTIFICE01",
+            "skillName": "⚙️ Autômato Celestial",
+            "skillDamage": 60,
             "skillMana": 40,
             "skillType": "summon",
-            "source": "cultural_renaissance",
-            "description": "Golens mecânicos seguindo proporções áureas"
+            "source": "cultural_renaissance"
         }
     ],
     "classe": "Artífice",
@@ -260,7 +251,7 @@ const CharacterDatabase = {
     "artefato": "Esfera armilar mecânica que prevê movimentos planetários",
     "elemento_cultural": "Workshop renascentista, manuscritos de Leonardo, geometria sagrada",
     "created_at": "2025-09-04T17:40:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.219Z",
+    "updated_at": "2025-09-04T18:02:03.108Z",
     "defesa_especial": 56
 },
 
@@ -288,13 +279,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "NINGYO01",
-            "skillName": "🎭 Ningyo no Kokoro",
-            "skillDamage": 90,
-            "skillMana": 50,
-            "skillType": "puppet_control",
-            "source": "cultural_japanese",
-            "description": "Marionetes com fragmentos de alma"
+            "skillId": "KARAKURI01",
+            "skillName": "🎭 Boneca Viva",
+            "skillDamage": 70,
+            "skillMana": 35,
+            "skillType": "illusion",
+            "source": "cultural_edo"
         }
     ],
     "classe": "Artífice",
@@ -304,7 +294,7 @@ const CharacterDatabase = {
     "artefato": "Kit de ferramentas com 99 instrumentos diferentes",
     "elemento_cultural": "Teatro kabuki, precisão artesanal japonesa, mono no aware",
     "created_at": "2025-09-04T17:45:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.219Z",
+    "updated_at": "2025-09-04T18:02:03.108Z",
     "defesa_especial": 57
 },
 
@@ -332,13 +322,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "THUNDER_HORSE01",
-            "skillName": "🐎 Thunder Horse Stampede",
-            "skillDamage": 120,
-            "skillMana": 60,
-            "skillType": "spirit_summon",
-            "source": "cultural_lakota",
-            "description": "Invoca manada espiritual dos ancestrais"
+            "skillId": "WINDTALK01",
+            "skillName": "🌪️ Chamado dos Quatro Ventos",
+            "skillDamage": 90,
+            "skillMana": 45,
+            "skillType": "elemental",
+            "source": "cultural_lakota"
         }
     ],
     "classe": "Guardião da Natureza",
@@ -348,7 +337,7 @@ const CharacterDatabase = {
     "artefato": "Cachimbo sagrado chanupa conectado aos quatro ventos",
     "elemento_cultural": "Cocar sagrado, pinturas corporais rituais, tradição oral",
     "created_at": "2025-09-04T17:50:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.219Z",
+    "updated_at": "2025-09-04T18:02:03.108Z",
     "defesa_especial": 65
 },
 
@@ -376,13 +365,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "FENRIR_RAGE01",
-            "skillName": "🐺 Fenrir's Rage",
-            "skillDamage": 150,
-            "skillMana": 80,
-            "skillType": "transformation",
-            "source": "cultural_viking",
-            "description": "Transformação lupina com força sobre-humana"
+            "skillId": "BERSERKER01",
+            "skillName": "🐺 Fúria do Fenrir",
+            "skillDamage": 120,
+            "skillMana": 0,
+            "skillType": "berserker",
+            "source": "cultural_viking"
         }
     ],
     "classe": "Guardião da Natureza",
@@ -392,7 +380,7 @@ const CharacterDatabase = {
     "artefato": "Braceletes rúnicos que amplificam a ira divina",
     "elemento_cultural": "Runas bind, pele de lobo sagrada, fúria controlada",
     "created_at": "2025-09-04T17:55:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.220Z",
+    "updated_at": "2025-09-04T18:02:03.108Z",
     "defesa_especial": 67
 },
 
@@ -420,13 +408,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "MIRACLE_HARUN01",
-            "skillName": "🕌 Milagre de Harun al-Rashid",
+            "skillId": "MERCHANT01",
+            "skillName": "✨ Tapete das Mil e Uma Noites",
             "skillDamage": 0,
-            "skillMana": 70,
-            "skillType": "summon_item",
-            "source": "cultural_abbasid",
-            "description": "Materializa qualquer item já comercializado"
+            "skillMana": 50,
+            "skillType": "teleport",
+            "source": "cultural_abbasid"
         }
     ],
     "classe": "Mercador-Diplomata",
@@ -436,7 +423,7 @@ const CharacterDatabase = {
     "artefato": "Tapete voador tecido com fios de luz das estrelas",
     "elemento_cultural": "Rota da Seda, caligrafia árabe, hospitalidade islâmica",
     "created_at": "2025-09-04T18:00:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.220Z",
+    "updated_at": "2025-09-04T18:02:03.109Z",
     "defesa_especial": 62
 },
 
@@ -464,13 +451,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "SOCIAL_POISON01",
-            "skillName": "☕ Social Poison",
-            "skillDamage": 85,
-            "skillMana": 45,
-            "skillType": "social_debuff",
-            "source": "cultural_victorian",
-            "description": "Destrói reputações e moral inimiga com palavras"
+            "skillId": "DIPLOMAT01",
+            "skillName": "🍵 Chá da Revelação",
+            "skillDamage": 0,
+            "skillMana": 20,
+            "skillType": "charm",
+            "source": "cultural_victorian"
         }
     ],
     "classe": "Mercador-Diplomata",
@@ -480,7 +466,7 @@ const CharacterDatabase = {
     "artefato": "Serviço de chá que revela segredos alheios",
     "elemento_cultural": "Etiqueta vitoriana, linguagem dos leques, salões literários",
     "created_at": "2025-09-04T18:05:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.220Z",
+    "updated_at": "2025-09-04T18:02:03.109Z",
     "defesa_especial": 59
 },
 
@@ -508,13 +494,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "AXE_ANCESTRAIS01",
-            "skillName": "🌟 Axé dos Ancestrais",
-            "skillDamage": 100,
-            "skillMana": 80,
-            "skillType": "divine_channel",
-            "source": "cultural_yoruba",
-            "description": "Canaliza poder direto dos Orixás"
+            "skillId": "BABALAWO01",
+            "skillName": "🪙 Leitura dos 256 Odús",
+            "skillDamage": 0,
+            "skillMana": 60,
+            "skillType": "divine_healing",
+            "source": "cultural_yoruba"
         }
     ],
     "classe": "Curandeiro Ritualista",
@@ -524,7 +509,7 @@ const CharacterDatabase = {
     "artefato": "Opele (corrente divinatória) conectada aos 401 Orixás",
     "elemento_cultural": "Culto aos Orixás, medicina tradicional yorubá, tradição oral Ifá",
     "created_at": "2025-09-04T18:10:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.220Z",
+    "updated_at": "2025-09-04T18:02:03.109Z",
     "defesa_especial": 84
 },
 
@@ -552,13 +537,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "VODKA_BENTA01",
-            "skillName": "🍺 Água Benta Siberiana",
-            "skillDamage": 120,
-            "skillMana": 90,
-            "skillType": "resurrection",
-            "source": "cultural_russian",
-            "description": "Ressurreição temporária através de hipotermia controlada"
+            "skillId": "HEALER001",
+            "skillName": "🧪 Elixir da Imortalidade Russa",
+            "skillDamage": -100,
+            "skillMana": 70,
+            "skillType": "mega_heal",
+            "source": "cultural_russian"
         }
     ],
     "classe": "Curandeiro Ritualista",
@@ -568,7 +552,7 @@ const CharacterDatabase = {
     "artefato": "Frasco de vodka benta que nunca se esvazia",
     "elemento_cultural": "Laboratório ortodoxo, ícones religiosos, medicina popular russa",
     "created_at": "2025-09-04T18:15:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.220Z",
+    "updated_at": "2025-09-04T18:02:03.109Z",
     "defesa_especial": 85
 },
 
@@ -596,13 +580,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "JADE_GARDEN01",
-            "skillName": "💚 Jardim de Mil Espadas de Jade",
-            "skillDamage": 110,
-            "skillMana": 65,
-            "skillType": "weapon_creation",
-            "source": "cultural_chinese",
-            "description": "Cria arsenal completo instantaneamente"
+            "skillId": "JADEIST01",
+            "skillName": "💎 Forja de Jade Imperial",
+            "skillDamage": 80,
+            "skillMana": 35,
+            "skillType": "weapon_craft",
+            "source": "cultural_chinese"
         }
     ],
     "classe": "Lutador",
@@ -613,7 +596,7 @@ const CharacterDatabase = {
     "artefato": "Anel imperial que transforma qi em jade sólido",
     "elemento_cultural": "Feng shui, jade imperial como condutor de energia, artes marciais internas",
     "created_at": "2025-09-04T18:20:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.220Z",
+    "updated_at": "2025-09-04T18:02:03.109Z",
     "defesa_especial": 55
 },
 
@@ -641,13 +624,12 @@ const CharacterDatabase = {
     "drops": [],
     "skills": [
         {
-            "skillId": "ANANSI_DRUMS01",
-            "skillName": "🥁 Tambores de Anansi",
-            "skillDamage": 95,
-            "skillMana": 75,
-            "skillType": "story_wisdom",
-            "source": "cultural_ashanti",
-            "description": "Convoca sabedoria de todas as histórias já contadas"
+            "skillId": "ASHANTI01",
+            "skillName": "🥁 Tambores Ancestrais",
+            "skillDamage": 75,
+            "skillMana": 40,
+            "skillType": "spirit_call",
+            "source": "cultural_ashanti"
         }
     ],
     "classe": "Guardião da Natureza",
@@ -658,7 +640,7 @@ const CharacterDatabase = {
     "artefato": "Tamboril falante que se comunica com ancestrais",
     "elemento_cultural": "Tecidos Kente sagrados, tambores falantes, máscaras Adinkra",
     "created_at": "2025-09-04T18:25:00.000Z",
-    "updated_at": "2025-09-04T17:38:50.220Z",
+    "updated_at": "2025-09-04T18:02:03.109Z",
     "defesa_especial": 66
 }
 
