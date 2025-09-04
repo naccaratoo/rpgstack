@@ -1,5 +1,5 @@
 // RPGStack Characters - Generated automatically
-// Generated at: 2025-09-04T17:46:36.996Z
+// Generated at: 2025-09-04T17:58:09.815Z
 // Mixed ID System: Legacy IDs preserved + New Hexadecimal IDs
 
 const CharacterDatabase = {
@@ -23,7 +23,7 @@ const CharacterDatabase = {
     ],
     "ai_type": "aggressive",
     "spawn_weight": 10,
-    "description": "",
+    "description": "Mestre ferreiro eslavo que forja armas lendárias usando técnicas ancestrais transmitidas por gerações de artesãos da resistência.",
     "drops": [],
     "skills": [
         {
@@ -39,8 +39,11 @@ const CharacterDatabase = {
     "anima": 100,
     "critico": 70,
     "created_at": "2025-08-25T23:57:38.589Z",
-    "updated_at": "2025-09-04T17:46:31.457Z",
-    "defesa_especial": 28
+    "updated_at": "2025-09-04T17:58:09.812Z",
+    "defesa_especial": 28,
+    "cultura": "Eslava",
+    "artefato": "Koljčuga Drakonova - Armadura forjada com escamas de dragão eslavo, oferece resistência contra magia e frio ancestral.",
+    "elemento_cultural": "Tradições de ferraria e resistência às adversidades do inverno eslavo. Conexão espiritual com os ancestrais guerreiros."
 },
 
   // ID: EA32D10F2D (HEX)
@@ -63,7 +66,7 @@ const CharacterDatabase = {
     ],
     "ai_type": "aggressive",
     "spawn_weight": 10,
-    "description": "",
+    "description": "Guerreiro-filósofo que domina as artes marciais através da harmonia com os cinco elementos fundamentais da cosmologia chinesa.",
     "drops": [],
     "skills": [
         {
@@ -79,8 +82,11 @@ const CharacterDatabase = {
     "anima": 100,
     "critico": 50,
     "created_at": "2025-08-31T17:47:13.246Z",
-    "updated_at": "2025-09-04T17:46:34.993Z",
-    "defesa_especial": 32
+    "updated_at": "2025-09-04T17:55:54.412Z",
+    "defesa_especial": 32,
+    "cultura": "Chinesa",
+    "artefato": "Amuleto dos Cinco Elementos - Talismã que canaliza Wu Xing (五行), permitindo harmonizar as forças naturais em combate.",
+    "elemento_cultural": "Filosofia dos Cinco Elementos (Metal, Madeira, Água, Fogo, Terra) e práticas de cultivo interno de qi."
 },
 
   // ID: A9C4N0001E (LEGACY)
@@ -103,7 +109,7 @@ const CharacterDatabase = {
     ],
     "ai_type": "aggressive",
     "spawn_weight": 8,
-    "description": "Mestre das artes arcanas",
+    "description": "Ex-senador romano que se tornou mago após descobrir pergaminhos arcanos nas bibliotecas de Alexandria, combinando liderança política com poder místico.",
     "drops": [],
     "skills": [
         {
@@ -119,8 +125,11 @@ const CharacterDatabase = {
     "anima": 120,
     "critico": 100,
     "created_at": "2025-09-01T10:00:00.000Z",
-    "updated_at": "2025-09-04T17:46:36.995Z",
-    "defesa_especial": 47
+    "updated_at": "2025-09-04T17:55:54.412Z",
+    "defesa_especial": 47,
+    "cultura": "Romana",
+    "artefato": "Báculo do Senatus - Cetro consular que amplifica autoridade e poder de comando sobre elementos arcanos.",
+    "elemento_cultural": "Tradição senatorial romana e conhecimento das leis arcanas estabelecidas pelo Império. Oratória persuasiva e liderança natural."
 },
 
   // ID: 7A8B9C0D1E (HEX)
