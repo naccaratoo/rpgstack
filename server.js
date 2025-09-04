@@ -1272,7 +1272,7 @@ app.get('/characters', (req, res) => {
 
 // Skills Database Module
 app.get('/skills', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'skills-database.html'));
+  res.sendFile(path.join(__dirname, 'public', 'skills.html'));
 });
 
 // Classes Database Module

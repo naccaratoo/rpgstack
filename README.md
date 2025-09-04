@@ -1,6 +1,6 @@
-# 🎭 RPGStack v4.3 - Éclat Mystique: Revolução Frontend Art Nouveau
+# 🎭 RPGStack v4.4 - Habilidades Ancestrais: Sistema de Passivas Culturais
 
-**Framework completo para jogos RPG com 15 personagens culturais e suas habilidades ancestrais únicas**
+**Framework completo para jogos RPG com 15 personagens culturais, skills ativas e suas habilidades ancestrais passivas únicas**
 
 ---
 
@@ -9,8 +9,9 @@
 O RPGStack é um sistema de RPG web moderno que combina mecânicas clássicas de batalha por turnos com uma identidade visual sofisticada inspirada no Art Nouveau. O projeto apresenta o sistema **Éclat Mystique Universal**, uma implementação elegante que unifica TODAS as interfaces sob uma mesma filosofia visual Art Nouveau, transformando a experiência de jogo em uma jornada aristocrática mística coerente.
 
 ### ✨ **Principais Características**
+- 📜 **Habilidades Ancestrais (Passivas)** - Sistema completo de passivas culturais únicas
 - 🎨 **Frontend Redesign Completo** - Todas as páginas unificadas com Éclat Mystique
-- ⚔️ **15 Skills Culturais Únicas** - Cada personagem com habilidade ancestral autêntica
+- ⚔️ **15 Skills Culturais Ativas** - Cada personagem com habilidade ancestral autêntica
 - 🎭 **Sistema Cultural CHRONOS** - 15 personagens de 15 culturas diferentes
 - 🌟 **Defesa Especial (Espírito)** - Mecânica de resistência mágica balanceada
 - 🎮 **Sistema de Batalha 4v4** com mecânicas Pokémon-style
@@ -24,7 +25,14 @@ O RPGStack é um sistema de RPG web moderno que combina mecânicas clássicas de
 
 ## 🎯 **Funcionalidades Principais**
 
-### **⚔️ Sistema de Skills Culturais**
+### **📜 Sistema de Habilidades Ancestrais (Passivas)**
+- **7 Passivas Culturais Implementadas** - Habilidades que definem a essência cultural
+- **Triggers Únicos**: "Ao Defender", "A cada 5 turnos", "Uso Consecutivo", "Início de Combate"
+- **Efeitos Progressivos** - Crescem com uso e permanência no combate
+- **Interface Dedicada** - Seção visual exclusiva com cards Art Nouveau
+- **Autenticidade Cultural** - Cada passiva reflete genuinamente tradições milenares
+
+### **⚔️ Sistema de Skills Ativas**
 - **15 Skills Ancestrais Únicas** - Uma habilidade especial para cada cultura
 - **Tipos Variados**: weapon_mastery, elemental_cycle, command_magic, prediction, transform, summon, illusion, teleport, charm, divine_healing, mega_heal, weapon_craft, spirit_call
 - **Balanceamento Cultural** - Dano e mana baseados na tradição de cada cultura
@@ -80,6 +88,7 @@ node server.js
 - **Interface Principal**: `http://localhost:3002`
 - **Sistema de Batalha**: `http://localhost:3002/battle.html`
 - **Duelo 4v4**: `http://localhost:3002/battle-4v4.html`
+- **Skills e Passivas**: `http://localhost:3002/skills.html` **(NOVO v4.4)**
 - **Personagens Culturais**: `http://localhost:3002/cultural-characters.html`
 - **Database de Personagens**: `http://localhost:3002/character-database.html`
 - **Database de Classes**: `http://localhost:3002/class-database.html`
@@ -93,6 +102,16 @@ rpgstack/
 ├── public/                 # Assets e páginas web
 │   ├── battle.html        # Sistema de batalha básico (35KB)
 │   ├── battle-4v4.html    # Duelo ancestral 4v4 (73KB)
+│   ├── skills.html        # Sistema de Skills e Passivas (NOVO v4.4)
+│   ├── skills/            # Módulos de skills por personagem
+│   │   ├── skill-loader.js          # Engine de carregamento dinâmico
+│   │   ├── milos_zeleznikov.js      # Skills eslavas
+│   │   ├── shi_wuxing.js           # Skills chinesas
+│   │   ├── aurelius_ignisvox.js    # Skills romanas
+│   │   ├── pythia_kassandra.js     # Skills gregas
+│   │   ├── itzel_nahualli.js       # Skills astecas
+│   │   ├── giovanni_da_ferrara.js  # Skills renascentistas
+│   │   └── yamazaki_karakuri.js    # Skills japonesas
 │   ├── cultural-characters.html  # Sistema Cultural CHRONOS
 │   ├── character-database.html   # Gerenciamento de personagens
 │   ├── class-database.html      # Gerenciamento de classes
@@ -180,13 +199,15 @@ Implementação fundamental do design Art Nouveau, otimizada para performance e 
 
 ## 🔮 **Roadmap**
 
-### **v4.3 Release Notes**
-- ✅ **Frontend Unificado** - Todas as 6 páginas redesignadas com Éclat Mystique
-- ✅ **Coerência Visual** - Paleta, tipografia e ornamentação padronizadas
-- ✅ **Experiência Unificada** - Navegação e interface consistentes
+### **v4.4 Release Notes (Atual)**
+- ✅ **Habilidades Ancestrais (Passivas)** - 7 passivas culturais implementadas
+- ✅ **Interface de Skills Dedicada** - Página `/skills.html` com design Art Nouveau
+- ✅ **Sistema Modular de Skills** - Carregamento dinâmico por personagem
+- ✅ **Triggers Únicos** - 6 tipos diferentes de ativação de passivas
+- ✅ **Documentação Completa** - Sessão 6 adicionada ao reworkbattle.md
 
-### **v4.4 - Expansão de Skills**
-- [ ] Skills secundárias para personagens multiclasse
+### **v4.5 - Expansão de Skills (Planejado)**
+- [ ] 8 passivas restantes para personagens não implementados
 - [ ] Sistema de combo entre skills culturais
 - [ ] Efeitos visuais únicos para cada skill ancestral
 - [ ] Progressão de poder baseada em uso cultural
@@ -217,11 +238,17 @@ O RPGStack foi desenvolvido com a filosofia **"Chronos Culturalis"** - uma abord
 
 ---
 
-## 🏆 **Conquistas v4.3**
+## 🏆 **Conquistas v4.4**
 
-- ✅ **Frontend Redesign Completo** - Todas as 6 páginas unificadas com Art Nouveau
+- ✅ **Habilidades Ancestrais (Passivas)** - 7 passivas culturais implementadas
+- ✅ **Interface de Skills Dedicada** - Página `/skills.html` completa
+- ✅ **Sistema Modular de Skills** - Carregamento dinâmico por personagem
+- ✅ **Design Art Nouveau para Passivas** - Cards elegantes com efeitos
+- ✅ **Database de Passivas** - Sistema JavaScript robusto
+- ✅ **Triggers Únicos** - 6 tipos diferentes de ativação
+- ✅ **Frontend Redesign Completo** - Todas as 7 páginas unificadas com Art Nouveau
 - ✅ **Éclat Mystique Universal** - Paleta, tipografia e ornamentação padronizadas
-- ✅ **15 Skills Culturais Únicas** - Sistema 100% completo
+- ✅ **15 Skills Culturais Ativas** - Sistema 100% completo
 - ✅ **Sistema Cultural CHRONOS** com 15 personagens de 15 culturas
 - ✅ **Defesa Especial (Espírito)** implementada em todo o sistema
 - ✅ **6 Classes Civilizacionais** balanceadas com skills temáticas
@@ -238,7 +265,32 @@ O RPGStack foi desenvolvido com a filosofia **"Chronos Culturalis"** - uma abord
 
 ---
 
-## ⚔️ **Showcase de Skills Culturais**
+## 📜 **Habilidades Ancestrais (Passivas) Implementadas**
+
+### **🔨 Maestria Ancestral da Forja** (Miloš Železnikov - Eslava)
+**Trigger:** Ao Defender • **Efeito:** +20% poder próxima forja, +15% chance Arma Draconiana
+
+### **☯️ Ciclo Perpétuo dos Elementos** (Shi Wuxing - Chinesa Imperial)
+**Trigger:** A cada 5 turnos • **Efeito:** Regenera 20+ MP, +10% maestria elemental por ciclo
+
+### **⚔️ Disciplina Militar Romana** (Aurelius Ignisvox - Romana Imperial)
+**Trigger:** Uso Consecutivo • **Efeito:** +5% veterano por uso, rank comando escala até 5
+
+### **🔮 Visão Oracular Contínua** (Pythia Kassandra - Grega Clássica)
+**Trigger:** Início de Combate • **Efeito:** Insight inicial nível 1, +1 sabedoria por skill
+
+### **🐆 Conexão Espiritual Animal** (Itzel Nahualli - Azteca/Mexica)
+**Trigger:** Por Transformação • **Efeito:** +15 energia espiritual por forma, progresso permanente
+
+### **🎨 Genialidade Renascentista** (Giovanni da Ferrara - Italiana Renascentista)
+**Trigger:** Ao Criar Invenções • **Efeito:** +10 inspiração por criação, +15% qualidade
+
+### **⚙️ Harmonia Mecânica Perfeita** (Yamazaki Karakuri - Japonesa Edo)
+**Trigger:** Karakuri Ativos • **Efeito:** +15 harmonia por Karakuri, bônus multiplicativo
+
+---
+
+## ⚔️ **Showcase de Skills Ativas Culturais**
 
 ### **🔨 Forja do Dragão Eslavo** (Miloš Železnikov)
 *Cultura Eslava* - Invoca técnicas ancestrais para forjar arma de escamas de dragão
@@ -311,6 +363,6 @@ Este projeto é desenvolvido para fins educacionais e de demonstração. Para us
 
 ---
 
-**🎮 RPGStack v4.3** - *"Éclat Mystique Universal: Uma Experiência Visual Coerente"*
+**🎮 RPGStack v4.4** - *"Habilidades Ancestrais: Passivas Culturais que Definem Identidade"*
 
-*Todas as interfaces unificadas sob a filosofia Art Nouveau autêntica*
+*Sistema completo de skills ativas e passivas culturalmente autênticas com interface Art Nouveau unificada*

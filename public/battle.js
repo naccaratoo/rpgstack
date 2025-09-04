@@ -393,13 +393,13 @@ class VintageBattleDemo {
             const percentage = (current / max) * 100;
             healthBar.style.width = `${percentage}%`;
             
-            // Color based on health percentage
+            // Color based on health percentage using Art Nouveau palette
             if (percentage <= 25) {
-                healthBar.style.background = 'var(--danger-color)';
+                healthBar.style.background = 'linear-gradient(90deg, #8B2635, #A53E4A)'; // Burgundy dark for danger
             } else if (percentage <= 50) {
-                healthBar.style.background = 'var(--warning-color)';
+                healthBar.style.background = 'linear-gradient(90deg, #D4AF37, #F7E98E)'; // Gold for warning
             } else {
-                healthBar.style.background = 'var(--success-color)';
+                healthBar.style.background = 'linear-gradient(90deg, var(--burgundy), var(--burgundy-light))'; // Normal burgundy
             }
         }
     }
@@ -409,6 +409,9 @@ class VintageBattleDemo {
         if (manaBar) {
             const percentage = (current / max) * 100;
             manaBar.style.width = `${percentage}%`;
+            
+            // Ensure mana bar always has the emerald color
+            manaBar.style.background = 'linear-gradient(90deg, var(--emerald), var(--emerald-light))';
         }
     }
 
