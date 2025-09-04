@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⟨ ❦ ⟩ Duelo Ancestral 4v4 ⟨ ❦ ⟩ - RPGStack</title>
+    
+    <!-- Google Fonts para tipografia vintage Art Nouveau -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== ÉCLAT MYSTIQUE 4v4 - ART NOUVEAU BATTLE SYSTEM ===== */
+        
+        /* === DESIGN TOKENS === */
+        :root {
+            /* Paleta Vintage Principal */
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E98E;
+            --gold-dark: #B8860B;
+            
+            --burgundy: #722F37;
+            --burgundy-light: #8B4B5C;
+            --burgundy-dark: #5A252A;
+            
+            --emerald: #355E3B;
+            --emerald-light: #4A7C59;
+            --emerald-dark: #2A4A30;
+            
+            --parchment: #FDF5E6;
+            --sepia-base: #F5F5DC;
+            --aged-paper: #F0E68C;
+            
+            --charcoal: #36454F;
+            --charcoal-light: #708090;
+            
+            /* Tipografia Clássica */
+            --font-title: 'Playfair Display', serif;
+            --font-ornate: 'Cinzel', serif;
+            --font-script: 'Dancing Script', cursive;
+            --font-body: 'Georgia', serif;
+            
+            /* Espaçamentos Art Nouveau */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Bordas e Curvas */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 20px;
+            
+            /* Transições Elegantes */
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* === RESET E BASE === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, 
+                var(--parchment) 0%, 
+                var(--sepia-base) 50%, 
+                var(--aged-paper) 100%
+            );
+            min-height: 100vh;
+            color: var(--charcoal);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* === CONTAINER PRINCIPAL === */
+        .battle-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* === HEADER ORNAMENTAL === */
+        .battle-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            position: relative;
+        }
+        
+        .battle-header::before,
+        .battle-header::after {
+            content: '⟨ ❦ ⟩';
+            font-size: 2.5rem;
+            color: var(--gold-primary);
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .battle-header::before {
+            left: -120px;
+        }
+        
+        .battle-header::after {
+            right: -120px;
+        }
+        
+        .battle-title {
+            font-family: var(--font-title);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            text-shadow: 2px 2px 4px rgba(212, 175, 55, 0.3);
+            margin-bottom: var(--space-sm);
+            background: linear-gradient(135deg, var(--charcoal), var(--charcoal-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .battle-subtitle {
+            font-family: var(--font-script);
+            font-size: 1.3rem;
+            color: var(--gold-dark);
+            opacity: 0.8;
+        }
+        
+        /* === LOADING SCREEN === */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--parchment), var(--sepia-base));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity var(--transition-slow);
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-title {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            color: var(--gold-primary);
+            margin-bottom: var(--space-lg);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .loading-ornament {
+            font-size: 3rem;
+            color: var(--burgundy);
+            margin-bottom: var(--space-lg);
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-bar {
+            width: 300px;
+            height: 8px;
+            background: var(--aged-paper);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--gold-primary);
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* === MODALS === */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 900;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--parchment), var(--sepia-base));
+            border: 3px solid var(--gold-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-content::before {
+            content: '◊';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            opacity: 0.7;
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .modal-title {
+            font-family: var(--font-title);
+            font-size: 2.2rem;
+            color: var(--charcoal);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .modal-subtitle {
+            font-family: var(--font-script);
+            font-size: 1.1rem;
+            color: var(--gold-dark);
+            opacity: 0.8;
+        }
+        
+        /* === TEAM SELECTION === */
+        .team-selection {
+            display: flex;
+            gap: var(--space-2xl);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .player-section {
+            flex: 1;
+            min-width: 400px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .player-title {
+            font-family: var(--font-ornate);
+            font-size: 1.5rem;
+            text-align: center;
+            color: var(--charcoal);
+            margin-bottom: var(--space-lg);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .selected-team {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .team-slot {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px dashed var(--gold-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            color: var(--gold-dark);
+            font-family: var(--font-script);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-normal);
+        }
+        
+        .team-slot.filled {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
+            border-style: solid;
+            color: var(--charcoal);
+            font-weight: 600;
+        }
+        
+        .available-characters {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: var(--space-sm);
+        }
+        
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .character-option {
+            background: linear-gradient(135deg, var(--sepia-base), var(--parchment));
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+        
+        .character-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+        
+        .character-option.selected {
+            border-color: var(--burgundy);
+            background: linear-gradient(135deg, var(--burgundy-light), var(--burgundy));
+            color: white;
+        }
+        
+        .character-option.unavailable {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+        
+        .character-name {
+            font-family: var(--font-title);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .character-class {
+            font-family: var(--font-ornate);
+            font-size: 0.8rem;
+            color: var(--gold-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .character-stats {
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-xs);
+        }
+        
+        /* === BATTLE ARENA 4v4 === */
+        .battle-arena {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+            flex: 1;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .team-display {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+        }
+        
+        .team-display.enemy {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .team-display.player {
+            margin-top: var(--space-lg);
+        }
+        
+        .mini-card {
+            width: 120px;
+            background: linear-gradient(135deg, var(--sepia-base), var(--parchment));
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm);
+            text-align: center;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+        }
+        
+        .mini-card.active {
+            border-color: var(--burgundy);
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+            transform: scale(1.1);
+        }
+        
+        .mini-card.fainted {
+            opacity: 0.3;
+            filter: grayscale(100%);
+            cursor: not-allowed;
+        }
+        
+        .mini-card:hover:not(.fainted) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .mini-name {
+            font-family: var(--font-title);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .mini-hp-bar {
+            height: 6px;
+            background: var(--aged-paper);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .mini-hp-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+            transition: width var(--transition-normal);
+        }
+        
+        .mini-hp-text {
+            font-size: 0.7rem;
+            color: var(--charcoal-light);
+        }
+        
+        /* === ACTIVE BATTLE SECTION === */
+        .active-battle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-2xl);
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 3px solid var(--gold-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            position: relative;
+        }
+        
+        .active-battle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.5;
+            z-index: 1;
+        }
+        
+        .active-battle > * {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .vs-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .vs-ornament {
+            background: radial-gradient(circle, var(--gold-primary), var(--gold-dark));
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-ornate);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--parchment);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .turn-display {
+            font-family: var(--font-ornate);
+            font-size: 1.2rem;
+            color: var(--charcoal);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .active-character-card {
+            background: linear-gradient(135deg, var(--parchment), var(--sepia-base));
+            border: 3px solid var(--gold-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            width: 300px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all var(--transition-normal);
+        }
+        
+        .active-character-card.enemy {
+            border-color: var(--burgundy);
+        }
+        
+        .active-character-card::after {
+            content: '◊';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            opacity: 0.7;
+        }
+        
+        .active-name {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--charcoal);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .active-class {
+            font-family: var(--font-ornate);
+            font-size: 1rem;
+            text-align: center;
+            color: var(--gold-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .status-bars {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .status-bar {
+            margin-bottom: var(--space-md);
+        }
+        
+        .status-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xs);
+            font-family: var(--font-ornate);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .status-track {
+            height: 12px;
+            background: var(--aged-paper);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--gold-primary);
+        }
+        
+        .status-fill {
+            height: 100%;
+            transition: width var(--transition-normal);
+        }
+        
+        .hp-fill {
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+        }
+        
+        .anima-fill {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
+        }
+        
+        /* === ACTION PANEL === */
+        .action-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border: 3px solid var(--gold-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .action-title {
+            font-family: var(--font-ornate);
+            font-size: 1.5rem;
+            text-align: center;
+            color: var(--charcoal);
+            margin-bottom: var(--space-lg);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            font-family: var(--font-ornate);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .action-button:hover::before {
+            left: 100%;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .action-button.attack {
+            background: linear-gradient(135deg, var(--burgundy), var(--burgundy-light));
+            color: white;
+        }
+        
+        .action-button.defend {
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+            color: white;
+        }
+        
+        .action-button.switch {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+        }
+        
+        /* === BATTLE LOG === */
+        .battle-log {
+            background: linear-gradient(135deg, rgba(54, 69, 79, 0.1), rgba(54, 69, 79, 0.05));
+            border: 2px solid var(--charcoal-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-title {
+            font-family: var(--font-script);
+            font-size: 1.3rem;
+            color: var(--charcoal);
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+        
+        .log-entry {
+            margin-bottom: var(--space-sm);
+            padding: var(--space-sm);
+            background: rgba(255,255,255,0.3);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--gold-primary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .log-entry.critical {
+            border-left-color: var(--burgundy);
+            background: rgba(114, 47, 55, 0.1);
+        }
+        
+        .log-entry.healing {
+            border-left-color: var(--emerald);
+            background: rgba(53, 94, 59, 0.1);
+        }
+        
+        /* === DAMAGE NUMBERS === */
+        .damage-number {
+            position: absolute;
+            font-family: var(--font-ornate);
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--burgundy);
+            z-index: 100;
+            pointer-events: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: damageFloat 2s ease-out forwards;
+        }
+        
+        .damage-number.critical {
+            color: var(--gold-primary);
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px var(--gold-light);
+        }
+        
+        .damage-number.healing {
+            color: var(--emerald-light);
+            font-size: 1.8rem;
+        }
+        
+        @keyframes damageFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-40px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-80px) scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        /* === RESPONSIVE DESIGN === */
+        @media (max-width: 1200px) {
+            .battle-header::before,
+            .battle-header::after {
+                display: none;
+            }
+            
+            .active-battle {
+                flex-direction: column;
+                gap: var(--space-lg);
+            }
+            
+            .active-character-card {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .battle-title {
+                font-size: 2rem;
+            }
+            
+            .team-display {
+                flex-wrap: wrap;
+                gap: var(--space-sm);
+            }
+            
+            .mini-card {
+                width: 100px;
+                padding: var(--space-xs);
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .team-selection {
+                flex-direction: column;
+            }
+            
+            .player-section {
+                min-width: unset;
+            }
+        }
+        
+        /* === UTILITY CLASSES === */
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* === SCROLLBAR STYLING === */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--aged-paper);
+            border-radius: var(--radius-sm);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border-radius: var(--radius-sm);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-ornament">⟨ ❦ ⟩</div>
+            <h2 class="loading-title">Preparando o Duelo Ancestral</h2>
+            <div class="loading-bar">
+                <div id="loadingProgress" class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Selection Modal -->
+    <div id="teamSelectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Seleção de Equipes</h2>
+                <p class="modal-subtitle">Cada jogador deve escolher 4 heróis ancestrais</p>
+            </div>
+            
+            <div class="team-selection">
+                <!-- Player 1 Section -->
+                <div class="player-section">
+                    <h3 class="player-title">⚔️ Jogador 1 ⚔️</h3>
+                    <div id="player1Team" class="selected-team">
+                        <div class="team-slot" data-slot="0">Slot 1</div>
+                        <div class="team-slot" data-slot="1">Slot 2</div>
+                        <div class="team-slot" data-slot="2">Slot 3</div>
+                        <div class="team-slot" data-slot="3">Slot 4</div>
+                    </div>
+                    <div class="available-characters" id="availableCharacters1">
+                        <div id="characterGrid1" class="character-grid"></div>
+                    </div>
+                </div>
+                
+                <!-- Player 2 Section -->
+                <div class="player-section">
+                    <h3 class="player-title">🛡️ Jogador 2 🛡️</h3>
+                    <div id="player2Team" class="selected-team">
+                        <div class="team-slot" data-slot="0">Slot 1</div>
+                        <div class="team-slot" data-slot="1">Slot 2</div>
+                        <div class="team-slot" data-slot="2">Slot 3</div>
+                        <div class="team-slot" data-slot="3">Slot 4</div>
+                    </div>
+                    <div class="available-characters" id="availableCharacters2">
+                        <div id="characterGrid2" class="character-grid"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="startBattleBtn" class="action-button" disabled>Iniciar Duelo Épico</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Switch Character Modal -->
+    <div id="switchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Trocar de Herói</h2>
+                <p class="modal-subtitle">Escolha seu próximo combatente</p>
+            </div>
+            
+            <div id="switchCharacterGrid" class="character-grid" style="max-width: 600px; margin: 0 auto;">
+                <!-- Characters will be populated here -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="cancelSwitchBtn" class="action-button">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div id="victoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="victoryTitle" class="modal-title">Vitória Gloriosa!</h2>
+                <p id="victorySubtitle" class="modal-subtitle">O duelo chegou ao fim</p>
+            </div>
+            
+            <div id="victoryContent" style="text-align: center;">
+                <!-- Victory content will be populated here -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                <button id="newBattleBtn" class="action-button">Novo Duelo</button>
+                <button id="backToMenuBtn" class="action-button">Voltar ao Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Battle Interface -->
+    <div class="battle-container">
+        <!-- Header -->
+        <header class="battle-header">
+            <h1 class="battle-title">Duelo Ancestral 4v4</h1>
+            <p class="battle-subtitle">Sistema de Batalha Épica</p>
+        </header>
+
+        <!-- Battle Arena -->
+        <div class="battle-arena">
+            <!-- Enemy Team Display -->
+            <div id="enemyTeamDisplay" class="team-display enemy">
+                <!-- Enemy mini cards will be populated here -->
+            </div>
+
+            <!-- Active Battle Section -->
+            <div class="active-battle">
+                <!-- Enemy Active Character -->
+                <div id="enemyActiveCard" class="active-character-card enemy">
+                    <!-- Enemy character info will be populated here -->
+                </div>
+
+                <!-- VS Section -->
+                <div class="vs-section">
+                    <div class="vs-ornament">VS</div>
+                    <div id="turnDisplay" class="turn-display">Turno I</div>
+                </div>
+
+                <!-- Player Active Character -->
+                <div id="playerActiveCard" class="active-character-card">
+                    <!-- Player character info will be populated here -->
+                </div>
+            </div>
+
+            <!-- Player Team Display -->
+            <div id="playerTeamDisplay" class="team-display player">
+                <!-- Player mini cards will be populated here -->
+            </div>
+        </div>
+
+        <!-- Action Panel -->
+        <div id="actionPanel" class="action-panel">
+            <h3 class="action-title">⚔️ Ações de Batalha ⚔️</h3>
+            <div class="action-grid">
+                <button id="attackBtn" class="action-button attack">⚔️ Atacar</button>
+                <button id="defendBtn" class="action-button defend">🛡️ Defender</button>
+                <button id="meditateBtn" class="action-button">🧘 Meditar</button>
+                <button id="switchBtn" class="action-button switch">🔄 Trocar</button>
+                <button id="skillBtn" class="action-button">✨ Habilidades</button>
+            </div>
+        </div>
+
+        <!-- Battle Log -->
+        <div class="battle-log">
+            <h3 class="log-title">📜 Crônicas do Duelo Épico 📜</h3>
+            <div id="battleLogContent">
+                <div class="log-entry">O duelo ancestral está prestes a começar...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * RPGStack Battle System 4v4 - Éclat Mystique Edition
+         * Pokemon-style battle mechanics with Art Nouveau aesthetics
+         * Version: 1.0.0
+         */
+        
+        class Battle4v4System {
+            constructor() {
+                // Game state
+                this.gameState = 'loading'; // loading, team-selection, battle, victory
+                this.currentTurn = 1;
+                this.activePlayer = 'player1'; // player1 or player2
+                this.selectedPlayer = 'player1';
+                
+                // Teams
+                this.player1Team = [];
+                this.player2Team = [];
+                this.player1ActiveIndex = 0;
+                this.player2ActiveIndex = 0;
+                
+                // Available characters from database
+                this.availableCharacters = [];
+                
+                // Battle log
+                this.battleLog = [];
+                
+                // Animation state
+                this.animating = false;
+                
+                // Initialize
+                this.init();
+            }
+            
+            async init() {
+                this.showLoadingScreen();
+                
+                try {
+                    await this.loadCharacters();
+                    this.setupEventListeners();
+                    
+                    // Simulate loading time
+                    setTimeout(() => {
+                        this.hideLoadingScreen();
+                        this.showTeamSelection();
+                    }, 2000);
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                    this.addLogEntry('❌ Erro ao carregar personagens');
+                }
+            }
+            
+            showLoadingScreen() {
+                const progressBar = document.getElementById('loadingProgress');
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 2;
+                    progressBar.style.width = progress + '%';
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                    }
+                }, 40);
+            }
+            
+            hideLoadingScreen() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }
+            
+            async loadCharacters() {
+                try {
+                    // Try API first
+                    const response = await fetch('/api/characters');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.availableCharacters = Object.values(data.characters || data);
+                    } else {
+                        throw new Error('API not available');
+                    }
+                } catch (error) {
+                    console.log('API not available, using fallback data');
+                    // Fallback to local data
+                    try {
+                        const response = await fetch('/data/characters.json');
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.availableCharacters = Object.values(data.characters || data);
+                        }
+                    } catch (fallbackError) {
+                        console.error('Both API and fallback failed:', fallbackError);
+                        // Use hardcoded fallback
+                        this.availableCharacters = this.getFallbackCharacters();
+                    }
+                }
+                
+                // Ensure characters have required properties
+                this.availableCharacters = this.availableCharacters.map(char => ({
+                    ...char,
+                    currentHP: char.hp || char.maxHP || 100,
+                    currentAnima: char.anima || 100,
+                    maxAnima: char.anima || 100,
+                    status: 'normal',
+                    buffs: [],
+                    debuffs: []
+                }));
+                
+                console.log('Loaded characters:', this.availableCharacters);
+            }
+            
+            getFallbackCharacters() {
+                return [
+                    {
+                        id: "FALLBACK1",
+                        name: "Guerreiro Ancestral",
+                        level: 1,
+                        hp: 120,
+                        maxHP: 120,
+                        currentHP: 120,
+                        attack: 35,
+                        defense: 15,
+                        classe: "Lutador",
+                        anima: 80,
+                        maxAnima: 80,
+                        currentAnima: 80,
+                        critico: 60,
+                        skills: []
+                    },
+                    {
+                        id: "FALLBACK2", 
+                        name: "Mago Místico",
+                        level: 1,
+                        hp: 90,
+                        maxHP: 90,
+                        currentHP: 90,
+                        attack: 40,
+                        defense: 10,
+                        classe: "Arcano",
+                        anima: 120,
+                        maxAnima: 120,
+                        currentAnima: 120,
+                        critico: 80,
+                        skills: []
+                    },
+                    {
+                        id: "FALLBACK3",
+                        name: "Arqueiro Élfico",
+                        level: 1,
+                        hp: 100,
+                        maxHP: 100,
+                        currentHP: 100,
+                        attack: 45,
+                        defense: 12,
+                        classe: "Armamentista",
+                        anima: 90,
+                        maxAnima: 90,
+                        currentAnima: 90,
+                        critico: 70,
+                        skills: []
+                    },
+                    {
+                        id: "FALLBACK4",
+                        name: "Paladino Dourado",
+                        level: 1,
+                        hp: 140,
+                        maxHP: 140,
+                        currentHP: 140,
+                        attack: 30,
+                        defense: 20,
+                        classe: "Lutador",
+                        anima: 70,
+                        maxAnima: 70,
+                        currentAnima: 70,
+                        critico: 50,
+                        skills: []
+                    },
+                    {
+                        id: "FALLBACK5",
+                        name: "Feiticeira Sombria",
+                        level: 1,
+                        hp: 85,
+                        maxHP: 85,
+                        currentHP: 85,
+                        attack: 50,
+                        defense: 8,
+                        classe: "Arcano",
+                        anima: 140,
+                        maxAnima: 140,
+                        currentAnima: 140,
+                        critico: 90,
+                        skills: []
+                    },
+                    {
+                        id: "FALLBACK6",
+                        name: "Bestiário Selvagem",
+                        level: 1,
+                        hp: 110,
+                        maxHP: 110,
+                        currentHP: 110,
+                        attack: 38,
+                        defense: 14,
+                        classe: "Armamentista",
+                        anima: 85,
+                        maxAnima: 85,
+                        currentAnima: 85,
+                        critico: 65,
+                        skills: []
+                    }
+                ];
+            }
+            
+            setupEventListeners() {
+                // Team selection
+                document.getElementById('startBattleBtn').addEventListener('click', () => this.startBattle());
+                
+                // Actions
+                document.getElementById('attackBtn').addEventListener('click', () => this.performAction('attack'));
+                document.getElementById('defendBtn').addEventListener('click', () => this.performAction('defend'));
+                document.getElementById('meditateBtn').addEventListener('click', () => this.performAction('meditate'));
+                document.getElementById('switchBtn').addEventListener('click', () => this.showSwitchModal());
+                document.getElementById('skillBtn').addEventListener('click', () => this.performAction('skill'));
+                
+                // Switch modal
+                document.getElementById('cancelSwitchBtn').addEventListener('click', () => this.hideSwitchModal());
+                
+                // Victory modal
+                document.getElementById('newBattleBtn').addEventListener('click', () => this.newBattle());
+                document.getElementById('backToMenuBtn').addEventListener('click', () => this.backToMenu());
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+            }
+            
+            handleKeyboard(e) {
+                if (this.gameState !== 'battle' || this.animating) return;
+                
+                switch(e.key) {
+                    case '1':
+                        this.performAction('attack');
+                        break;
+                    case '2':
+                        this.performAction('defend');
+                        break;
+                    case '3':
+                        this.performAction('meditate');
+                        break;
+                    case '4':
+                        this.showSwitchModal();
+                        break;
+                    case '5':
+                        this.performAction('skill');
+                        break;
+                    case 'Escape':
+                        if (document.getElementById('switchModal').style.display === 'flex') {
+                            this.hideSwitchModal();
+                        }
+                        break;
+                }
+            }
+            
+            showTeamSelection() {
+                this.gameState = 'team-selection';
+                this.populateCharacterGrids();
+                document.getElementById('teamSelectionModal').style.display = 'flex';
+            }
+            
+            populateCharacterGrids() {
+                const grid1 = document.getElementById('characterGrid1');
+                const grid2 = document.getElementById('characterGrid2');
+                
+                const characterCards = this.availableCharacters.map(char => `
+                    <div class="character-option" data-character-id="${char.id}" data-player="1">
+                        <div class="character-name">${char.name}</div>
+                        <div class="character-class">${char.classe || 'Desconhecido'}</div>
+                        <div class="character-stats">
+                            <span>❤️ ${char.hp || char.maxHP}</span>
+                            <span>✨ ${char.anima || 100}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                grid1.innerHTML = characterCards.replace(/data-player="1"/g, 'data-player="1"');
+                grid2.innerHTML = characterCards.replace(/data-player="1"/g, 'data-player="2"');
+                
+                // Add event listeners
+                this.setupCharacterSelection();
+            }
+            
+            setupCharacterSelection() {
+                document.querySelectorAll('.character-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const characterId = option.dataset.characterId;
+                        const player = option.dataset.player;
+                        this.selectCharacterForTeam(characterId, player);
+                    });
+                });
+            }
+            
+            selectCharacterForTeam(characterId, player) {
+                const character = this.availableCharacters.find(c => c.id === characterId);
+                if (!character) return;
+                
+                const team = player === '1' ? this.player1Team : this.player2Team;
+                const teamContainer = document.getElementById(player === '1' ? 'player1Team' : 'player2Team');
+                
+                if (team.length >= 4) return;
+                
+                // Clone character to avoid reference issues
+                const characterClone = JSON.parse(JSON.stringify(character));
+                team.push(characterClone);
+                
+                // Update team slot
+                const slot = teamContainer.children[team.length - 1];
+                slot.textContent = character.name;
+                slot.classList.add('filled');
+                
+                // Disable character option
+                const option = document.querySelector(`[data-character-id="${characterId}"][data-player="${player}"]`);
+                option.classList.add('unavailable');
+                
+                // Check if both teams are ready
+                this.checkTeamsReady();
+            }
+            
+            checkTeamsReady() {
+                if (this.player1Team.length === 4 && this.player2Team.length === 4) {
+                    document.getElementById('startBattleBtn').disabled = false;
+                }
+            }
+            
+            startBattle() {
+                if (this.player1Team.length !== 4 || this.player2Team.length !== 4) {
+                    alert('Ambos os jogadores precisam selecionar 4 personagens!');
+                    return;
+                }
+                
+                this.gameState = 'battle';
+                document.getElementById('teamSelectionModal').style.display = 'none';
+                
+                // Initialize battle
+                this.player1ActiveIndex = 0;
+                this.player2ActiveIndex = 0;
+                this.currentTurn = 1;
+                this.activePlayer = 'player1';
+                
+                this.addLogEntry('🎺 O Duelo Ancestral 4v4 começou!');
+                this.addLogEntry(`⚔️ ${this.getCurrentActiveCharacter('player1').name} vs ${this.getCurrentActiveCharacter('player2').name}`);
+                
+                this.updateBattleDisplay();
+            }
+            
+            updateBattleDisplay() {
+                this.updateTeamDisplays();
+                this.updateActiveCharacters();
+                this.updateTurnDisplay();
+                this.updateActionPanel();
+            }
+            
+            updateTeamDisplays() {
+                // Update player team display
+                const playerDisplay = document.getElementById('playerTeamDisplay');
+                playerDisplay.innerHTML = this.player1Team.map((char, index) => `
+                    <div class="mini-card ${index === this.player1ActiveIndex ? 'active' : ''} ${char.currentHP <= 0 ? 'fainted' : ''}"
+                         data-player="player1" data-index="${index}">
+                        <div class="mini-name">${char.name}</div>
+                        <div class="mini-hp-bar">
+                            <div class="mini-hp-fill" style="width: ${(char.currentHP / char.maxHP) * 100}%"></div>
+                        </div>
+                        <div class="mini-hp-text">${Math.max(0, char.currentHP)}/${char.maxHP}</div>
+                    </div>
+                `).join('');
+                
+                // Update enemy team display
+                const enemyDisplay = document.getElementById('enemyTeamDisplay');
+                enemyDisplay.innerHTML = this.player2Team.map((char, index) => `
+                    <div class="mini-card ${index === this.player2ActiveIndex ? 'active' : ''} ${char.currentHP <= 0 ? 'fainted' : ''}"
+                         data-player="player2" data-index="${index}">
+                        <div class="mini-name">${char.name}</div>
+                        <div class="mini-hp-bar">
+                            <div class="mini-hp-fill" style="width: ${(char.currentHP / char.maxHP) * 100}%"></div>
+                        </div>
+                        <div class="mini-hp-text">${Math.max(0, char.currentHP)}/${char.maxHP}</div>
+                    </div>
+                `).join('');
+                
+                // Add click handlers for switching
+                document.querySelectorAll('.mini-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const player = card.dataset.player;
+                        const index = parseInt(card.dataset.index);
+                        if (player === this.activePlayer && !card.classList.contains('fainted') && !card.classList.contains('active')) {
+                            this.switchToCharacter(index);
+                        }
+                    });
+                });
+            }
+            
+            updateActiveCharacters() {
+                const player1Char = this.getCurrentActiveCharacter('player1');
+                const player2Char = this.getCurrentActiveCharacter('player2');
+                
+                // Update player active card
+                document.getElementById('playerActiveCard').innerHTML = `
+                    <div class="active-name">${player1Char.name}</div>
+                    <div class="active-class">${player1Char.classe || 'Desconhecido'}</div>
+                    <div class="status-bars">
+                        <div class="status-bar">
+                            <div class="status-label">
+                                <span>❤️ Vida</span>
+                                <span>${Math.max(0, player1Char.currentHP)}/${player1Char.maxHP}</span>
+                            </div>
+                            <div class="status-track">
+                                <div class="status-fill hp-fill" style="width: ${(player1Char.currentHP / player1Char.maxHP) * 100}%"></div>
+                            </div>
+                        </div>
+                        <div class="status-bar">
+                            <div class="status-label">
+                                <span>✨ Ânima</span>
+                                <span>${player1Char.currentAnima}/${player1Char.maxAnima}</span>
+                            </div>
+                            <div class="status-track">
+                                <div class="status-fill anima-fill" style="width: ${(player1Char.currentAnima / player1Char.maxAnima) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Update enemy active card
+                document.getElementById('enemyActiveCard').innerHTML = `
+                    <div class="active-name">${player2Char.name}</div>
+                    <div class="active-class">${player2Char.classe || 'Desconhecido'}</div>
+                    <div class="status-bars">
+                        <div class="status-bar">
+                            <div class="status-label">
+                                <span>❤️ Vida</span>
+                                <span>${Math.max(0, player2Char.currentHP)}/${player2Char.maxHP}</span>
+                            </div>
+                            <div class="status-track">
+                                <div class="status-fill hp-fill" style="width: ${(player2Char.currentHP / player2Char.maxHP) * 100}%"></div>
+                            </div>
+                        </div>
+                        <div class="status-bar">
+                            <div class="status-label">
+                                <span>✨ Ânima</span>
+                                <span>${player2Char.currentAnima}/${player2Char.maxAnima}</span>
+                            </div>
+                            <div class="status-track">
+                                <div class="status-fill anima-fill" style="width: ${(player2Char.currentAnima / player2Char.maxAnima) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            updateTurnDisplay() {
+                const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+                const turnText = romanNumerals[Math.min(this.currentTurn - 1, romanNumerals.length - 1)] || this.currentTurn;
+                document.getElementById('turnDisplay').textContent = `Turno ${turnText}`;
+            }
+            
+            updateActionPanel() {
+                const isPlayerTurn = this.activePlayer === 'player1';
+                const buttons = document.querySelectorAll('.action-button');
+                
+                buttons.forEach(btn => {
+                    btn.disabled = !isPlayerTurn || this.animating;
+                });
+                
+                if (!isPlayerTurn) {
+                    // AI turn will be handled automatically
+                    setTimeout(() => this.performAIAction(), 1500);
+                }
+            }
+            
+            getCurrentActiveCharacter(player) {
+                const team = player === 'player1' ? this.player1Team : this.player2Team;
+                const index = player === 'player1' ? this.player1ActiveIndex : this.player2ActiveIndex;
+                return team[index];
+            }
+            
+            async performAction(actionType) {
+                if (this.animating || this.gameState !== 'battle') return;
+                
+                this.animating = true;
+                
+                const attacker = this.getCurrentActiveCharacter(this.activePlayer);
+                const defender = this.getCurrentActiveCharacter(this.activePlayer === 'player1' ? 'player2' : 'player1');
+                
+                let logMessage = '';
+                let damage = 0;
+                let healing = 0;
+                let isCritical = false;
+                
+                switch (actionType) {
+                    case 'attack':
+                        const result = this.calculateAttack(attacker, defender);
+                        damage = result.damage;
+                        isCritical = result.isCritical;
+                        
+                        defender.currentHP = Math.max(0, defender.currentHP - damage);
+                        
+                        logMessage = `⚔️ ${attacker.name} atacou ${defender.name}!`;
+                        if (isCritical) {
+                            logMessage += ' ✨ CRÍTICO!';
+                        }
+                        logMessage += ` (-${damage} HP)`;
+                        
+                        this.showDamageNumber(damage, isCritical, false);
+                        break;
+                        
+                    case 'defend':
+                        attacker.currentAnima = Math.min(attacker.maxAnima, attacker.currentAnima + 20);
+                        logMessage = `🛡️ ${attacker.name} se defendeu e recuperou Ânima! (+20 Ânima)`;
+                        break;
+                        
+                    case 'meditate':
+                        healing = Math.floor(attacker.maxHP * 0.3);
+                        attacker.currentHP = Math.min(attacker.maxHP, attacker.currentHP + healing);
+                        attacker.currentAnima = Math.min(attacker.maxAnima, attacker.currentAnima + 15);
+                        
+                        logMessage = `🧘 ${attacker.name} meditou e se curou! (+${healing} HP, +15 Ânima)`;
+                        this.showDamageNumber(healing, false, true);
+                        break;
+                        
+                    case 'skill':
+                        if (attacker.skills && attacker.skills.length > 0 && attacker.currentAnima >= 30) {
+                            const skill = attacker.skills[0];
+                            attacker.currentAnima -= 30;
+                            
+                            // Simulate skill effect
+                            const skillDamage = Math.floor(attacker.attack * 1.5);
+                            defender.currentHP = Math.max(0, defender.currentHP - skillDamage);
+                            
+                            logMessage = `✨ ${attacker.name} usou ${skill.skillName || 'Habilidade Especial'}! (-${skillDamage} HP)`;
+                            this.showDamageNumber(skillDamage, true, false);
+                        } else {
+                            logMessage = `❌ ${attacker.name} não tem Ânima suficiente para habilidades!`;
+                        }
+                        break;
+                }
+                
+                this.addLogEntry(logMessage, isCritical ? 'critical' : (healing > 0 ? 'healing' : ''));
+                
+                // Check if character fainted
+                if (defender.currentHP <= 0) {
+                    this.addLogEntry(`💀 ${defender.name} foi derrotado!`);
+                    this.handleCharacterFainted(this.activePlayer === 'player1' ? 'player2' : 'player1');
+                }
+                
+                // Update display
+                this.updateBattleDisplay();
+                
+                // Check victory conditions
+                if (this.checkVictoryConditions()) {
+                    this.animating = false;
+                    return;
+                }
+                
+                // Switch turns
+                this.switchTurns();
+                this.animating = false;
+            }
+            
+            calculateAttack(attacker, defender) {
+                let baseDamage = attacker.attack;
+                
+                // Apply class advantages
+                const classAdvantage = this.getClassAdvantage(attacker.classe, defender.classe);
+                baseDamage = Math.floor(baseDamage * classAdvantage);
+                
+                // Apply defense
+                const defense = defender.defense || 0;
+                baseDamage = Math.max(1, baseDamage - Math.floor(defense * 0.5));
+                
+                // Random variance
+                const variance = 0.15;
+                const randomMultiplier = 1 + (Math.random() - 0.5) * variance * 2;
+                baseDamage = Math.floor(baseDamage * randomMultiplier);
+                
+                // Critical hit calculation
+                const criticalChance = (attacker.critico || 50) / 100;
+                const isCritical = Math.random() < criticalChance;
+                
+                if (isCritical) {
+                    baseDamage = Math.floor(baseDamage * 1.5);
+                }
+                
+                return {
+                    damage: baseDamage,
+                    isCritical: isCritical
+                };
+            }
+            
+            getClassAdvantage(attackerClass, defenderClass) {
+                const advantages = {
+                    'Lutador': { 'Armamentista': 1.2 },
+                    'Armamentista': { 'Arcano': 1.2 },
+                    'Arcano': { 'Lutador': 1.2 }
+                };
+                
+                return advantages[attackerClass]?.[defenderClass] || 1.0;
+            }
+            
+            showDamageNumber(value, isCritical, isHealing) {
+                const targetCard = this.activePlayer === 'player1' ? 
+                    document.getElementById('enemyActiveCard') : 
+                    document.getElementById('playerActiveCard');
+                
+                if (isHealing) {
+                    targetCard = this.activePlayer === 'player1' ? 
+                        document.getElementById('playerActiveCard') : 
+                        document.getElementById('enemyActiveCard');
+                }
+                
+                const damageNumber = document.createElement('div');
+                damageNumber.className = `damage-number ${isCritical ? 'critical' : ''} ${isHealing ? 'healing' : ''}`;
+                damageNumber.textContent = `${isHealing ? '+' : '-'}${value}`;
+                
+                const rect = targetCard.getBoundingClientRect();
+                damageNumber.style.position = 'fixed';
+                damageNumber.style.left = rect.left + rect.width / 2 + 'px';
+                damageNumber.style.top = rect.top + rect.height / 2 + 'px';
+                damageNumber.style.transform = 'translate(-50%, -50%)';
+                
+                document.body.appendChild(damageNumber);
+                
+                setTimeout(() => {
+                    damageNumber.remove();
+                }, 2000);
+                
+                // Shake effect
+                targetCard.classList.add('shake');
+                setTimeout(() => {
+                    targetCard.classList.remove('shake');
+                }, 500);
+            }
+            
+            handleCharacterFainted(player) {
+                const availableCharacters = this.getAvailableCharacters(player);
+                
+                if (availableCharacters.length > 0) {
+                    // Force switch to next available character
+                    const nextIndex = availableCharacters[0].index;
+                    if (player === 'player1') {
+                        this.player1ActiveIndex = nextIndex;
+                    } else {
+                        this.player2ActiveIndex = nextIndex;
+                    }
+                    
+                    const newActive = this.getCurrentActiveCharacter(player);
+                    this.addLogEntry(`🔄 ${newActive.name} entrou em batalha!`);
+                }
+            }
+            
+            getAvailableCharacters(player) {
+                const team = player === 'player1' ? this.player1Team : this.player2Team;
+                return team.map((char, index) => ({ char, index }))
+                          .filter(item => item.char.currentHP > 0);
+            }
+            
+            switchTurns() {
+                this.activePlayer = this.activePlayer === 'player1' ? 'player2' : 'player1';
+                if (this.activePlayer === 'player1') {
+                    this.currentTurn++;
+                }
+                this.updateBattleDisplay();
+            }
+            
+            async performAIAction() {
+                if (this.activePlayer !== 'player2' || this.animating) return;
+                
+                // Simple AI: random action with some logic
+                const actions = ['attack', 'defend', 'meditate'];
+                const aiChar = this.getCurrentActiveCharacter('player2');
+                
+                let selectedAction = 'attack';
+                
+                // AI logic
+                if (aiChar.currentHP < aiChar.maxHP * 0.3 && aiChar.currentAnima >= 15) {
+                    selectedAction = 'meditate';
+                } else if (aiChar.currentAnima < 20) {
+                    selectedAction = 'defend';
+                } else {
+                    selectedAction = Math.random() < 0.7 ? 'attack' : (Math.random() < 0.5 ? 'defend' : 'meditate');
+                }
+                
+                this.addLogEntry(`🤖 ${aiChar.name} está pensando...`);
+                
+                setTimeout(() => {
+                    this.performAction(selectedAction);
+                }, 1000);
+            }
+            
+            checkVictoryConditions() {
+                const player1Available = this.getAvailableCharacters('player1');
+                const player2Available = this.getAvailableCharacters('player2');
+                
+                if (player1Available.length === 0) {
+                    this.showVictory('player2');
+                    return true;
+                } else if (player2Available.length === 0) {
+                    this.showVictory('player1');
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            showVictory(winner) {
+                this.gameState = 'victory';
+                
+                const modal = document.getElementById('victoryModal');
+                const title = document.getElementById('victoryTitle');
+                const subtitle = document.getElementById('victorySubtitle');
+                const content = document.getElementById('victoryContent');
+                
+                if (winner === 'player1') {
+                    title.textContent = '🏆 Vitória Gloriosa!';
+                    subtitle.textContent = 'Jogador 1 conquistou o duelo ancestral!';
+                    content.innerHTML = `
+                        <div style="font-size: 4rem; margin: 2rem 0;">⟨ ❦ ⟩</div>
+                        <p style="font-family: var(--font-script); font-size: 1.3rem; color: var(--gold-dark);">
+                            Uma vitória digna dos grandes mestres do passado!
+                        </p>
+                    `;
+                } else {
+                    title.textContent = '👑 Duelo Épico!';
+                    subtitle.textContent = 'Jogador 2 demonstrou supremacia!';
+                    content.innerHTML = `
+                        <div style="font-size: 4rem; margin: 2rem 0;">⟨ ❦ ⟩</div>
+                        <p style="font-family: var(--font-script); font-size: 1.3rem; color: var(--gold-dark);">
+                            Uma batalha que será lembrada por gerações!
+                        </p>
+                    `;
+                }
+                
+                modal.style.display = 'flex';
+                this.addLogEntry(`🎉 ${winner === 'player1' ? 'Jogador 1' : 'Jogador 2'} venceu o Duelo Ancestral 4v4!`);
+            }
+            
+            showSwitchModal() {
+                if (this.activePlayer !== 'player1' || this.animating) return;
+                
+                const availableChars = this.getAvailableCharacters('player1')
+                    .filter(item => item.index !== this.player1ActiveIndex);
+                
+                if (availableChars.length === 0) {
+                    this.addLogEntry('❌ Nenhum personagem disponível para trocar!');
+                    return;
+                }
+                
+                const grid = document.getElementById('switchCharacterGrid');
+                grid.innerHTML = availableChars.map(item => `
+                    <div class="character-option" data-switch-index="${item.index}">
+                        <div class="character-name">${item.char.name}</div>
+                        <div class="character-class">${item.char.classe || 'Desconhecido'}</div>
+                        <div class="character-stats">
+                            <span>❤️ ${item.char.currentHP}/${item.char.maxHP}</span>
+                            <span>✨ ${item.char.currentAnima}/${item.char.maxAnima}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Add click handlers
+                grid.querySelectorAll('.character-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        const index = parseInt(option.dataset.switchIndex);
+                        this.switchToCharacter(index);
+                        this.hideSwitchModal();
+                    });
+                });
+                
+                document.getElementById('switchModal').style.display = 'flex';
+            }
+            
+            hideSwitchModal() {
+                document.getElementById('switchModal').style.display = 'none';
+            }
+            
+            switchToCharacter(newIndex) {
+                if (this.activePlayer !== 'player1' || this.animating) return;
+                
+                const oldChar = this.getCurrentActiveCharacter('player1');
+                this.player1ActiveIndex = newIndex;
+                const newChar = this.getCurrentActiveCharacter('player1');
+                
+                this.addLogEntry(`🔄 ${oldChar.name} volta para reserva. ${newChar.name} entra em batalha!`);
+                this.updateBattleDisplay();
+                this.switchTurns();
+            }
+            
+            addLogEntry(message, type = '') {
+                const logContent = document.getElementById('battleLogContent');
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = message;
+                
+                logContent.appendChild(entry);
+                logContent.scrollTop = logContent.scrollHeight;
+                
+                // Keep only last 20 entries
+                while (logContent.children.length > 20) {
+                    logContent.removeChild(logContent.firstChild);
+                }
+            }
+            
+            newBattle() {
+                // Reset everything
+                this.player1Team = [];
+                this.player2Team = [];
+                this.player1ActiveIndex = 0;
+                this.player2ActiveIndex = 0;
+                this.currentTurn = 1;
+                this.activePlayer = 'player1';
+                this.battleLog = [];
+                
+                // Reset character HP/Anima
+                this.availableCharacters.forEach(char => {
+                    char.currentHP = char.hp || char.maxHP;
+                    char.currentAnima = char.anima || char.maxAnima;
+                });
+                
+                // Clear team slots
+                document.querySelectorAll('.team-slot').forEach(slot => {
+                    slot.textContent = slot.dataset.slot ? `Slot ${parseInt(slot.dataset.slot) + 1}` : 'Slot';
+                    slot.classList.remove('filled');
+                });
+                
+                // Clear battle log
+                document.getElementById('battleLogContent').innerHTML = '<div class="log-entry">O duelo ancestral está prestes a começar...</div>';
+                
+                // Hide victory modal and show team selection
+                document.getElementById('victoryModal').style.display = 'none';
+                this.showTeamSelection();
+            }
+            
+            backToMenu() {
+                // Redirect to main menu or reload page
+                window.location.href = '/';
+            }
+        }
+        
+        // Initialize the battle system when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.battleSystem = new Battle4v4System();
+        });
+    </script>
+</body>
+</html>
