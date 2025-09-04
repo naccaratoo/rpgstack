@@ -1,6 +1,6 @@
-# 🎭 RPGStack v4.1.1 - Sistema Cultural CHRONOS com Defesa Especial
+# 🎭 RPGStack v4.2 - Sistema Cultural CHRONOS: Skills Ancestrais Completas
 
-**Framework completo para jogos RPG com sistema de personagens culturais e mecânicas de defesa espiritual**
+**Framework completo para jogos RPG com 15 personagens culturais e suas habilidades ancestrais únicas**
 
 ---
 
@@ -9,8 +9,9 @@
 O RPGStack é um sistema de RPG web moderno que combina mecânicas clássicas de batalha por turnos com uma identidade visual sofisticada inspirada no Art Nouveau. O projeto apresenta o sistema **Éclat Mystique**, uma implementação elegante que transforma a experiência de jogo em uma jornada aristocrática mística.
 
 ### ✨ **Principais Características**
-- 🎭 **Sistema Cultural CHRONOS** - 12 personagens de 8 culturas ancestrais
-- 🌟 **Defesa Especial (Espírito)** - Nova mecânica de resistência mágica
+- ⚔️ **15 Skills Culturais Únicas** - Cada personagem com habilidade ancestral autêntica
+- 🎭 **Sistema Cultural CHRONOS** - 15 personagens de 15 culturas diferentes
+- 🌟 **Defesa Especial (Espírito)** - Mecânica de resistência mágica balanceada
 - 🎮 **Sistema de Batalha 4v4** com mecânicas Pokémon-style
 - 🎨 **Design Art Nouveau Autêntico** com ornamentações ⟨ ❦ ⟩ e ◊
 - ⚡ **Performance Otimizada** - 35KB single-file, zero dependências
@@ -22,9 +23,16 @@ O RPGStack é um sistema de RPG web moderno que combina mecânicas clássicas de
 
 ## 🎯 **Funcionalidades Principais**
 
+### **⚔️ Sistema de Skills Culturais**
+- **15 Skills Ancestrais Únicas** - Uma habilidade especial para cada cultura
+- **Tipos Variados**: weapon_mastery, elemental_cycle, command_magic, prediction, transform, summon, illusion, teleport, charm, divine_healing, mega_heal, weapon_craft, spirit_call
+- **Balanceamento Cultural** - Dano e mana baseados na tradição de cada cultura
+- **Descrições Autênticas** - Cada skill reflete genuinamente sua herança cultural
+- **100% Cobertura** - Todos os personagens possuem identidade através de suas habilidades
+
 ### **🎭 Sistema Cultural CHRONOS**
-- **12 Personagens Ancestrais** representando 8 culturas distintas
-- **6 Novas Classes**: Oráculo, Curandeiro Ritualista, Guardião da Natureza, Artífice, Mercador-Diplomata, Naturalista
+- **15 Personagens Ancestrais** representando 15 culturas distintas
+- **6 Classes Civilizacionais**: Oráculo, Curandeiro Ritualista, Guardião da Natureza, Artífice, Mercador-Diplomata, Naturalista
 - **Artefatos Culturais** únicos para cada personagem
 - **Interface Art Nouveau** dedicada com filtros por cultura e classe
 - **"Dignitas Personae"** - filosofia de representação cultural respeitosa
@@ -171,17 +179,17 @@ Implementação fundamental do design Art Nouveau, otimizada para performance e 
 
 ## 🔮 **Roadmap**
 
-### **v4.2 - Expansão Cultural**
-- [ ] Novas culturas: Nórdica, Eslava, Mesoamericana
-- [ ] Sistema de linhagens e herança cultural
-- [ ] Eventos culturais sazonais
-- [ ] Artefatos lendários únicos
+### **v4.3 - Expansão de Skills**
+- [ ] Skills secundárias para personagens multiclasse
+- [ ] Sistema de combo entre skills culturais
+- [ ] Efeitos visuais únicos para cada skill ancestral
+- [ ] Progressão de poder baseada em uso cultural
 
-### **v4.3 - Melhorias de Combate**
+### **v4.4 - Melhorias de Combate**
 - [ ] Sistema de dano mágico vs defesa especial
-- [ ] Habilidades baseadas em cultura
-- [ ] Efeitos visuais para defesa especial
-- [ ] Balanceamento avançado de classes
+- [ ] Resistências culturais específicas
+- [ ] Mecânicas de sinergia entre culturas aliadas
+- [ ] Balanceamento avançado por região geográfica
 
 ### **v5.0 - Multiplayer**
 - [ ] Batalhas online via WebSocket
@@ -203,11 +211,13 @@ O RPGStack foi desenvolvido com a filosofia **"Chronos Culturalis"** - uma abord
 
 ---
 
-## 🏆 **Conquistas v4.1.1**
+## 🏆 **Conquistas v4.2**
 
-- ✅ **Sistema Cultural CHRONOS** com 12 personagens ancestrais
+- ✅ **15 Skills Culturais Únicas** - Sistema 100% completo
+- ✅ **Sistema Cultural CHRONOS** com 15 personagens de 15 culturas
 - ✅ **Defesa Especial (Espírito)** implementada em todo o sistema
-- ✅ **6 Novas Classes Civilizacionais** balanceadas
+- ✅ **6 Classes Civilizacionais** balanceadas com skills temáticas
+- ✅ **Skills Ancestrais Autênticas** representando tradições milenares
 - ✅ **Interface Cultural Art Nouveau** com filtros avançados
 - ✅ **Sistema de Batalha 4v4** Pokemon-style implementado
 - ✅ **Estética Art Nouveau Completa** com skin Éclat Mystique
@@ -216,6 +226,55 @@ O RPGStack foi desenvolvido com a filosofia **"Chronos Culturalis"** - uma abord
 - ✅ **API RESTful Completa** para todos os dados
 - ✅ **Responsividade Total** em todos os dispositivos
 - ✅ **Acessibilidade WCAG AA** implementada
+
+---
+
+## ⚔️ **Showcase de Skills Culturais**
+
+### **🔨 Forja do Dragão Eslavo** (Miloš Železnikov)
+*Cultura Eslava* - Invoca técnicas ancestrais para forjar arma de escamas de dragão
+
+### **🌊 Ciclo dos Cinco Elementos** (Shi Wuxing) 
+*Cultura Chinesa* - Canaliza Wu Xing (五行): Madeira → Fogo → Terra → Metal → Água
+
+### **🏛️ Decreto Senatorial Arcano** (Aurelius Ignisvox)
+*Cultura Romana* - Combina autoridade política com poder arcano em decreto mágico
+
+### **🔮 Visão Oracular Délfica** (Pythia Kassandra)
+*Grécia Antiga* - Prevê o futuro através dos vapores sagrados de Delphi
+
+### **🐆 Transformação Jaguar** (Itzel Nahualli)
+*Asteca/Mexica* - Transforma-se em jaguar durante rituais de sangue
+
+### **⚙️ Autômato Celestial** (Giovanni da Ferrara)
+*Renascimento Italiano* - Cria autômatos movidos por engrenagens celestiais
+
+### **🎭 Boneca Viva** (Yamazaki Karakuri)
+*Japão Período Edo* - Bonecas karakuri que imitam vida humana
+
+### **🌪️ Chamado dos Quatro Ventos** (Aiyana Windtalker)
+*Lakota/Dakota* - Invoca espíritos dos ventos das Grandes Planícies
+
+### **🐺 Fúria do Fenrir** (Björn Ulfhednar)
+*Viking/Nórdico* - Canaliza o espírito do lobo primordial
+
+### **✨ Tapete das Mil e Uma Noites** (Hadji Abdul-Rahman)
+*Califado Abássida* - Tapete voador tecido com fios de luz estelar
+
+### **🍵 Chá da Revelação** (Lady Catherine Ashworth)
+*Inglaterra Vitoriana* - Serviço de chá que revela segredos alheios
+
+### **🪙 Leitura dos 256 Odús** (Babalawo)
+*Reino de Oyó/Iorubá* - Divinhação através dos 256 caminhos do Ifá
+
+### **🧪 Elixir da Imortalidade Russa** (Dr. Dmitri Raskolnikov)
+*Império Russo* - Frasco de vodka benta com propriedades regenerativas
+
+### **💎 Forja de Jade Imperial** (Mei Lin "Punhos de Jade")
+*China Imperial* - Transforma qi em jade sólido para criar armas
+
+### **🥁 Tambores Ancestrais** (Kwame Asante)
+*Reino Ashanti/Gana* - Tambores falantes que se comunicam com ancestrais
 
 ---
 
@@ -243,6 +302,6 @@ Este projeto é desenvolvido para fins educacionais e de demonstração. Para us
 
 ---
 
-**🎮 RPGStack v4.1.1** - *"Onde culturas ancestrais encontram o combate espiritual"*
+**🎮 RPGStack v4.2** - *"15 culturas, 15 skills, 15 identidades ancestrais"*
 
-*Conectando tradições milenares com mecânicas modernas de RPG desde 2025*
+*Cada personagem carrega o poder e a sabedoria de sua civilização ancestral*
