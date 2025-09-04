@@ -4,9 +4,9 @@
       "id": "045CCF3515",
       "name": "Sesshoumaru",
       "level": 1,
-      "hp": 7000,
-      "maxHP": 7000,
-      "attack": 30,
+      "hp": 300,
+      "maxHP": 300,
+      "attack": 50,
       "defense": 10,
       "sprite": "assets/sprites/character.png",
       "color": 4873507,
@@ -24,8 +24,8 @@
       "skills": [
         {
           "skillId": "8AB7CDE5F9",
-          "skillName": "Arsenal Adaptativo",
-          "skillDamage": 0,
+          "skillName": "💀 Arsenal Adaptativo v4.0.0 CAPCRIT BALANCED",
+          "skillDamage": 9999,
           "skillMana": 0,
           "skillType": "buff",
           "source": "skills_module"
@@ -35,17 +35,17 @@
       "anima": 100,
       "critico": 70,
       "created_at": "2025-08-25T23:57:38.589Z",
-      "updated_at": "2025-09-01T11:58:45.849Z"
+      "updated_at": "2025-09-04T14:20:36.091Z"
     },
     "EA32D10F2D": {
       "id": "EA32D10F2D",
-      "name": "Loki ",
+      "name": "Loki",
       "level": 1,
-      "hp": 7000,
-      "maxHP": 7000,
+      "hp": 300,
+      "maxHP": 300,
       "attack": 50,
       "defense": 10,
-      "sprite": "assets/sprites/character.png",
+      "sprite": "assets/sprites/character.webp",
       "color": 4873507,
       "borderColor": 2962964,
       "size": 12,
@@ -72,17 +72,17 @@
       "anima": 100,
       "critico": 50,
       "created_at": "2025-08-31T17:47:13.246Z",
-      "updated_at": "2025-09-01T15:00:36.260Z"
+      "updated_at": "2025-09-04T16:08:44.867Z"
     },
-    "ARCANO001": {
-      "id": "ARCANO001",
+    "A9C4N0001E": {
+      "id": "A9C4N0001E",
       "name": "Merlin",
       "level": 1,
-      "hp": 7000,
-      "maxHP": 7000,
+      "hp": 300,
+      "maxHP": 300,
       "attack": 25,
       "defense": 10,
-      "sprite": "assets/sprites/Merlin.png",
+      "sprite": "assets/sprites/character.webp",
       "color": 8388736,
       "borderColor": 5592405,
       "size": 12,
@@ -98,7 +98,7 @@
       "skills": [
         {
           "skillId": "9BC8DEF6G1",
-          "skillName": "Convergência Ânima",
+          "skillName": "🛡️ Convergência Ânima v2.3.0 BALANCED PROTECTION",
           "skillDamage": 0,
           "skillMana": 0,
           "skillType": "buff",
@@ -109,7 +109,34 @@
       "anima": 120,
       "critico": 100,
       "created_at": "2025-09-01T10:00:00.000Z",
-      "updated_at": "2025-09-01T11:59:05.309Z"
+      "updated_at": "2025-09-04T16:08:30.493Z"
+    },
+    "142C422D6B": {
+      "id": "142C422D6B",
+      "name": "Coco",
+      "level": 1,
+      "hp": 100,
+      "maxHP": 100,
+      "attack": 10,
+      "defense": 5,
+      "sprite": null,
+      "color": 4873507,
+      "borderColor": 2962964,
+      "size": 12,
+      "experience": 25,
+      "goldRange": [
+        5,
+        15
+      ],
+      "ai_type": "aggressive",
+      "spawn_weight": 10,
+      "description": "",
+      "drops": [],
+      "skills": [],
+      "classe": "Lutador",
+      "anima": 100,
+      "critico": 1,
+      "created_at": "2025-09-04T14:13:40.400Z"
     }
   }
 }

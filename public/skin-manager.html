@@ -434,6 +434,98 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Animated skin previews */
+        .skin-preview {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skin-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+        }
+        
+        .skin-preview.animated::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255,255,255,0.2), 
+                transparent);
+            animation: shimmer 3s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-5px); }
+        }
+        
+        /* Preview modal */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .preview-content {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .preview-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .preview-iframe {
+            width: 100%;
+            height: 60vh;
+            border: none;
+            border-radius: var(--radius);
+            background: white;
+        }
     </style>
 </head>
 <body>
@@ -464,11 +556,11 @@
         <div class="stats-bar">
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-value" id="totalSkins">1</div>
+                    <div class="stat-value" id="totalSkins">3</div>
                     <div class="stat-label">Total de Skins</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="activeSkins">1</div>
+                    <div class="stat-value" id="activeSkins">3</div>
                     <div class="stat-label">Ativas</div>
                 </div>
                 <div class="stat-item">
@@ -476,7 +568,7 @@
                     <div class="stat-label">Bloqueadas</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="skinSize">60KB</div>
+                    <div class="stat-value" id="skinSize">180KB</div>
                     <div class="stat-label">Tamanho Total</div>
                 </div>
             </div>
@@ -484,21 +576,64 @@
 
         <!-- Skins Grid -->
         <div class="skins-grid" id="skinsGrid">
-            <!-- Éclat Mystique - Skin Implementada -->
+            <!-- Éclat Mystique: Básica - Nova Skin Implementada -->
             <div class="skin-card">
                 <div class="skin-preview eclat-mystique"></div>
                 <div class="skin-info">
                     <h3>
-                        🎭 Éclat Mystique
+                        🎭 Éclat Mystique: Básica
                         <span class="skin-status status-active">Ativa</span>
                     </h3>
                     <p class="skin-description">
-                        Elegância Art Nouveau inspirada em Reverse 1999. Uma experiência vintage sofisticada com ornamentações clássicas e atmosfera mística.
+                        Versão essencial da elegância Art Nouveau. Interface única em arquivo HTML com toda funcionalidade do sistema de batalha RPGStack integrada.
                     </p>
                     <div class="skin-details">
                         <div class="detail-item">
                             <span class="detail-label">Tema</span>
-                            <span class="detail-value">Art Nouveau Vintage</span>
+                            <span class="detail-value">Art Nouveau Clássico</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Arquivos</span>
+                            <span class="detail-value">HTML Único</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tamanho</span>
+                            <span class="detail-value">35KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">✅ Implementada</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-primary" onclick="applySkin('eclat-mystique-basica')">
+                            <span>🎮</span> Testar
+                        </button>
+                        <button class="btn btn-secondary" onclick="editSkin('eclat-mystique-basica')">
+                            <span>✏️</span> Editar
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSkin('eclat-mystique-basica')">
+                            <span>📤</span> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Éclat Mystique: Demo - Versão Original -->
+            <div class="skin-card">
+                <div class="skin-preview eclat-mystique" style="opacity: 0.8;"></div>
+                <div class="skin-info">
+                    <h3>
+                        🎭 Éclat Mystique: Demo
+                        <span class="skin-status status-available">Disponível</span>
+                    </h3>
+                    <p class="skin-description">
+                        Versão completa original com arquivos separados. Elegância Art Nouveau inspirada em Reverse 1999 com ornamentações complexas.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Art Nouveau Premium</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Arquivos</span>
@@ -510,17 +645,66 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Status</span>
+                            <span class="detail-value">⭐ Demo Premium</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-primary" onclick="applySkin('eclat-mystique-demo')">
+                            <span>🎮</span> Testar
+                        </button>
+                        <button class="btn btn-secondary" onclick="editSkin('eclat-mystique-demo')">
+                            <span>✏️</span> Editar
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSkin('eclat-mystique-demo')">
+                            <span>📤</span> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chronos Heritage - Sistema Cultural Adaptativo -->
+            <div class="skin-card">
+                <div class="skin-preview" style="background: linear-gradient(135deg, #dc2626 0%, #0ea5e9 50%, #059669 100%); color: white;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏯</div>
+                        <div>CHRONOS HERITAGE</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">Cultural Adaptive</div>
+                    </div>
+                </div>
+                <div class="skin-info">
+                    <h3>
+                        🏯 Chronos Heritage
+                        <span class="skin-status status-active">Ativa</span>
+                    </h3>
+                    <p class="skin-description">
+                        Sistema cultural adaptativo com temas japonês, nórdico e celta. Interface dinâmica que muda conforme a herança cultural do personagem.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Cultural Adaptativo</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Culturas</span>
+                            <span class="detail-value">🏯 Japonesa | ⚔️ Nórdica | 🍀 Celta</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tamanho</span>
+                            <span class="detail-value">85KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
                             <span class="detail-value">✅ Implementada</span>
                         </div>
                     </div>
                     <div class="skin-actions">
-                        <button class="btn btn-primary" onclick="applySkin('eclat-mystique')">
+                        <button class="btn btn-primary" onclick="applySkin('chronos-heritage')">
                             <span>🎮</span> Testar
                         </button>
-                        <button class="btn btn-secondary" onclick="editSkin('eclat-mystique')">
+                        <button class="btn btn-secondary" onclick="editSkin('chronos-heritage')">
                             <span>✏️</span> Editar
                         </button>
-                        <button class="btn btn-secondary" onclick="exportSkin('eclat-mystique')">
+                        <button class="btn btn-secondary" onclick="exportSkin('chronos-heritage')">
                             <span>📤</span> Exportar
                         </button>
                     </div>
@@ -705,8 +889,12 @@
     <script>
         // Skin Management Functions
         function applySkin(skinId) {
-            if (skinId === 'eclat-mystique') {
+            if (skinId === 'eclat-mystique-basica') {
+                window.open('battle.html', '_blank');
+            } else if (skinId === 'eclat-mystique-demo') {
                 window.open('battle-demo.html', '_blank');
+            } else if (skinId === 'chronos-heritage') {
+                window.open('battle-chronos.html', '_blank');
             } else {
                 alert(`Skin "${skinId}" ainda não foi implementada.`);
             }
@@ -718,14 +906,42 @@
         }
 
         function exportSkin(skinId) {
-            const skinData = {
-                id: skinId,
-                name: 'Éclat Mystique',
-                theme: 'Art Nouveau Vintage',
-                files: ['battle-demo.html', 'battle-demo.css', 'battle-demo.js'],
-                size: '60KB',
-                created: '2025-09-04'
-            };
+            let skinData = {};
+            
+            if (skinId === 'eclat-mystique-basica') {
+                skinData = {
+                    id: skinId,
+                    name: 'Éclat Mystique: Básica',
+                    theme: 'Art Nouveau Clássico',
+                    files: ['battle.html'],
+                    size: '35KB',
+                    version: '1.0.0',
+                    category: 'art-nouveau',
+                    created: '2025-09-04',
+                    description: 'Versão essencial da elegância Art Nouveau com arquivo único otimizado'
+                };
+            } else if (skinId === 'eclat-mystique-demo') {
+                skinData = {
+                    id: skinId,
+                    name: 'Éclat Mystique: Demo',
+                    theme: 'Art Nouveau Premium',
+                    files: ['battle-demo.html', 'battle-demo.css', 'battle-demo.js'],
+                    size: '60KB',
+                    version: '1.0.0',
+                    category: 'art-nouveau',
+                    created: '2025-09-04',
+                    description: 'Versão completa original com arquivos separados e ornamentações complexas'
+                };
+            } else {
+                skinData = {
+                    id: skinId,
+                    name: skinId,
+                    theme: 'Unknown',
+                    files: [],
+                    size: '0KB',
+                    created: '2025-09-04'
+                };
+            }
             
             const blob = new Blob([JSON.stringify(skinData, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -757,10 +973,36 @@
 
         function exportSkins() {
             const allSkins = {
-                'eclat-mystique': {
-                    name: 'Éclat Mystique',
-                    theme: 'Art Nouveau Vintage',
-                    status: 'active'
+                'eclat-mystique-basica': {
+                    name: 'Éclat Mystique: Básica',
+                    theme: 'Art Nouveau Clássico',
+                    status: 'active',
+                    files: ['battle.html'],
+                    size: '35KB',
+                    priority: 1
+                },
+                'eclat-mystique-demo': {
+                    name: 'Éclat Mystique: Demo',
+                    theme: 'Art Nouveau Premium',
+                    status: 'available',
+                    files: ['battle-demo.html', 'battle-demo.css', 'battle-demo.js'],
+                    size: '60KB',
+                    priority: 2
+                },
+                'cyber-nexus': {
+                    name: 'Cyber Nexus',
+                    theme: 'Cyberpunk Neon',
+                    status: 'planned'
+                },
+                'forest-sanctuary': {
+                    name: 'Forest Sanctuary', 
+                    theme: 'Nature & Earth',
+                    status: 'planned'
+                },
+                'royal-court': {
+                    name: 'Royal Court',
+                    theme: 'Medieval Heraldry', 
+                    status: 'planned'
                 }
             };
             
@@ -821,6 +1063,116 @@
             if (e.target.classList.contains('modal')) {
                 e.target.style.display = 'none';
             }
+        });
+
+        // Initialize animated previews
+        function initializeAnimatedPreviews() {
+            const skinPreviews = document.querySelectorAll('.skin-preview');
+            
+            skinPreviews.forEach(preview => {
+                // Add shimmer animation on hover
+                preview.addEventListener('mouseenter', function() {
+                    this.classList.add('animated');
+                });
+                
+                preview.addEventListener('mouseleave', function() {
+                    this.classList.remove('animated');
+                });
+                
+                // Add click to preview functionality
+                preview.addEventListener('click', function() {
+                    showPreviewModal(this);
+                });
+            });
+        }
+        
+        function showPreviewModal(previewElement) {
+            const skinCard = previewElement.closest('.skin-card');
+            const skinName = skinCard.querySelector('h3').textContent;
+            const skinDescription = skinCard.querySelector('.skin-description').textContent;
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'preview-modal';
+            modal.innerHTML = `
+                <div class="preview-content">
+                    <button class="preview-close" onclick="closePreviewModal()">&times;</button>
+                    <h2 style="color: var(--text-primary); margin-bottom: 1rem;">${skinName}</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">${skinDescription}</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div>
+                            <h4 style="color: var(--accent); margin-bottom: 1rem;">Preview Estático</h4>
+                            <div class="skin-preview ${previewElement.className}" 
+                                 style="width: 100%; height: 200px; margin: 0; border-radius: var(--radius);"></div>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--accent); margin-bottom: 1rem;">Características</h4>
+                            <div style="color: var(--text-secondary);">
+                                ${generateSkinFeatures(skinName)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="btn btn-primary" onclick="testSkinFromPreview('${getSkinIdFromName(skinName)}')">
+                            <span>🎮</span> Testar Agora
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+        
+        function closePreviewModal() {
+            const modal = document.querySelector('.preview-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+        
+        function generateSkinFeatures(skinName) {
+            const features = {
+                'Éclat Mystique': [
+                    '🎨 Art Nouveau autêntico',
+                    '⟨ ❦ ⟩ Ornamentações clássicas',
+                    '📜 Tipografia vintage',
+                    '✨ Partículas douradas',
+                    '🎵 Sons temáticos'
+                ],
+                'Chronos Heritage': [
+                    '🏯 UI Cultural adaptativa',
+                    '🌏 3 temas culturais',
+                    '⚔️ Estética nórdica',
+                    '🍀 Elementos celtas',
+                    '🔄 Switching dinâmico'
+                ]
+            };
+            
+            const skinFeatures = Object.keys(features).find(key => skinName.includes(key));
+            const featuresList = features[skinFeatures] || ['✨ Skin única', '🎨 Design customizado'];
+            
+            return featuresList.map(feature => `<div style="margin-bottom: 0.5rem;">${feature}</div>`).join('');
+        }
+        
+        function getSkinIdFromName(skinName) {
+            if (skinName.includes('Chronos Heritage')) return 'chronos-heritage';
+            if (skinName.includes('Éclat Mystique: Demo')) return 'eclat-mystique-demo';
+            if (skinName.includes('Éclat Mystique: Básica')) return 'eclat-mystique-basica';
+            return 'unknown';
+        }
+        
+        function testSkinFromPreview(skinId) {
+            closePreviewModal();
+            applySkin(skinId);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAnimatedPreviews();
         });
 
         console.log('🎨 Skin Manager Loaded Successfully!');

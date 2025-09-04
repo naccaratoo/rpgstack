@@ -30,81 +30,6 @@ class VintageBattleDemo {
             maxMP: 30
         };
         
-        this.characters = [];
-        this.characterData = null;
-        
-        this.selectedCharacter = null;
-        this.battleState = 'character-selection';
-        this.skillsVisible = false;
-        this.logVisible = true;
-        
-        // Pagination for character selection
-        this.currentPage = 0;
-        this.charactersPerPage = 3;
-    }
-
-    async init() {
-        this.showLoadingScreen();
-        await this.loadCharacters();
-        setTimeout(() => {
-            this.hideLoadingScreen();
-            this.showCharacterModal();
-            this.setupEventListeners();
-            this.populateCharacterGrid();
-        }, 2000);
-    }
-
-    async loadCharacters() {
-        try {
-            // Load from main characters database
-            const response = await fetch('/data/characters.json?t=' + Date.now());
-            console.log('📡 Response status:', response.status, response.statusText);
-            console.log('📡 Response URL:', response.url);
-            
-            if (response.ok) {
-                const mainData = await response.json();
-                this.characterData = mainData;
-                console.log(`📊 Encontrados ${Object.keys(mainData.characters).length} personagens no arquivo`);
-                console.log('🔍 Debug - personagens no JSON:', Object.keys(mainData.characters));
-                console.log('🔍 Debug - dados completos:', mainData.characters);
-                const rawCharacters = Object.values(mainData.characters);
-                console.log('🔍 Debug - personagens antes do map:', rawCharacters.length);
-                this.characters = rawCharacters.map((char, index) => {
-                    console.log(`🔍 Processando personagem ${index + 1}: ${char.name}`);
-                    return {
-                        id: index + 1,
-                        name: char.name,
-                        level: char.level || 1,
-                        hp: char.hp,
-                        maxHP: char.maxHP,
-                        mp: char.anima || 50,
-                        maxMP: char.anima || 50,
-                        class: char.classe || 'Unknown',
-                        description: char.description && char.description.trim() !== "" ? char.description : `${char.classe} experiente com poderes únicos`,
-                        attack: char.attack || 25,
-                        defense: char.defense || 10,
-                        critical: char.critico || 15,
-                        skills: char.skills || [],
-                        image: this.generateCharacterImage(char.name)
-                    };
-                });
-                console.log(`✨ ${this.characters.length} personagens carregados de characters.json`);
-                console.log('📋 Personagens carregados:', this.characters.map(c => c.name));
-                return;
-            }
-            
-            throw new Error(`Arquivo characters.json não encontrado - Status: ${response.status} ${response.statusText}`);
-            
-        } catch (error) {
-            console.error('❌ Erro ao carregar personagens:', error);
-            console.error('🌐 URL tentada:', '/data/characters.json?t=' + Date.now());
-            console.error('🔍 Status da response:', error.response?.status || 'N/A');
-            console.log('⚠️ Carregando personagens de fallback...');
-            this.loadFallbackCharacters();
-        }
-    }
-
-    loadFallbackCharacters() {
         this.characters = [
             {
                 id: 1,
@@ -114,8 +39,7 @@ class VintageBattleDemo {
                 maxHP: 90,
                 mp: 60,
                 maxMP: 60,
-                class: "Arcano",
-                image: this.generateCharacterImage("Alquimista Místico")
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRDRBRjM3IiByeD0iOCIvPgo8dGV4dCB4PSI1MCIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMzNjQ1NEYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJzZXJpZiI+QUxRVUlNSVNUQTwvdGV4dD4KPC9zdmc+Cg=="
             },
             {
                 id: 2,
@@ -125,8 +49,7 @@ class VintageBattleDemo {
                 maxHP: 120,
                 mp: 40,
                 maxMP: 40,
-                class: "Lutador",
-                image: this.generateCharacterImage("Cavaleiro Eterno")
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjNzIyRjM3IiByeD0iOCIvPgo8dGV4dCB4PSI1MCIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGREY1RTYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJzZXJpZiI+Q0FWQUxFSVJPPC90ZXh0Pgo8L3N2Zz4K"
             },
             {
                 id: 3,
@@ -136,34 +59,24 @@ class VintageBattleDemo {
                 maxHP: 85,
                 mp: 70,
                 maxMP: 70,
-                class: "Armamentista",
-                image: this.generateCharacterImage("Feiticeira Antiga")
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMzU1RTNCIiByeD0iOCIvPgo8dGV4dCB4PSI1MCIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGREY1RTYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJzZXJpZiI+RkVJVElDRUlSQTwvdGV4dD4KPC9zdmc+Cg=="
             }
         ];
-        console.log("⚠️ Usando personagens de fallback");
+        
+        this.selectedCharacter = null;
+        this.battleState = 'character-selection';
+        this.skillsVisible = false;
+        this.logVisible = true;
     }
 
-    generateCharacterImage(name) {
-        const colors = {
-            "Alquimista Místico": "#D4AF37",
-            "Cavaleiro Eterno": "#722F37", 
-            "Feiticeira Antiga": "#355E3B",
-            "Sesshoumaru": "#DC2626",
-            "Loki ": "#0EA5E9", // Note: Loki tem espaço no final no JSON
-            "Loki": "#0EA5E9",
-            "Merlin": "#059669",
-            "Coco": "#8B5A3C"
-        };
-        
-        const color = colors[name] || "#666666";
-        const shortName = name.split(' ').map(word => word.charAt(0)).join('').toUpperCase();
-        
-        const svg = `<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="${color}" rx="8"/>
-            <text x="50" y="55" text-anchor="middle" fill="#FDF5E6" font-size="12" font-family="serif">${shortName}</text>
-        </svg>`;
-        
-        return `data:image/svg+xml;base64,${btoa(svg)}`;
+    init() {
+        this.showLoadingScreen();
+        setTimeout(() => {
+            this.hideLoadingScreen();
+            this.showCharacterModal();
+            this.setupEventListeners();
+            this.populateCharacterGrid();
+        }, 2000);
     }
 
     setupEventListeners() {
@@ -241,68 +154,21 @@ class VintageBattleDemo {
         const grid = document.getElementById('characterGrid');
         if (!grid) return;
 
-        // Calculate pagination
-        const totalPages = Math.ceil(this.characters.length / this.charactersPerPage);
-        const startIndex = this.currentPage * this.charactersPerPage;
-        const endIndex = startIndex + this.charactersPerPage;
-        const currentCharacters = this.characters.slice(startIndex, endIndex);
-
-        // Create character grid
-        grid.innerHTML = `
-            <div class="characters-container" id="charactersContainer">
-                ${currentCharacters.map(char => `
-                    <div class="character-option" data-character-id="${char.id}">
-                        <div class="character-portrait">
-                            <img src="${char.image}" alt="${char.name}">
-                        </div>
-                        <div class="character-info">
-                            <h4>${char.name}</h4>
-                            <div class="character-level">Nível ${char.level}</div>
-                            <div class="character-class">${char.class || 'Classe Desconhecida'}</div>
-                            <div class="character-stats">
-                                <div class="stat">❤ ${char.hp}</div>
-                                <div class="stat">✦ ${char.mp}</div>
-                            </div>
-                            ${char.description ? `<div class="character-description">${char.description}</div>` : ''}
-                        </div>
+        grid.innerHTML = this.characters.map(char => `
+            <div class="character-option" data-character-id="${char.id}">
+                <div class="character-portrait">
+                    <img src="${char.image}" alt="${char.name}">
+                </div>
+                <div class="character-info">
+                    <h4>${char.name}</h4>
+                    <div class="character-level">Nível ${char.level}</div>
+                    <div class="character-stats">
+                        <div class="stat">❤ ${char.hp}</div>
+                        <div class="stat">✦ ${char.mp}</div>
                     </div>
-                `).join('')}
+                </div>
             </div>
-        `;
-
-        // Add scroll wheel handler to the grid
-        grid.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            
-            const totalPages = Math.ceil(this.characters.length / this.charactersPerPage);
-            
-            // Add visual feedback
-            grid.classList.add('scrolling');
-            
-            setTimeout(() => {
-                grid.classList.remove('scrolling');
-            }, 300);
-            
-            if (e.deltaY > 0) {
-                // Scroll down - next page
-                if (this.currentPage < totalPages - 1) {
-                    this.currentPage++;
-                    setTimeout(() => this.populateCharacterGrid(), 150);
-                    console.log(`📜 Scroll para baixo - Página ${this.currentPage + 1}/${totalPages}`);
-                } else {
-                    console.log(`📜 Última página alcançada (${totalPages})`);
-                }
-            } else {
-                // Scroll up - previous page
-                if (this.currentPage > 0) {
-                    this.currentPage--;
-                    setTimeout(() => this.populateCharacterGrid(), 150);
-                    console.log(`📜 Scroll para cima - Página ${this.currentPage + 1}/${totalPages}`);
-                } else {
-                    console.log(`📜 Primeira página alcançada`);
-                }
-            }
-        });
+        `).join('');
 
         // Add click handlers to character options
         grid.querySelectorAll('.character-option').forEach(option => {
@@ -318,8 +184,6 @@ class VintageBattleDemo {
                     startButton.disabled = false;
                     startButton.textContent = 'Começar Duelo';
                 }
-                
-                console.log('🎯 Personagem selecionado:', this.selectedCharacter?.name);
             });
         });
     }
@@ -750,177 +614,10 @@ document.addEventListener('DOMContentLoaded', () => {
     battleDemo.init();
 });
 
-// ========== THEMATIC SOUND SYSTEM ========== //
-
-class VintageAudioSystem {
-    constructor() {
-        this.audioContext = null;
-        this.sounds = {};
-        this.isMuted = false;
-        this.volume = 0.3;
-        
-        this.initAudio();
-    }
-    
-    initAudio() {
-        try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.createVintageSounds();
-        } catch (e) {
-            console.log('🔇 Audio Context não suportado');
-        }
-    }
-    
-    createVintageSounds() {
-        // Create vintage-style audio using Web Audio API
-        this.sounds = {
-            attack: () => this.createTone(200, 0.1, 'sawtooth'),
-            defend: () => this.createTone(400, 0.15, 'square'),
-            meditate: () => this.createChord([262, 330, 392], 0.5, 'sine'), // C major chord
-            critical: () => this.createSparkle(),
-            victory: () => this.createFanfare(),
-            defeat: () => this.createSombre(),
-            hover: () => this.createTone(800, 0.05, 'triangle'),
-            click: () => this.createTone(1200, 0.05, 'square'),
-            pageFlip: () => this.createPageTurn(),
-            mystical: () => this.createMysticalAmbience()
-        };
-    }
-    
-    createTone(frequency, duration, waveType = 'sine') {
-        if (!this.audioContext || this.isMuted) return;
-        
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-        oscillator.type = waveType;
-        
-        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(this.volume, this.audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
-        
-        oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + duration);
-    }
-    
-    createChord(frequencies, duration, waveType = 'sine') {
-        if (!this.audioContext || this.isMuted) return;
-        
-        frequencies.forEach((freq, index) => {
-            setTimeout(() => {
-                this.createTone(freq, duration, waveType);
-            }, index * 50);
-        });
-    }
-    
-    createSparkle() {
-        if (!this.audioContext || this.isMuted) return;
-        
-        // Create a sparkly sound with multiple tones
-        const frequencies = [800, 1000, 1200, 1500];
-        frequencies.forEach((freq, index) => {
-            setTimeout(() => {
-                this.createTone(freq, 0.1, 'triangle');
-            }, index * 30);
-        });
-    }
-    
-    createFanfare() {
-        if (!this.audioContext || this.isMuted) return;
-        
-        // Victory fanfare
-        const melody = [262, 330, 392, 523]; // C, E, G, C (octave)
-        melody.forEach((freq, index) => {
-            setTimeout(() => {
-                this.createTone(freq, 0.3, 'triangle');
-            }, index * 150);
-        });
-    }
-    
-    createSombre() {
-        if (!this.audioContext || this.isMuted) return;
-        
-        // Defeat sound
-        const melody = [392, 330, 262, 196]; // G, E, C, G (low)
-        melody.forEach((freq, index) => {
-            setTimeout(() => {
-                this.createTone(freq, 0.4, 'sine');
-            }, index * 200);
-        });
-    }
-    
-    createPageTurn() {
-        if (!this.audioContext || this.isMuted) return;
-        
-        // Simulate page turning with noise
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(2000, this.audioContext.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(100, this.audioContext.currentTime + 0.1);
-        oscillator.type = 'sawtooth';
-        
-        gainNode.gain.setValueAtTime(this.volume * 0.3, this.audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.1);
-        
-        oscillator.start();
-        oscillator.stop(this.audioContext.currentTime + 0.1);
-    }
-    
-    createMysticalAmbience() {
-        if (!this.audioContext || this.isMuted) return;
-        
-        // Create mystical background ambience
-        const frequencies = [110, 146.83, 220]; // A, D, A (octave)
-        frequencies.forEach((freq) => {
-            const oscillator = this.audioContext.createOscillator();
-            const gainNode = this.audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(this.audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime);
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(this.volume * 0.1, this.audioContext.currentTime + 2);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 8);
-            
-            oscillator.start();
-            oscillator.stop(this.audioContext.currentTime + 8);
-        });
-    }
-    
-    play(soundType) {
-        if (this.sounds[soundType]) {
-            this.sounds[soundType]();
-        }
-    }
-    
-    toggleMute() {
-        this.isMuted = !this.isMuted;
-        return this.isMuted;
-    }
-    
-    setVolume(volume) {
-        this.volume = Math.max(0, Math.min(1, volume));
-    }
-}
-
-// Initialize vintage audio system
-const vintageAudio = new VintageAudioSystem();
-
-// Enhanced sound function
+// Add some utility functions for enhanced experience
 function playSound(soundType) {
-    vintageAudio.play(soundType);
-    console.log(`🔊 Tocando som vintage: ${soundType}`);
+    // Placeholder for sound system
+    console.log(`🔊 Tocando som: ${soundType}`);
 }
 
 function addScreenShake() {
@@ -946,172 +643,3 @@ const shakeCSS = `
 const style = document.createElement('style');
 style.textContent = shakeCSS;
 document.head.appendChild(style);
-
-// ========== ATMOSPHERIC PARTICLES SYSTEM ========== //
-
-class AtmosphericParticleSystem {
-    constructor() {
-        this.particleField = document.getElementById('particleField');
-        this.particles = [];
-        this.isActive = true;
-        this.maxParticles = 25;
-    }
-
-    init() {
-        if (!this.particleField) return;
-        
-        this.startParticleSystem();
-        
-        // Create initial particles
-        for (let i = 0; i < 15; i++) {
-            setTimeout(() => this.createParticle(), i * 300);
-        }
-    }
-
-    startParticleSystem() {
-        if (!this.isActive) return;
-        
-        // Create regular particles
-        setInterval(() => {
-            if (this.particles.length < this.maxParticles) {
-                this.createParticle();
-            }
-        }, 2000);
-        
-        // Create special orbs occasionally
-        setInterval(() => {
-            if (this.particles.length < this.maxParticles) {
-                this.createOrb();
-            }
-        }, 5000);
-        
-        // Create dust particles
-        setInterval(() => {
-            if (this.particles.length < this.maxParticles) {
-                this.createDust();
-            }
-        }, 1500);
-    }
-
-    createParticle() {
-        if (!this.particleField) return;
-        
-        const particle = document.createElement('div');
-        const size = ['small', 'medium', 'large'][Math.floor(Math.random() * 3)];
-        const sparkle = Math.random() < 0.3 ? 'sparkle' : '';
-        
-        particle.className = `particle ${size} ${sparkle}`;
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 2 + 's';
-        particle.style.animationDuration = (6 + Math.random() * 4) + 's';
-        
-        this.particleField.appendChild(particle);
-        this.particles.push(particle);
-        
-        // Remove particle after animation
-        setTimeout(() => {
-            this.removeParticle(particle);
-        }, 8000);
-    }
-
-    createOrb() {
-        if (!this.particleField) return;
-        
-        const orb = document.createElement('div');
-        orb.className = 'particle orb';
-        orb.style.left = (20 + Math.random() * 60) + '%';
-        orb.style.animationDelay = Math.random() * 3 + 's';
-        orb.style.animationDuration = (12 + Math.random() * 6) + 's';
-        
-        this.particleField.appendChild(orb);
-        this.particles.push(orb);
-        
-        // Remove orb after animation
-        setTimeout(() => {
-            this.removeParticle(orb);
-        }, 18000);
-    }
-
-    createDust() {
-        if (!this.particleField) return;
-        
-        const dust = document.createElement('div');
-        dust.className = 'particle dust';
-        dust.style.left = Math.random() * 100 + '%';
-        dust.style.width = (2 + Math.random() * 3) + 'px';
-        dust.style.height = (2 + Math.random() * 3) + 'px';
-        dust.style.animationDelay = Math.random() * 2 + 's';
-        dust.style.animationDuration = (10 + Math.random() * 4) + 's';
-        
-        this.particleField.appendChild(dust);
-        this.particles.push(dust);
-        
-        // Remove dust after animation
-        setTimeout(() => {
-            this.removeParticle(dust);
-        }, 14000);
-    }
-
-    createCriticalSparkle(x, y) {
-        if (!this.particleField) return;
-        
-        const sparkleCount = 8 + Math.floor(Math.random() * 4);
-        
-        for (let i = 0; i < sparkleCount; i++) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'critical-sparkle';
-            sparkle.style.left = x + (Math.random() * 60 - 30) + 'px';
-            sparkle.style.top = y + (Math.random() * 60 - 30) + 'px';
-            sparkle.style.animationDelay = (Math.random() * 0.3) + 's';
-            
-            this.particleField.appendChild(sparkle);
-            
-            // Remove sparkle after animation
-            setTimeout(() => {
-                if (sparkle.parentNode) {
-                    sparkle.parentNode.removeChild(sparkle);
-                }
-            }, 1500);
-        }
-    }
-
-    removeParticle(particle) {
-        if (particle && particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-            const index = this.particles.indexOf(particle);
-            if (index > -1) {
-                this.particles.splice(index, 1);
-            }
-        }
-    }
-
-    pauseParticles() {
-        this.isActive = false;
-        this.particles.forEach(particle => {
-            particle.style.animationPlayState = 'paused';
-        });
-    }
-
-    resumeParticles() {
-        this.isActive = true;
-        this.particles.forEach(particle => {
-            particle.style.animationPlayState = 'running';
-        });
-    }
-
-    clearAllParticles() {
-        this.particles.forEach(particle => {
-            this.removeParticle(particle);
-        });
-        this.particles = [];
-    }
-}
-
-// Initialize particle system
-document.addEventListener('DOMContentLoaded', () => {
-    const particleSystem = new AtmosphericParticleSystem();
-    particleSystem.init();
-    
-    // Make it globally available for critical hit effects
-    window.particleSystem = particleSystem;
-});

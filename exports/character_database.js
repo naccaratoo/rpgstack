@@ -1,5 +1,5 @@
 // RPGStack Characters - Generated automatically
-// Generated at: 2025-09-01T15:00:36.262Z
+// Generated at: 2025-09-04T16:08:44.868Z
 // Mixed ID System: Legacy IDs preserved + New Hexadecimal IDs
 
 const CharacterDatabase = {
@@ -8,9 +8,9 @@ const CharacterDatabase = {
     "id": "045CCF3515",
     "name": "Sesshoumaru",
     "level": 1,
-    "hp": 7000,
-    "maxHP": 7000,
-    "attack": 30,
+    "hp": 300,
+    "maxHP": 300,
+    "attack": 50,
     "defense": 10,
     "sprite": "assets/sprites/character.png",
     "color": 4873507,
@@ -28,8 +28,8 @@ const CharacterDatabase = {
     "skills": [
         {
             "skillId": "8AB7CDE5F9",
-            "skillName": "Arsenal Adaptativo",
-            "skillDamage": 0,
+            "skillName": "💀 Arsenal Adaptativo v4.0.0 CAPCRIT BALANCED",
+            "skillDamage": 9999,
             "skillMana": 0,
             "skillType": "buff",
             "source": "skills_module"
@@ -39,19 +39,19 @@ const CharacterDatabase = {
     "anima": 100,
     "critico": 70,
     "created_at": "2025-08-25T23:57:38.589Z",
-    "updated_at": "2025-09-01T11:58:45.849Z"
+    "updated_at": "2025-09-04T14:20:36.091Z"
 },
 
   // ID: EA32D10F2D (HEX)
-  "loki_": {
+  "loki": {
     "id": "EA32D10F2D",
-    "name": "Loki ",
+    "name": "Loki",
     "level": 1,
-    "hp": 7000,
-    "maxHP": 7000,
+    "hp": 300,
+    "maxHP": 300,
     "attack": 50,
     "defense": 10,
-    "sprite": "assets/sprites/character.png",
+    "sprite": "assets/sprites/character.webp",
     "color": 4873507,
     "borderColor": 2962964,
     "size": 12,
@@ -78,19 +78,19 @@ const CharacterDatabase = {
     "anima": 100,
     "critico": 50,
     "created_at": "2025-08-31T17:47:13.246Z",
-    "updated_at": "2025-09-01T15:00:36.260Z"
+    "updated_at": "2025-09-04T16:08:44.867Z"
 },
 
-  // ID: ARCANO001 (LEGACY)
+  // ID: A9C4N0001E (LEGACY)
   "merlin": {
-    "id": "ARCANO001",
+    "id": "A9C4N0001E",
     "name": "Merlin",
     "level": 1,
-    "hp": 7000,
-    "maxHP": 7000,
+    "hp": 300,
+    "maxHP": 300,
     "attack": 25,
     "defense": 10,
-    "sprite": "assets/sprites/Merlin.png",
+    "sprite": "assets/sprites/character.webp",
     "color": 8388736,
     "borderColor": 5592405,
     "size": 12,
@@ -106,7 +106,7 @@ const CharacterDatabase = {
     "skills": [
         {
             "skillId": "9BC8DEF6G1",
-            "skillName": "Convergência Ânima",
+            "skillName": "🛡️ Convergência Ânima v2.3.0 BALANCED PROTECTION",
             "skillDamage": 0,
             "skillMana": 0,
             "skillType": "buff",
@@ -117,21 +117,51 @@ const CharacterDatabase = {
     "anima": 120,
     "critico": 100,
     "created_at": "2025-09-01T10:00:00.000Z",
-    "updated_at": "2025-09-01T11:59:05.309Z"
+    "updated_at": "2025-09-04T16:08:30.493Z"
+},
+
+  // ID: 142C422D6B (HEX)
+  "coco": {
+    "id": "142C422D6B",
+    "name": "Coco",
+    "level": 1,
+    "hp": 100,
+    "maxHP": 100,
+    "attack": 10,
+    "defense": 5,
+    "sprite": null,
+    "color": 4873507,
+    "borderColor": 2962964,
+    "size": 12,
+    "experience": 25,
+    "goldRange": [
+        5,
+        15
+    ],
+    "ai_type": "aggressive",
+    "spawn_weight": 10,
+    "description": "",
+    "drops": [],
+    "skills": [],
+    "classe": "Lutador",
+    "anima": 100,
+    "critico": 1,
+    "created_at": "2025-09-04T14:13:40.400Z"
 }
 
 };
 
 // Statistics:
-// Total characters: 3
+// Total characters: 4
 // Legacy IDs: 1
-// Hexadecimal IDs: 2
+// Hexadecimal IDs: 3
 
 // Legacy ID Examples (PRESERVED):
-// Merlin: ARCANO001
+// Merlin: A9C4N0001E
 // Hexadecimal ID Examples:
 // Sesshoumaru: 045CCF3515
-// Loki : EA32D10F2D
+// Loki: EA32D10F2D
+// Coco: 142C422D6B
 
 module.exports = CharacterDatabase;
 // For ES6: export default CharacterDatabase;
