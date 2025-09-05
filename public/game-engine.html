@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPGStack Game Engine - v4.0.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #0d7377 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            overflow-x: hidden;
+            padding: 10px;
+            margin: 0;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: none;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 20px;
+            box-shadow: 0 25px 75px rgba(0,0,0,0.4);
+            min-height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(65, 234, 212, 0.1);
+            position: relative;
+        }
+
+        /* Header */
+        .game-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            border-radius: 20px 20px 0 0;
+            overflow: hidden;
+        }
+
+        .game-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(65, 234, 212, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .engine-title {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #41eadc 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .engine-version {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .engine-description {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Main Game Interface */
+        .game-interface {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Side Panels */
+        .side-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #41eadc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Game Canvas */
+        .game-canvas {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-display {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .game-status {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #41eadc;
+        }
+
+        .game-info {
+            background: rgba(65, 234, 212, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(65, 234, 212, 0.2);
+        }
+
+        /* Controls */
+        .game-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 12px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, #41eadc 0%, #10b981 100%);
+            color: #0f172a;
+            border: none;
+        }
+
+        .control-btn.primary:hover {
+            box-shadow: 0 8px 25px rgba(65, 234, 212, 0.3);
+        }
+
+        .control-btn.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+        }
+
+        .control-btn.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+        }
+
+        /* Lists */
+        .item-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .list-item {
+            background: rgba(65, 234, 212, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(65, 234, 212, 0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .list-item:hover {
+            background: rgba(65, 234, 212, 0.1);
+            border-color: rgba(65, 234, 212, 0.2);
+        }
+
+        .list-item.active {
+            background: rgba(65, 234, 212, 0.15);
+            border-color: #41eadc;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .item-details {
+            font-size: 0.9em;
+            color: #e2e8f0;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Status Display */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            background: rgba(65, 234, 212, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(65, 234, 212, 0.1);
+        }
+
+        .status-value {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #41eadc;
+        }
+
+        .status-label {
+            font-size: 0.9em;
+            color: #e2e8f0;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Console Output */
+        .console-output {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(65, 234, 212, 0.2);
+        }
+
+        .console-line {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: #41eadc;
+        }
+
+        .console-line.error {
+            color: #ef4444;
+        }
+
+        .console-line.warning {
+            color: #f59e0b;
+        }
+
+        .console-line.success {
+            color: #10b981;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(65, 234, 212, 0.3);
+            border-top: 2px solid #41eadc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Battle Mode Styles */
+        .battle-mode .game-canvas {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 20%, #1e293b 100%);
+        }
+
+        .battle-ui {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .combatant {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            text-align: center;
+        }
+
+        .combatant.active {
+            border-color: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .game-interface {
+                grid-template-columns: 250px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .game-interface {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+
+            .side-panel {
+                order: 2;
+            }
+
+            .game-canvas {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .engine-title {
+                font-size: 2em;
+            }
+
+            .game-container {
+                padding: 10px;
+            }
+
+            .game-header {
+                padding: 20px;
+            }
+
+            .side-panel {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Header -->
+        <div class="game-header">
+            <h1 class="engine-title">🎮 RPGStack Game Engine</h1>
+            <div class="engine-version">v4.0.0 - Complete System</div>
+            <p class="engine-description">
+                Motor de jogo completo com sistema de classes algorítmico, battle mechanics avançado,
+                gerenciamento de personagens e integração total dos módulos RPGStack.
+            </p>
+        </div>
+
+        <!-- Main Game Interface -->
+        <div class="game-interface">
+            <!-- Left Panel - Characters -->
+            <div class="side-panel">
+                <h3 class="panel-title">👥 Personagens</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-value" id="characterCount">0</div>
+                        <div class="status-label">Total</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="activeCount">0</div>
+                        <div class="status-label">Ativo</div>
+                    </div>
+                </div>
+                <div class="item-list" id="characterList">
+                    <!-- Characters will be populated here -->
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn success" onclick="createRandomCharacter()">➕ Criar</button>
+                    <button class="control-btn" onclick="loadCharacters()">🔄 Carregar</button>
+                </div>
+            </div>
+
+            <!-- Center Panel - Game Canvas -->
+            <div class="game-canvas" id="gameCanvas">
+                <div class="game-display">
+                    <div class="game-status" id="gameStatus">🎮 Inicializando Game Engine...</div>
+                    <div class="game-info" id="gameInfo">
+                        <p>RPGStack Game Engine v4.0.0</p>
+                        <p>Sistema completo de jogo RPG</p>
+                    </div>
+                    <div class="game-controls">
+                        <button class="control-btn primary" onclick="initializeEngine()">🚀 Inicializar</button>
+                        <button class="control-btn" onclick="runSystemTest()">🧪 Testar</button>
+                        <button class="control-btn" onclick="startBattle()">⚔️ Batalha</button>
+                        <button class="control-btn success" onclick="saveGame()">💾 Salvar</button>
+                        <button class="control-btn" onclick="loadGame()">📂 Carregar</button>
+                        <button class="control-btn danger" onclick="resetGame()">🔄 Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Classes & Engine Status -->
+            <div class="side-panel">
+                <h3 class="panel-title">🎭 Classes & Status</h3>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-value" id="classCount">3</div>
+                        <div class="status-label">Classes</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="engineStatus">❌</div>
+                        <div class="status-label">Engine</div>
+                    </div>
+                </div>
+                <div class="item-list" id="classList">
+                    <!-- Classes will be populated here -->
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn success" onclick="generateRandomClass()">✨ Gerar</button>
+                    <button class="control-btn" onclick="loadClasses()">📋 Listar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console Output -->
+        <div class="console-output" id="consoleOutput">
+            <div class="console-line">🎮 Console RPGStack Game Engine v4.0.0</div>
+            <div class="console-line">Digite comandos ou use os botões da interface</div>
+        </div>
+    </div>
+
+    <!-- Load Game Engine Modules -->
+    <script type="module">
+        import { GameEngine } from './GameEngineCore.js';
+        import { RPGStackReference } from './RPGStackReference.js';
+
+        // Global access
+        window.GameEngine = GameEngine;
+        window.RPGStackRef = RPGStackReference;
+
+        // Console logging
+        const consoleOutput = document.getElementById('consoleOutput');
+        
+        function addConsoleLog(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            
+            // Keep only last 50 lines
+            if (consoleOutput.children.length > 50) {
+                consoleOutput.removeChild(consoleOutput.firstChild);
+            }
+        }
+
+        // Override console methods to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = (...args) => {
+            originalLog(...args);
+            addConsoleLog(args.join(' '), 'info');
+        };
+
+        console.error = (...args) => {
+            originalError(...args);
+            addConsoleLog(args.join(' '), 'error');
+        };
+
+        console.warn = (...args) => {
+            originalWarn(...args);
+            addConsoleLog(args.join(' '), 'warning');
+        };
+
+        // Global functions for button handlers
+        window.initializeEngine = async function() {
+            try {
+                document.getElementById('gameStatus').innerHTML = '🔄 Inicializando... <span class="loading"></span>';
+                await GameEngine.initialize();
+                document.getElementById('gameStatus').textContent = '✅ Engine Inicializado';
+                document.getElementById('engineStatus').textContent = '✅';
+                updateInterface();
+                console.log('Game Engine inicializado com sucesso');
+            } catch (error) {
+                document.getElementById('gameStatus').textContent = '❌ Erro na Inicialização';
+                document.getElementById('engineStatus').textContent = '❌';
+                console.error('Erro na inicialização:', error);
+            }
+        };
+
+        window.runSystemTest = async function() {
+            console.log('🧪 Executando teste completo do sistema...');
+            const result = await RPGStackReference.DebugExamples.runSystemTest();
+            if (result) {
+                console.log('✅ Teste completo executado com sucesso');
+                updateInterface();
+            }
+        };
+
+        window.createRandomCharacter = async function() {
+            try {
+                const names = ['Aragorn', 'Legolas', 'Gandalf', 'Frodo', 'Sauron', 'Galadriel', 'Boromir', 'Gimli'];
+                const classes = ['Lutador', 'Armamentista', 'Arcano'];
+                
+                const characterData = {
+                    name: names[Math.floor(Math.random() * names.length)],
+                    level: Math.floor(Math.random() * 10) + 1,
+                    stats: {
+                        hp: Math.floor(Math.random() * 50) + 100,
+                        maxHP: Math.floor(Math.random() * 50) + 100,
+                        attack: Math.floor(Math.random() * 30) + 15,
+                        defense: Math.floor(Math.random() * 25) + 10
+                    },
+                    classe: classes[Math.floor(Math.random() * classes.length)],
+                    anima: Math.floor(Math.random() * 50) + 100,
+                    critico: (Math.random() * 0.5 + 1.0).toFixed(1)
+                };
+
+                if (GameEngine.initialized) {
+                    const character = await GameEngine.character.create(characterData);
+                    console.log(`Personagem criado: ${character.name} (${character.classe})`);
+                    updateCharacterList();
+                } else {
+                    console.warn('Engine não inicializado. Inicialize primeiro.');
+                }
+            } catch (error) {
+                console.error('Erro ao criar personagem:', error);
+            }
+        };
+
+        window.loadCharacters = function() {
+            if (GameEngine.initialized) {
+                updateCharacterList();
+                console.log('Lista de personagens atualizada');
+            } else {
+                console.warn('Engine não inicializado');
+            }
+        };
+
+        window.generateRandomClass = function() {
+            if (GameEngine.initialized) {
+                const types = ['balanced', 'attack', 'defense', 'magic', 'speed'];
+                const rarities = ['Common', 'Rare', 'Epic', 'Legendary'];
+                
+                const randomType = types[Math.floor(Math.random() * types.length)];
+                const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+                
+                const newClass = GameEngine.classes.generate(randomType, randomRarity);
+                console.log(`Classe gerada: ${newClass.name} (${newClass.rarity})`);
+                updateClassList();
+            } else {
+                console.warn('Engine não inicializado');
+            }
+        };
+
+        window.loadClasses = function() {
+            if (GameEngine.initialized) {
+                updateClassList();
+                console.log('Lista de classes atualizada');
+            } else {
+                console.warn('Engine não inicializado');
+            }
+        };
+
+        window.startBattle = async function() {
+            if (!GameEngine.initialized) {
+                console.warn('Engine não inicializado');
+                return;
+            }
+
+            const characters = GameEngine.character.getAll();
+            if (characters.length < 2) {
+                console.warn('Necessário pelo menos 2 personagens para batalha');
+                return;
+            }
+
+            document.getElementById('gameCanvas').classList.add('battle-mode');
+            document.getElementById('gameStatus').textContent = '⚔️ Modo Batalha Ativo';
+            
+            // Simulate battle
+            const attacker = characters[0];
+            const defender = characters[1];
+            
+            const battleResult = await RPGStackReference.BattleExamples.simulateBattle();
+            console.log('Batalha simulada concluída');
+            
+            setTimeout(() => {
+                document.getElementById('gameCanvas').classList.remove('battle-mode');
+                document.getElementById('gameStatus').textContent = '✅ Engine Ativo';
+            }, 5000);
+        };
+
+        window.saveGame = function() {
+            if (GameEngine.initialized) {
+                const saveData = GameEngine.game.save();
+                console.log('Jogo salvo com sucesso');
+            } else {
+                console.warn('Engine não inicializado');
+            }
+        };
+
+        window.loadGame = function() {
+            if (GameEngine.initialized) {
+                const saveData = GameEngine.game.load();
+                if (saveData) {
+                    console.log('Jogo carregado com sucesso');
+                    updateInterface();
+                } else {
+                    console.log('Nenhum save encontrado');
+                }
+            } else {
+                console.warn('Engine não inicializado');
+            }
+        };
+
+        window.resetGame = function() {
+            if (confirm('Tem certeza que deseja resetar todo o progresso?')) {
+                if (GameEngine.initialized) {
+                    GameEngine.game.reset();
+                    console.log('Jogo resetado');
+                    updateInterface();
+                }
+            }
+        };
+
+        function updateInterface() {
+            if (!GameEngine.initialized) return;
+            
+            updateCharacterList();
+            updateClassList();
+            updateStats();
+        }
+
+        function updateCharacterList() {
+            if (!GameEngine.initialized) return;
+            
+            const characters = GameEngine.character.getAll();
+            const characterList = document.getElementById('characterList');
+            
+            characterList.innerHTML = '';
+            characters.forEach(character => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="item-name">${character.name}</div>
+                    <div class="item-details">${character.classe} - Lv.${character.level}</div>
+                `;
+                characterList.appendChild(item);
+            });
+
+            document.getElementById('characterCount').textContent = characters.length;
+        }
+
+        function updateClassList() {
+            if (!GameEngine.initialized) return;
+            
+            const classes = GameEngine.classes.getAll();
+            const classList = document.getElementById('classList');
+            
+            classList.innerHTML = '';
+            classes.forEach(cls => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="item-name">${cls.name}</div>
+                    <div class="item-details">${cls.rarity} - ATK: ${cls.stats.attack}</div>
+                `;
+                classList.appendChild(item);
+            });
+
+            document.getElementById('classCount').textContent = classes.length;
+        }
+
+        function updateStats() {
+            const status = GameEngine.getStatus();
+            document.getElementById('engineStatus').textContent = status.initialized ? '✅' : '❌';
+        }
+
+        // Initialize interface
+        addConsoleLog('Interface carregada. Clique em "Inicializar" para começar.');
+        console.log('🎮 RPGStack Game Engine Interface carregada');
+        console.log('Use initializeEngine() para inicializar o sistema');
+    </script>
+</body>
+</html>

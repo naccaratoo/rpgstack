@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⟨ ❦ ⟩ RPGStack - Galería de Estéticas Aristocráticas ⟨ ❦ ⟩</title>
+    
+    <!-- Google Fonts - Art Nouveau Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@500;600&family=Georgia:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E98E;
+            --gold-dark: #B8860B;
+            --burgundy: #722F37;
+            --burgundy-light: #8B4B5C;
+            --burgundy-dark: #5A252A;
+            --emerald: #355E3B;
+            --emerald-light: #4A7C59;
+            --emerald-dark: #2A4A30;
+            --parchment: #FDF5E6;
+            --sepia-base: #F5F5DC;
+            --aged-paper: #F0E68C;
+            --charcoal: #36454F;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--burgundy) 50%, var(--emerald) 100%);
+            color: var(--parchment);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(253, 245, 230, 0.98);
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            color: var(--charcoal);
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            color: var(--gold-light);
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            margin: -2rem -2rem 3rem -2rem;
+        }
+
+        .header-ornament {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2em;
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: var(--gold-primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3em;
+            color: var(--gold-light);
+            opacity: 0.9;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.3);
+        }
+
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .skin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--accent);
+        }
+
+        .skin-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #d4af37, #f5f5dc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #36454f;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skin-preview.eclat-mystique {
+            background: linear-gradient(135deg, #d4af37, #fdf5e6);
+            position: relative;
+        }
+
+        .skin-preview.eclat-mystique::before {
+            content: '⟨ ❦ ⟩';
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            color: #722f37;
+        }
+
+        .skin-preview.eclat-mystique::after {
+            content: 'Duelo Ancestral';
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #36454f;
+        }
+
+        .skin-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skin-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .status-available {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+        }
+
+        .status-locked {
+            background: var(--text-muted);
+            color: white;
+        }
+
+        .skin-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .skin-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .skin-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .skin-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            flex: 1;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .add-skin-card {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 300px;
+        }
+
+        .add-skin-card:hover {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .add-skin-card .plus-icon {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-skin-card:hover .plus-icon {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .stats-bar {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .skins-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .skin-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animated skin previews */
+        .skin-preview {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skin-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+        }
+        
+        .skin-preview.animated::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255,255,255,0.2), 
+                transparent);
+            animation: shimmer 3s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-5px); }
+        }
+        
+        /* Preview modal */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .preview-content {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .preview-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .preview-iframe {
+            width: 100%;
+            height: 60vh;
+            border: none;
+            border-radius: var(--radius);
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-ornament">⟨ ❦ ⟩</div>
+            <h1>Galería de Estéticas Aristocráticas</h1>
+            <p>Gerencie e personalize as estéticas nobres do seu sistema de duelos ancestrais</p>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="actions">
+            <button class="btn btn-primary" onclick="showAddSkinModal()">
+                <span>➕</span> Nova Skin
+            </button>
+            <button class="btn btn-secondary" onclick="importSkin()">
+                <span>📥</span> Importar Skin
+            </button>
+            <button class="btn btn-secondary" onclick="exportSkins()">
+                <span>📤</span> Exportar Skins
+            </button>
+            <a href="battle-demo.html" class="btn btn-secondary">
+                <span>🎮</span> Testar Demo
+            </a>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalSkins">3</div>
+                    <div class="stat-label">Total de Skins</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeSkins">3</div>
+                    <div class="stat-label">Ativas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="lockedSkins">3</div>
+                    <div class="stat-label">Bloqueadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="skinSize">180KB</div>
+                    <div class="stat-label">Tamanho Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skins Grid -->
+        <div class="skins-grid" id="skinsGrid">
+            <!-- Éclat Mystique: Básica - Nova Skin Implementada -->
+            <div class="skin-card">
+                <div class="skin-preview eclat-mystique"></div>
+                <div class="skin-info">
+                    <h3>
+                        🎭 Éclat Mystique: Básica
+                        <span class="skin-status status-active">Ativa</span>
+                    </h3>
+                    <p class="skin-description">
+                        Versão essencial da elegância Art Nouveau. Interface única em arquivo HTML com toda funcionalidade do sistema de batalha RPGStack integrada.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Art Nouveau Clássico</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Arquivos</span>
+                            <span class="detail-value">HTML Único</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tamanho</span>
+                            <span class="detail-value">35KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">✅ Implementada</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-primary" onclick="applySkin('eclat-mystique-basica')">
+                            <span>🎮</span> Testar
+                        </button>
+                        <button class="btn btn-secondary" onclick="editSkin('eclat-mystique-basica')">
+                            <span>✏️</span> Editar
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSkin('eclat-mystique-basica')">
+                            <span>📤</span> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Éclat Mystique: Demo - Versão Original -->
+            <div class="skin-card">
+                <div class="skin-preview eclat-mystique" style="opacity: 0.8;"></div>
+                <div class="skin-info">
+                    <h3>
+                        🎭 Éclat Mystique: Demo
+                        <span class="skin-status status-available">Disponível</span>
+                    </h3>
+                    <p class="skin-description">
+                        Versão completa original com arquivos separados. Elegância Art Nouveau inspirada em Reverse 1999 com ornamentações complexas.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Art Nouveau Premium</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Arquivos</span>
+                            <span class="detail-value">HTML, CSS, JS</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tamanho</span>
+                            <span class="detail-value">60KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">⭐ Demo Premium</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-primary" onclick="applySkin('eclat-mystique-demo')">
+                            <span>🎮</span> Testar
+                        </button>
+                        <button class="btn btn-secondary" onclick="editSkin('eclat-mystique-demo')">
+                            <span>✏️</span> Editar
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSkin('eclat-mystique-demo')">
+                            <span>📤</span> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chronos Heritage - Sistema Cultural Adaptativo -->
+            <div class="skin-card">
+                <div class="skin-preview" style="background: linear-gradient(135deg, #dc2626 0%, #0ea5e9 50%, #059669 100%); color: white;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏯</div>
+                        <div>CHRONOS HERITAGE</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">Cultural Adaptive</div>
+                    </div>
+                </div>
+                <div class="skin-info">
+                    <h3>
+                        🏯 Chronos Heritage
+                        <span class="skin-status status-active">Ativa</span>
+                    </h3>
+                    <p class="skin-description">
+                        Sistema cultural adaptativo com temas japonês, nórdico e celta. Interface dinâmica que muda conforme a herança cultural do personagem.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Cultural Adaptativo</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Culturas</span>
+                            <span class="detail-value">🏯 Japonesa | ⚔️ Nórdica | 🍀 Celta</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tamanho</span>
+                            <span class="detail-value">85KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">✅ Implementada</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-primary" onclick="applySkin('chronos-heritage')">
+                            <span>🎮</span> Testar
+                        </button>
+                        <button class="btn btn-secondary" onclick="editSkin('chronos-heritage')">
+                            <span>✏️</span> Editar
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSkin('chronos-heritage')">
+                            <span>📤</span> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cyber Nexus - Skin Planejada -->
+            <div class="skin-card">
+                <div class="skin-preview" style="background: linear-gradient(135deg, #00ffff, #ff00ff); color: #000;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+                        <div>CYBER NEXUS</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">Neon Cyberpunk</div>
+                    </div>
+                </div>
+                <div class="skin-info">
+                    <h3>
+                        ⚡ Cyber Nexus
+                        <span class="skin-status status-locked">Bloqueada</span>
+                    </h3>
+                    <p class="skin-description">
+                        Interface futurística cyberpunk com efeitos neon, elementos holográficos e atmosfera sci-fi distópica.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Cyberpunk Neon</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">🔒 Planejada</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-secondary" disabled>
+                            <span>🔒</span> Bloqueada
+                        </button>
+                        <button class="btn btn-primary" onclick="createSkin('cyber-nexus')">
+                            <span>🛠️</span> Desenvolver
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forest Sanctuary - Skin Planejada -->
+            <div class="skin-card">
+                <div class="skin-preview" style="background: linear-gradient(135deg, #228b22, #32cd32); color: white;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌲</div>
+                        <div>FOREST SANCTUARY</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">Nature Theme</div>
+                    </div>
+                </div>
+                <div class="skin-info">
+                    <h3>
+                        🌲 Forest Sanctuary
+                        <span class="skin-status status-locked">Bloqueada</span>
+                    </h3>
+                    <p class="skin-description">
+                        Tema natural com elementos orgânicos, tons terrosos e atmosfera de floresta mágica encantada.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Nature & Earth</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">🔒 Planejada</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-secondary" disabled>
+                            <span>🔒</span> Bloqueada
+                        </button>
+                        <button class="btn btn-primary" onclick="createSkin('forest-sanctuary')">
+                            <span>🛠️</span> Desenvolver
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Royal Court - Skin Planejada -->
+            <div class="skin-card">
+                <div class="skin-preview" style="background: linear-gradient(135deg, #ffd700, #4169e1); color: white;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">👑</div>
+                        <div>ROYAL COURT</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">Medieval Heraldry</div>
+                    </div>
+                </div>
+                <div class="skin-info">
+                    <h3>
+                        👑 Royal Court
+                        <span class="skin-status status-locked">Bloqueada</span>
+                    </h3>
+                    <p class="skin-description">
+                        Design medieval com heráldica real, brasões nobres, dourado e azul real, atmosfera de corte medieval.
+                    </p>
+                    <div class="skin-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Tema</span>
+                            <span class="detail-value">Medieval Heraldry</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">🔒 Planejada</span>
+                        </div>
+                    </div>
+                    <div class="skin-actions">
+                        <button class="btn btn-secondary" disabled>
+                            <span>🔒</span> Bloqueada
+                        </button>
+                        <button class="btn btn-primary" onclick="createSkin('royal-court')">
+                            <span>🛠️</span> Desenvolver
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Skin Card -->
+            <div class="add-skin-card" onclick="showAddSkinModal()">
+                <div class="plus-icon">+</div>
+                <h3>Criar Nova Skin</h3>
+                <p>Desenvolva uma nova skin temática personalizada</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Skin Modal -->
+    <div class="modal" id="addSkinModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🎨 Criar Nova Skin</h3>
+                <button class="close-btn" onclick="closeModal('addSkinModal')">&times;</button>
+            </div>
+            <form id="addSkinForm">
+                <div class="form-group">
+                    <label class="form-label">Nome da Skin</label>
+                    <input type="text" class="form-input" id="skinName" placeholder="Ex: Mystic Forest" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea class="form-textarea" id="skinDescription" placeholder="Descreva o tema e atmosfera da skin..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <select class="form-select" id="skinCategory" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="fantasy">Fantasy</option>
+                        <option value="sci-fi">Sci-Fi</option>
+                        <option value="medieval">Medieval</option>
+                        <option value="modern">Modern</option>
+                        <option value="vintage">Vintage</option>
+                        <option value="nature">Nature</option>
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cor Principal</label>
+                    <input type="color" class="form-input" id="skinPrimaryColor" value="#7c3aed">
+                    <span class="color-preview" id="primaryColorPreview"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cor Secundária</label>
+                    <input type="color" class="form-input" id="skinSecondaryColor" value="#a78bfa">
+                    <span class="color-preview" id="secondaryColorPreview"></span>
+                </div>
+                <div class="skin-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addSkinModal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>🎨</span> Criar Skin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Skin Management Functions
+        function applySkin(skinId) {
+            if (skinId === 'eclat-mystique-basica') {
+                window.open('battle.html', '_blank');
+            } else if (skinId === 'eclat-mystique-demo') {
+                window.open('battle-demo.html', '_blank');
+            } else if (skinId === 'chronos-heritage') {
+                window.open('battle-chronos.html', '_blank');
+            } else {
+                alert(`Skin "${skinId}" ainda não foi implementada.`);
+            }
+        }
+
+        function editSkin(skinId) {
+            alert(`Abrindo editor para a skin: ${skinId}`);
+            // Implementar editor de skin
+        }
+
+        function exportSkin(skinId) {
+            let skinData = {};
+            
+            if (skinId === 'eclat-mystique-basica') {
+                skinData = {
+                    id: skinId,
+                    name: 'Éclat Mystique: Básica',
+                    theme: 'Art Nouveau Clássico',
+                    files: ['battle.html'],
+                    size: '35KB',
+                    version: '1.0.0',
+                    category: 'art-nouveau',
+                    created: '2025-09-04',
+                    description: 'Versão essencial da elegância Art Nouveau com arquivo único otimizado'
+                };
+            } else if (skinId === 'eclat-mystique-demo') {
+                skinData = {
+                    id: skinId,
+                    name: 'Éclat Mystique: Demo',
+                    theme: 'Art Nouveau Premium',
+                    files: ['battle-demo.html', 'battle-demo.css', 'battle-demo.js'],
+                    size: '60KB',
+                    version: '1.0.0',
+                    category: 'art-nouveau',
+                    created: '2025-09-04',
+                    description: 'Versão completa original com arquivos separados e ornamentações complexas'
+                };
+            } else {
+                skinData = {
+                    id: skinId,
+                    name: skinId,
+                    theme: 'Unknown',
+                    files: [],
+                    size: '0KB',
+                    created: '2025-09-04'
+                };
+            }
+            
+            const blob = new Blob([JSON.stringify(skinData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${skinId}-skin.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function createSkin(skinId) {
+            alert(`Iniciando desenvolvimento da skin: ${skinId}\nEsta funcionalidade criará os arquivos HTML, CSS e JS para a nova skin.`);
+            // Implementar criação automática de skin
+        }
+
+        function importSkin() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json,.zip';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    alert(`Importando skin: ${file.name}`);
+                    // Implementar importação de skin
+                }
+            };
+            input.click();
+        }
+
+        function exportSkins() {
+            const allSkins = {
+                'eclat-mystique-basica': {
+                    name: 'Éclat Mystique: Básica',
+                    theme: 'Art Nouveau Clássico',
+                    status: 'active',
+                    files: ['battle.html'],
+                    size: '35KB',
+                    priority: 1
+                },
+                'eclat-mystique-demo': {
+                    name: 'Éclat Mystique: Demo',
+                    theme: 'Art Nouveau Premium',
+                    status: 'available',
+                    files: ['battle-demo.html', 'battle-demo.css', 'battle-demo.js'],
+                    size: '60KB',
+                    priority: 2
+                },
+                'cyber-nexus': {
+                    name: 'Cyber Nexus',
+                    theme: 'Cyberpunk Neon',
+                    status: 'planned'
+                },
+                'forest-sanctuary': {
+                    name: 'Forest Sanctuary', 
+                    theme: 'Nature & Earth',
+                    status: 'planned'
+                },
+                'royal-court': {
+                    name: 'Royal Court',
+                    theme: 'Medieval Heraldry', 
+                    status: 'planned'
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(allSkins, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'rpgstack-skins.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Modal Functions
+        function showAddSkinModal() {
+            document.getElementById('addSkinModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Form Handling
+        document.getElementById('addSkinForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const skinData = {
+                name: document.getElementById('skinName').value,
+                description: document.getElementById('skinDescription').value,
+                category: document.getElementById('skinCategory').value,
+                primaryColor: document.getElementById('skinPrimaryColor').value,
+                secondaryColor: document.getElementById('skinSecondaryColor').value,
+                created: new Date().toISOString().split('T')[0]
+            };
+            
+            alert(`Skin "${skinData.name}" criada com sucesso!\nDados: ${JSON.stringify(skinData, null, 2)}`);
+            closeModal('addSkinModal');
+            
+            // Aqui você implementaria a criação real dos arquivos da skin
+        });
+
+        // Color Preview Updates
+        document.getElementById('skinPrimaryColor').addEventListener('input', function(e) {
+            document.getElementById('primaryColorPreview').style.backgroundColor = e.target.value;
+        });
+
+        document.getElementById('skinSecondaryColor').addEventListener('input', function(e) {
+            document.getElementById('secondaryColorPreview').style.backgroundColor = e.target.value;
+        });
+
+        // Initialize color previews
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('primaryColorPreview').style.backgroundColor = '#7c3aed';
+            document.getElementById('secondaryColorPreview').style.backgroundColor = '#a78bfa';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Initialize animated previews
+        function initializeAnimatedPreviews() {
+            const skinPreviews = document.querySelectorAll('.skin-preview');
+            
+            skinPreviews.forEach(preview => {
+                // Add shimmer animation on hover
+                preview.addEventListener('mouseenter', function() {
+                    this.classList.add('animated');
+                });
+                
+                preview.addEventListener('mouseleave', function() {
+                    this.classList.remove('animated');
+                });
+                
+                // Add click to preview functionality
+                preview.addEventListener('click', function() {
+                    showPreviewModal(this);
+                });
+            });
+        }
+        
+        function showPreviewModal(previewElement) {
+            const skinCard = previewElement.closest('.skin-card');
+            const skinName = skinCard.querySelector('h3').textContent;
+            const skinDescription = skinCard.querySelector('.skin-description').textContent;
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'preview-modal';
+            modal.innerHTML = `
+                <div class="preview-content">
+                    <button class="preview-close" onclick="closePreviewModal()">&times;</button>
+                    <h2 style="color: var(--text-primary); margin-bottom: 1rem;">${skinName}</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">${skinDescription}</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div>
+                            <h4 style="color: var(--accent); margin-bottom: 1rem;">Preview Estático</h4>
+                            <div class="skin-preview ${previewElement.className}" 
+                                 style="width: 100%; height: 200px; margin: 0; border-radius: var(--radius);"></div>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--accent); margin-bottom: 1rem;">Características</h4>
+                            <div style="color: var(--text-secondary);">
+                                ${generateSkinFeatures(skinName)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="btn btn-primary" onclick="testSkinFromPreview('${getSkinIdFromName(skinName)}')">
+                            <span>🎮</span> Testar Agora
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+        
+        function closePreviewModal() {
+            const modal = document.querySelector('.preview-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+        
+        function generateSkinFeatures(skinName) {
+            const features = {
+                'Éclat Mystique': [
+                    '🎨 Art Nouveau autêntico',
+                    '⟨ ❦ ⟩ Ornamentações clássicas',
+                    '📜 Tipografia vintage',
+                    '✨ Partículas douradas',
+                    '🎵 Sons temáticos'
+                ],
+                'Chronos Heritage': [
+                    '🏯 UI Cultural adaptativa',
+                    '🌏 3 temas culturais',
+                    '⚔️ Estética nórdica',
+                    '🍀 Elementos celtas',
+                    '🔄 Switching dinâmico'
+                ]
+            };
+            
+            const skinFeatures = Object.keys(features).find(key => skinName.includes(key));
+            const featuresList = features[skinFeatures] || ['✨ Skin única', '🎨 Design customizado'];
+            
+            return featuresList.map(feature => `<div style="margin-bottom: 0.5rem;">${feature}</div>`).join('');
+        }
+        
+        function getSkinIdFromName(skinName) {
+            if (skinName.includes('Chronos Heritage')) return 'chronos-heritage';
+            if (skinName.includes('Éclat Mystique: Demo')) return 'eclat-mystique-demo';
+            if (skinName.includes('Éclat Mystique: Básica')) return 'eclat-mystique-basica';
+            return 'unknown';
+        }
+        
+        function testSkinFromPreview(skinId) {
+            closePreviewModal();
+            applySkin(skinId);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAnimatedPreviews();
+        });
+
+        console.log('🎨 Skin Manager Loaded Successfully!');
+        console.log('📁 Current Skins Location: /home/horuzen/Meu RPG/rpgstack/public/');
+        console.log('🎭 Active Skin: Éclat Mystique (battle-demo.html)');
+    </script>
+</body>
+</html>

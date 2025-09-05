@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Validação de Equipe 3v3</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .warning { color: orange; font-weight: bold; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 3px; }
+        .passed { background-color: #e8f5e8; }
+        .failed { background-color: #ffeaea; }
+        pre { background-color: #f5f5f5; padding: 10px; border-radius: 3px; }
+        button { margin: 5px; padding: 10px; }
+        .team-display { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0; }
+        .character { padding: 10px; border: 1px solid #999; border-radius: 5px; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>Teste do Sistema de Validação de Equipes 3v3</h1>
+    
+    <div id="test-results"></div>
+    
+    <div class="test-section">
+        <h3>Equipes de Teste</h3>
+        <div id="teams-display"></div>
+        <button onclick="runAllTests()">Executar Todos os Testes</button>
+        <button onclick="runValidationTest()">Teste Específico</button>
+        <button onclick="showTeamBalance()">Mostrar Balanceamento</button>
+    </div>
+
+    <script src="battlemechanics.js"></script>
+    <script>
+        let battleMechanics;
+        let testResults = [];
+        
+        // Dados de teste variados
+        const validTeam = [
+            { name: "Guerreiro", hp: 300, maxHp: 300, attack: 150, defense: 120 },
+            { name: "Mago", hp: 200, maxHp: 200, attack: 80, specialAttack: 180, spirit: 100 },
+            { name: "Arqueiro", hp: 250, maxHp: 250, attack: 140, defense: 80 }
+        ];
+        
+        const invalidTeamSize = [
+            { name: "Guerreiro", hp: 300, attack: 150 },
+            { name: "Mago", hp: 200, attack: 80 }
+        ]; // Apenas 2 personagens
+        
+        const duplicateNamesTeam = [
+            { name: "Guerreiro", hp: 300, attack: 150 },
+            { name: "Guerreiro", hp: 250, attack: 140 },
+            { name: "Mago", hp: 200, attack: 80 }
+        ]; // Nomes duplicados
+        
+        const invalidAttributesTeam = [
+            { name: "Guerreiro", hp: 300, attack: 150 },
+            { name: "Mago", hp: -50, attack: 80 }, // HP negativo
+            { name: "Arqueiro", hp: 250, attack: 1500 } // Ataque muito alto
+        ];
+        
+        const missingFieldsTeam = [
+            { name: "Guerreiro", hp: 300 }, // Falta attack
+            { name: "Mago", attack: 80 }, // Falta hp
+            { hp: 250, attack: 140 } // Falta name
+        ];
+        
+        const faintedTeam = [
+            { name: "Guerreiro", hp: 0, maxHp: 300, attack: 150 },
+            { name: "Mago", hp: 0, maxHp: 200, attack: 80 },
+            { name: "Arqueiro", hp: 0, maxHp: 250, attack: 140 }
+        ]; // Todos desmaiados
+        
+        const unbalancedTeam = [
+            { name: "Tank", hp: 500, maxHp: 500, attack: 30, defense: 200 },
+            { name: "Glass Cannon", hp: 100, maxHp: 100, attack: 250, defense: 10 },
+            { name: "Support", hp: 150, maxHp: 150, attack: 40, defense: 50 }
+        ]; // Desbalanceada mas válida
+
+        function runTest(testName, testFunction, expectedToPass = true) {
+            try {
+                const result = testFunction();
+                if (expectedToPass) {
+                    testResults.push({ name: testName, result: 'PASSOU', details: result, type: 'success' });
+                    console.log(`✓ ${testName}: PASSOU`);
+                } else {
+                    testResults.push({ name: testName, result: 'FALHOU (esperava erro)', details: 'Não deveria ter passado', type: 'failed' });
+                    console.error(`✗ ${testName}: FALHOU - Esperava que falhasse mas passou`);
+                }
+                return true;
+            } catch (error) {
+                if (expectedToPass) {
+                    testResults.push({ name: testName, result: 'FALHOU', details: error.message, type: 'failed' });
+                    console.error(`✗ ${testName}: FALHOU - ${error.message}`);
+                } else {
+                    testResults.push({ name: testName, result: 'PASSOU (erro esperado)', details: error.message, type: 'success' });
+                    console.log(`✓ ${testName}: PASSOU (erro esperado) - ${error.message}`);
+                }
+                return false;
+            }
+        }
+
+        function test1_ValidTeam() {
+            battleMechanics = new BattleMechanics();
+            battleMechanics.validateTeamSelection(validTeam, 'jogador');
+            return 'Equipe válida aprovada com sucesso';
+        }
+
+        function test2_InvalidTeamSize() {
+            battleMechanics.validateTeamSelection(invalidTeamSize, 'jogador');
+            return 'Deveria falhar com equipe de tamanho inválido';
+        }
+
+        function test3_DuplicateNames() {
+            battleMechanics.validateTeamSelection(duplicateNamesTeam, 'jogador');
+            return 'Deveria falhar com nomes duplicados';
+        }
+
+        function test4_InvalidAttributes() {
+            battleMechanics.validateTeamSelection(invalidAttributesTeam, 'jogador');
+            return 'Deveria falhar com atributos inválidos';
+        }
+
+        function test5_MissingFields() {
+            battleMechanics.validateTeamSelection(missingFieldsTeam, 'jogador');
+            return 'Deveria falhar com campos obrigatórios faltando';
+        }
+
+        function test6_AllFainted() {
+            battleMechanics.validateTeamSelection(faintedTeam, 'jogador');
+            return 'Deveria falhar com todos os personagens desmaiados';
+        }
+
+        function test7_UnbalancedButValid() {
+            battleMechanics.validateTeamSelection(unbalancedTeam, 'jogador');
+            return 'Equipe desbalanceada mas válida aprovada';
+        }
+
+        function test8_NullOrUndefined() {
+            battleMechanics.validateTeamSelection(null, 'jogador');
+            return 'Deveria falhar com equipe null';
+        }
+
+        function test9_EmptyArray() {
+            battleMechanics.validateTeamSelection([], 'jogador');
+            return 'Deveria falhar com array vazio';
+        }
+
+        function test10_SwapValidation() {
+            battleMechanics.initialize3v3Battle(validTeam, validTeam);
+            const playerTeam = battleMechanics.battleState.teams.player;
+            const validation = battleMechanics.validateTeamForSwap(playerTeam);
+            
+            if (!validation.valid) {
+                throw new Error('Validação de swap falhou para equipe válida');
+            }
+            
+            if (validation.aliveCount !== 3) {
+                throw new Error(`Contagem incorreta de personagens vivos: ${validation.aliveCount}`);
+            }
+            
+            return `Swap validation passou: ${validation.aliveCount} personagens vivos`;
+        }
+
+        function test11_SwapValidationFainted() {
+            // Simular equipe com apenas 1 personagem vivo
+            const testTeam = {
+                characters: [
+                    { name: "Vivo", hp: 100 },
+                    { name: "Morto1", hp: 0 },
+                    { name: "Morto2", hp: 0 }
+                ],
+                activeIndex: 0
+            };
+            
+            const validation = battleMechanics.validateTeamForSwap(testTeam);
+            
+            if (validation.valid) {
+                throw new Error('Deveria falhar com apenas 1 personagem vivo');
+            }
+            
+            return `Swap validation corretamente rejeitou equipe com ${validation.aliveCount} personagem vivo`;
+        }
+
+        function test12_Initialize3v3WithValidation() {
+            const result = battleMechanics.initialize3v3Battle(validTeam, validTeam);
+            
+            if (!battleMechanics.battleState.teams) {
+                throw new Error('Teams não foram inicializadas');
+            }
+            
+            if (!battleMechanics.battleState.teams.player || !battleMechanics.battleState.teams.enemy) {
+                throw new Error('Equipes player ou enemy não foram criadas');
+            }
+            
+            return 'Inicialização 3v3 com validação funcionou corretamente';
+        }
+
+        function runAllTests() {
+            console.log('=== INICIANDO TESTES DE VALIDAÇÃO DE EQUIPE ===');
+            testResults = []; // Reset
+            
+            // Testes que devem passar
+            runTest('1. Equipe Válida', test1_ValidTeam, true);
+            runTest('7. Equipe Desbalanceada (mas Válida)', test7_UnbalancedButValid, true);
+            runTest('10. Validação de Swap - Equipe Válida', test10_SwapValidation, true);
+            runTest('12. Inicialização 3v3 com Validação', test12_Initialize3v3WithValidation, true);
+            
+            // Testes que devem falhar
+            runTest('2. Tamanho de Equipe Inválido', test2_InvalidTeamSize, false);
+            runTest('3. Nomes Duplicados', test3_DuplicateNames, false);
+            runTest('4. Atributos Inválidos', test4_InvalidAttributes, false);
+            runTest('5. Campos Obrigatórios Ausentes', test5_MissingFields, false);
+            runTest('6. Todos Desmaiados', test6_AllFainted, false);
+            runTest('8. Equipe Null', test8_NullOrUndefined, false);
+            runTest('9. Array Vazio', test9_EmptyArray, false);
+            runTest('11. Swap - Apenas 1 Personagem Vivo', test11_SwapValidationFainted, false);
+            
+            displayResults();
+            displayTeams();
+            
+            console.log('=== TESTES DE VALIDAÇÃO CONCLUÍDOS ===');
+        }
+
+        function runValidationTest() {
+            try {
+                battleMechanics = new BattleMechanics();
+                const balance = battleMechanics.validateTeamBalance(validTeam, 'teste');
+                console.log('Balanceamento:', balance);
+                
+                const validation = battleMechanics.validateTeamSelection(validTeam, 'teste');
+                console.log('Validação passou:', validation);
+                
+                alert('Teste específico passou! Veja o console para detalhes.');
+            } catch (error) {
+                alert(`Teste específico falhou: ${error.message}`);
+            }
+        }
+
+        function showTeamBalance() {
+            battleMechanics = new BattleMechanics();
+            const teams = [
+                { name: 'Válida', data: validTeam },
+                { name: 'Desbalanceada', data: unbalancedTeam }
+            ];
+            
+            teams.forEach(team => {
+                console.log(`\n=== BALANCEAMENTO - ${team.name.toUpperCase()} ===`);
+                try {
+                    const balance = battleMechanics.validateTeamBalance(team.data, team.name);
+                    console.log(`Ataque Total: ${balance.totalAttack} (Média: ${balance.averageAttack})`);
+                    console.log(`Defesa Total: ${balance.totalDefense} (Média: ${balance.averageDefense})`);
+                    console.log(`HP Total: ${balance.totalHp} (Média: ${balance.averageHp})`);
+                } catch (error) {
+                    console.error(`Erro ao calcular balanceamento: ${error.message}`);
+                }
+            });
+            
+            alert('Análise de balanceamento concluída! Veja o console.');
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '<h3>Resultados dos Testes de Validação:</h3>';
+            
+            const passed = testResults.filter(t => t.type === 'success').length;
+            const total = testResults.length;
+            
+            html += `<div class="test-result ${total === passed ? 'passed' : 'failed'}">
+                <strong>Total: ${passed}/${total} testes passaram</strong>
+            </div>`;
+            
+            testResults.forEach(test => {
+                const className = test.type === 'success' ? 'success' : 'error';
+                html += `<div class="test-result ${test.type === 'success' ? 'passed' : 'failed'}">
+                    <span class="${className}"><strong>${test.name}</strong>: ${test.result}</span><br>
+                    <em>${test.details}</em>
+                </div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function displayTeams() {
+            const teamsDiv = document.getElementById('teams-display');
+            const teams = [
+                { name: 'Equipe Válida', data: validTeam, valid: true },
+                { name: 'Tamanho Inválido', data: invalidTeamSize, valid: false },
+                { name: 'Nomes Duplicados', data: duplicateNamesTeam, valid: false }
+            ];
+            
+            let html = '';
+            teams.forEach(team => {
+                html += `<div class="test-section">
+                    <h4>${team.name} ${team.valid ? '✓' : '✗'}</h4>
+                    <div class="team-display">
+                        ${team.data.map((char, i) => `
+                            <div class="character">
+                                <strong>[${i}] ${char.name || 'SEM NOME'}</strong><br>
+                                HP: ${char.hp || '?'}${char.maxHp ? `/${char.maxHp}` : ''}<br>
+                                ATK: ${char.attack || '?'}<br>
+                                DEF: ${char.defense || '?'}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            });
+            
+            teamsDiv.innerHTML = html;
+        }
+
+        // Executar testes automaticamente
+        window.onload = function() {
+            displayTeams();
+            // Comentado para não rodar automaticamente
+            // runAllTests();
+        };
+    </script>
+</body>
+</html>

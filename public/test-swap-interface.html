@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Interface de Troca - RPGStack</title>
+    <link rel="stylesheet" href="battle.css">
+</head>
+<body>
+    <div class="battle-stage">
+        <header class="battle-header">
+            <h1 class="battle-title">Teste de Troca de Personagens</h1>
+        </header>
+        
+        <main class="duel-arena-3v3">
+            <!-- Equipe do Jogador -->
+            <div class="team-section player-team">
+                <div class="team-header">
+                    <h3 class="team-title">👑 Sua Equipe</h3>
+                </div>
+                
+                <div class="team-roster">
+                    <!-- Personagem Ativo (oculto pois está no battle field) -->
+                    <div class="character-slot active" id="player-slot-0" style="display: none;">
+                    </div>
+                    
+                    <!-- Personagem 2 (Reserva) -->
+                    <div class="character-slot reserve selectable" id="player-slot-1" onclick="showSwapOptions(1)">
+                        <div class="slot-frame">
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img src="https://via.placeholder.com/60x60/4CAF50/FFFFFF?text=M" alt="Mago">
+                                    <div class="reserve-indicator">🔵</div>
+                                    <div class="swap-hint">👆</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="playerName1">Mago de Fogo</div>
+                                    <div class="char-level">Nv. <span id="playerLevel1">5</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="playerHPBar1" style="width: 80%;"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="playerMPBar1" style="width: 90%;"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="playerHP1">200</span>/<span id="playerMaxHP1">250</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="playerMP1">45</span>/<span id="playerMaxMP1">50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personagem 3 (Reserva) -->
+                    <div class="character-slot reserve selectable" id="player-slot-2" onclick="showSwapOptions(2)">
+                        <div class="slot-frame">
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img src="https://via.placeholder.com/60x60/FF9800/FFFFFF?text=A" alt="Arqueiro">
+                                    <div class="reserve-indicator">🔵</div>
+                                    <div class="swap-hint">👆</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="playerName2">Arqueiro Élfico</div>
+                                    <div class="char-level">Nv. <span id="playerLevel2">4</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="playerHPBar2" style="width: 60%;"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="playerMPBar2" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="playerHP2">150</span>/<span id="playerMaxHP2">250</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="playerMP2">35</span>/<span id="playerMaxMP2">50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Campo de Batalha -->
+            <div class="battle-field">
+                <!-- Personagem Ativo do Jogador -->
+                <div class="active-battle-slot player-active">
+                    <div class="slot-frame">
+                        <div class="slot-content">
+                            <div class="character-portrait">
+                                <img src="https://via.placeholder.com/80x80/2196F3/FFFFFF?text=G" alt="Guerreiro">
+                                <div class="active-indicator">🟢</div>
+                            </div>
+                            
+                            <div class="character-info">
+                                <div class="char-name" id="playerName0">Guerreiro Nobre</div>
+                                <div class="char-level">Nv. <span id="playerLevel0">6</span></div>
+                            </div>
+                            
+                            <div class="mini-bars">
+                                <div class="mini-hp-bar">
+                                    <div class="mini-bar-fill" id="playerHPBar0" style="width: 100%;"></div>
+                                </div>
+                                <div class="mini-mp-bar">
+                                    <div class="mini-bar-fill" id="playerMPBar0" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mini-stats">
+                                <div class="mini-hp">
+                                    <span id="playerHP0">300</span>/<span id="playerMaxHP0">300</span>
+                                </div>
+                                <div class="mini-mp">
+                                    <span id="playerMP0">50</span>/<span id="playerMaxMP0">50</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="battle-indicator">⚔️</div>
+                
+                <!-- Personagem Ativo do Inimigo -->
+                <div class="active-battle-slot enemy-active">
+                    <div class="slot-frame">
+                        <div class="slot-content">
+                            <div class="character-portrait">
+                                <img src="https://via.placeholder.com/80x80/f44336/FFFFFF?text=O" alt="Orc">
+                                <div class="active-indicator">🟢</div>
+                            </div>
+                            
+                            <div class="character-info">
+                                <div class="char-name">Orc Chefe</div>
+                                <div class="char-level">Nv. 5</div>
+                            </div>
+                            
+                            <div class="mini-bars">
+                                <div class="mini-hp-bar">
+                                    <div class="mini-bar-fill" style="width: 75%;"></div>
+                                </div>
+                                <div class="mini-mp-bar">
+                                    <div class="mini-bar-fill" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mini-stats">
+                                <div class="mini-hp">240/320</div>
+                                <div class="mini-mp">30/50</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Equipe Inimiga -->
+            <div class="team-section enemy-team">
+                <div class="team-header">
+                    <h3 class="team-title">⚔️ Equipe Adversária</h3>
+                </div>
+                
+                <div class="team-roster">
+                    <div class="character-slot reserve">
+                        <div class="slot-frame">
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img src="https://via.placeholder.com/60x60/9C27B0/FFFFFF?text=S" alt="Shaman">
+                                    <div class="reserve-indicator">🔵</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name">Shaman</div>
+                                    <div class="char-level">Nv. 4</div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" style="width: 90%;"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">180/200</div>
+                                    <div class="mini-mp">50/50</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="character-slot reserve">
+                        <div class="slot-frame">
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img src="https://via.placeholder.com/60x60/795548/FFFFFF?text=T" alt="Troll">
+                                    <div class="reserve-indicator">🔵</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name">Troll</div>
+                                    <div class="char-level">Nv. 6</div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" style="width: 100%;"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" style="width: 20%;"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">400/400</div>
+                                    <div class="mini-mp">10/50</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Action Panel -->
+        <div class="action-panel">
+            <div class="panel-header">
+                <h4>Ações de Batalha</h4>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn primary" onclick="testAction('attack')">
+                    <div class="btn-content">
+                        <div class="btn-icon">⚔️</div>
+                        <div class="btn-text">Atacar</div>
+                    </div>
+                </button>
+                <button class="action-btn secondary" onclick="testAction('defend')">
+                    <div class="btn-content">
+                        <div class="btn-icon">🛡️</div>
+                        <div class="btn-text">Defender</div>
+                    </div>
+                </button>
+                <button class="action-btn tertiary" onclick="testAction('meditate')">
+                    <div class="btn-content">
+                        <div class="btn-icon">🧘</div>
+                        <div class="btn-text">Meditar</div>
+                    </div>
+                </button>
+                <button class="action-btn skills" onclick="showSkills()">
+                    <div class="btn-content">
+                        <div class="btn-icon">✨</div>
+                        <div class="btn-text">Skills</div>
+                    </div>
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="color: #722F37; font-weight: 600;">
+                    👆 Clique nos personagens da reserva para trocar!
+                </p>
+                <p style="color: #355E3B; font-size: 0.9rem; margin-top: 10px;">
+                    ⚡ Trocas disponíveis por turno: <span id="swaps-remaining">1</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="battlemechanics.js"></script>
+    <script src="battle.js"></script>
+    
+    <script>
+        // Mock do sistema de batalha para teste
+        let battleDemo = null;
+        let swapsUsed = 0;
+        const MAX_SWAPS = 1;
+        
+        // Dados de teste
+        const testPlayerTeam = [
+            { name: "Guerreiro Nobre", hp: 300, maxHp: 300, attack: 150, defense: 120, level: 6 },
+            { name: "Mago de Fogo", hp: 200, maxHp: 250, attack: 80, specialAttack: 180, level: 5 },
+            { name: "Arqueiro Élfico", hp: 150, maxHp: 250, attack: 140, defense: 80, level: 4 }
+        ];
+        
+        const testEnemyTeam = [
+            { name: "Orc Chefe", hp: 240, maxHp: 320, attack: 130, defense: 100, level: 5 },
+            { name: "Shaman", hp: 180, maxHp: 200, attack: 60, specialAttack: 160, level: 4 },
+            { name: "Troll", hp: 400, maxHp: 400, attack: 120, defense: 150, level: 6 }
+        ];
+        
+        function showSwapOptions(characterIndex) {
+            // Verificar se já usou todas as trocas
+            if (swapsUsed >= MAX_SWAPS) {
+                alert('❌ Limite de trocas por turno atingido!');
+                return;
+            }
+            
+            const character = testPlayerTeam[characterIndex];
+            const activeCharacter = testPlayerTeam[0]; // Simulação: Guerreiro é sempre o ativo
+            
+            // Verificar se o personagem está vivo
+            if (character.hp <= 0) {
+                alert(`❌ ${character.name} está desmaiado e não pode entrar em batalha!`);
+                return;
+            }
+            
+            // Confirmar troca
+            const confirmSwap = confirm(
+                `🔄 Trocar Personagens?\n\n` +
+                `${activeCharacter.name} (Ativo) ➜ ${character.name} (Reserva)\n\n` +
+                `Trocas restantes: ${MAX_SWAPS - swapsUsed}\n` +
+                `${character.name}: ${character.hp}/${character.maxHp} HP`
+            );
+            
+            if (confirmSwap) {
+                executeSwap(0, characterIndex);
+            }
+        }
+        
+        function executeSwap(fromIndex, toIndex) {
+            try {
+                // Simular troca
+                const fromChar = testPlayerTeam[fromIndex];
+                const toChar = testPlayerTeam[toIndex];
+                
+                // Incrementar contador
+                swapsUsed++;
+                
+                // Mock: trocar posições no array (simulação)
+                testPlayerTeam[fromIndex] = toChar;
+                testPlayerTeam[toIndex] = fromChar;
+                
+                // Atualizar interface
+                updateSwapDisplay(fromChar, toChar);
+                
+                // Log da troca
+                console.log(`✅ Troca executada: ${fromChar.name} ↔ ${toChar.name}`);
+                alert(`✅ Troca realizada com sucesso!\n\n${toChar.name} agora está ativo!`);
+                
+                // Atualizar contador
+                document.getElementById('swaps-remaining').textContent = MAX_SWAPS - swapsUsed;
+                
+                // Desabilitar novas trocas se atingiu o limite
+                if (swapsUsed >= MAX_SWAPS) {
+                    const slots = document.querySelectorAll('.character-slot.selectable');
+                    slots.forEach(slot => {
+                        slot.classList.remove('selectable');
+                        slot.onclick = null;
+                        slot.style.cursor = 'not-allowed';
+                        slot.style.opacity = '0.6';
+                        
+                        const hint = slot.querySelector('.swap-hint');
+                        if (hint) hint.style.display = 'none';
+                    });
+                    
+                    alert('⚠️ Limite de trocas atingido para este turno!');
+                }
+                
+            } catch (error) {
+                alert(`❌ Erro na troca: ${error.message}`);
+                console.error('Erro na troca:', error);
+            }
+        }
+        
+        function updateSwapDisplay(oldActive, newActive) {
+            // Atualizar nomes na interface (simulação simples)
+            const activeSlot = document.querySelector('.active-battle-slot .char-name');
+            if (activeSlot) {
+                activeSlot.textContent = newActive.name;
+            }
+            
+            // Adicionar efeito visual
+            const activeCharSlot = document.querySelector('.active-battle-slot');
+            activeCharSlot.style.transform = 'scale(1.1)';
+            activeCharSlot.style.transition = 'transform 0.5s ease';
+            
+            setTimeout(() => {
+                activeCharSlot.style.transform = 'scale(1.05)';
+            }, 500);
+        }
+        
+        function testAction(actionType) {
+            const actions = {
+                'attack': '⚔️ Ataque executado!',
+                'defend': '🛡️ Posição defensiva!',
+                'meditate': '🧘 Meditando para recuperar energia...',
+            };
+            
+            alert(actions[actionType] || '❓ Ação desconhecida');
+            console.log(`Ação: ${actionType}`);
+        }
+        
+        function showSkills() {
+            alert('✨ Painel de Skills em desenvolvimento!');
+        }
+        
+        // Simular novo turno (para testar reset de trocas)
+        function newTurn() {
+            swapsUsed = 0;
+            document.getElementById('swaps-remaining').textContent = MAX_SWAPS;
+            
+            // Reabilitar slots para troca
+            const slots = document.querySelectorAll('.character-slot.reserve');
+            slots.forEach((slot, index) => {
+                slot.classList.add('selectable');
+                slot.onclick = () => showSwapOptions(index + 1);
+                slot.style.cursor = 'pointer';
+                slot.style.opacity = '1';
+                
+                const hint = slot.querySelector('.swap-hint');
+                if (hint) hint.style.display = 'flex';
+            });
+            
+            alert('🔄 Novo turno iniciado! Trocas resetadas.');
+        }
+        
+        // Adicionar botão para simular novo turno
+        window.onload = function() {
+            const actionPanel = document.querySelector('.action-panel');
+            const newTurnBtn = document.createElement('button');
+            newTurnBtn.innerHTML = '🔄 Simular Novo Turno';
+            newTurnBtn.style.cssText = 'margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;';
+            newTurnBtn.onclick = newTurn;
+            actionPanel.appendChild(newTurnBtn);
+        };
+    </script>
+</body>
+</html>

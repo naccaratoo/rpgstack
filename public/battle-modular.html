@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Batalha Modular - RPGStack v4.3</title>
+    
+    <!-- Google Fonts - Art Nouveau Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="battle.css">
+</head>
+<body>
+    <div class="battle-stage">
+        
+        <!-- Background Pattern -->
+        <div class="vintage-backdrop">
+            <div class="damask-pattern"></div>
+        </div>
+        
+        <!-- Atmospheric Particles -->
+        <div class="particle-field" id="particleField"></div>
+        
+        <!-- Header Ornamental -->
+        <header class="battle-header">
+            <div class="header-ornament">⟨ ❦ ⟩</div>
+            <h1 class="battle-title">Duelo Ancestral</h1>
+            <div class="turn-display">
+                Turno <span id="currentTurn">I</span>
+            </div>
+        </header>
+        
+        <!-- Main Battle Area -->
+        <main class="duel-arena">
+            
+            <!-- Enemy Card -->
+            <div class="combatant-card enemy-card">
+                <div class="card-frame">
+                    <div class="frame-corners">
+                        <span class="corner tl">◊</span>
+                        <span class="corner tr">◊</span>
+                        <span class="corner bl">◊</span>
+                        <span class="corner br">◊</span>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="nameplate">
+                            <h3 id="enemyName">Adversário Sombrio</h3>
+                            <div class="level-badge">Nv. <span id="enemyLevel">??</span></div>
+                        </div>
+                        
+                        <div class="portrait-area">
+                            <div class="portrait-frame">
+                                <img id="enemyImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjNzIyRjM3IiByeD0iOCIvPgo8dGV4dCB4PSI1MCIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGREY1RTYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJzZXJpZiI+RU5FTVk8L3RleHQ+Cjwvc3ZnPgo=" alt="Enemy">
+                            </div>
+                        </div>
+                        
+                        <div class="status-bars">
+                            <div class="health-bar">
+                                <div class="bar-label">❤ Vida</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="enemyHealthBar"></div>
+                                </div>
+                                <div class="bar-text">
+                                    <span id="enemyHP">100</span>/<span id="enemyMaxHP">100</span>
+                                </div>
+                            </div>
+                            
+                            <div class="anima-bar">
+                                <div class="bar-label">✦ Ânima</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="enemyManaBar"></div>
+                                </div>
+                                <div class="bar-text">
+                                    <span id="enemyMP">50</span>/<span id="enemyMaxMP">50</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VS Ornament -->
+            <div class="versus-ornament">
+                <div class="vs-circle">
+                    <span class="vs-text">VS</span>
+                </div>
+            </div>
+            
+            <!-- Player Card -->
+            <div class="combatant-card player-card">
+                <div class="card-frame">
+                    <div class="frame-corners">
+                        <span class="corner tl">◊</span>
+                        <span class="corner tr">◊</span>
+                        <span class="corner bl">◊</span>
+                        <span class="corner br">◊</span>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="nameplate">
+                            <h3 id="playerName">Herói Ancestral</h3>
+                            <div class="level-badge">Nv. <span id="playerLevel">1</span></div>
+                        </div>
+                        
+                        <div class="portrait-area">
+                            <div class="portrait-frame">
+                                <img id="playerImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjNzIyRjM3IiByeD0iOCIvPgo8dGV4dCB4PSI1MCIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGREY1RTYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJzZXJpZiI+SEVST0k8L3RleHQ+Cjwvc3ZnPgo=" alt="Player">
+                            </div>
+                        </div>
+                        
+                        <div class="status-bars">
+                            <div class="health-bar">
+                                <div class="bar-label">❤ Vida</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="playerHealthBar"></div>
+                                </div>
+                                <div class="bar-text">
+                                    <span id="playerHP">100</span>/<span id="playerMaxHP">100</span>
+                                </div>
+                            </div>
+                            
+                            <div class="anima-bar">
+                                <div class="bar-label">✦ Ânima</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="playerManaBar"></div>
+                                </div>
+                                <div class="bar-text">
+                                    <span id="playerMP">50</span>/<span id="playerMaxMP">50</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+        
+        <!-- Action Panel -->
+        <section class="action-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">⟨ Ações de Combate ⟩</h2>
+            </div>
+            
+            <div class="action-grid">
+                <button class="action-btn primary" data-action="attack">
+                    <div class="btn-icon">⚔</div>
+                    <div class="btn-label">Atacar</div>
+                    <div class="btn-hotkey">[1]</div>
+                </button>
+                
+                <button class="action-btn secondary" data-action="defend">
+                    <div class="btn-icon">🛡</div>
+                    <div class="btn-label">Defender</div>
+                    <div class="btn-hotkey">[2]</div>
+                </button>
+                
+                <button class="action-btn tertiary" data-action="meditate">
+                    <div class="btn-icon">🧘</div>
+                    <div class="btn-label">Meditar</div>
+                    <div class="btn-hotkey">[3]</div>
+                </button>
+                
+                <button class="action-btn quaternary" data-action="skills">
+                    <div class="btn-icon">✨</div>
+                    <div class="btn-label">Habilidades</div>
+                    <div class="btn-hotkey">[4]</div>
+                </button>
+            </div>
+        </section>
+        
+        <!-- Skills Menu (Hidden by default) -->
+        <section class="skills-menu" id="skillsMenu" style="display: none;">
+            <div class="menu-header">
+                <h3 class="menu-title">⟨ Habilidades Ancestrais ⟩</h3>
+                <button class="close-btn" onclick="document.getElementById('skillsMenu').style.display='none'">✕</button>
+            </div>
+            <div class="skills-list" id="skillsList">
+                <!-- Skills will be populated by JavaScript -->
+            </div>
+            <div class="menu-footer">
+                <div class="navigation-hint">Use ← → para navegar • Enter para usar • ESC para fechar</div>
+            </div>
+        </section>
+        
+        <!-- Battle Log -->
+        <aside class="battle-log-panel">
+            <div class="log-header">
+                <h3 class="log-title">◊ Registro de Batalha ◊</h3>
+            </div>
+            <div class="battle-log" id="battleLog">
+                <div class="log-entry system">
+                    <span class="entry-marker">◊</span>
+                    <span class="entry-text">Sistema iniciado. Aguardando seleção de personagem...</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Character Selection Modal -->
+        <div class="modal-overlay" id="characterModal" style="display: flex;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">ESCOLHA SEU GUERREIRO</h2>
+                    <div class="header-divider">❦ ◊ ❦</div>
+                </div>
+                
+                <div class="character-grid" id="characterGrid">
+                    <!-- Characters will be populated here -->
+                    <div class="character-option loading">
+                        <div class="character-avatar">🌀</div>
+                        <div class="character-info">
+                            <h4 class="character-name">Carregando...</h4>
+                            <div class="character-details">Aguarde</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pagination-controls">
+                    <button class="modal-btn secondary" id="prevPage" disabled>◀ Anterior</button>
+                    <button class="modal-btn secondary" id="nextPage">Próximo ▶</button>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="modal-btn primary" id="startBattle" disabled>
+                        Começar Duelo
+                    </button>
+                    <button class="modal-btn secondary" id="backToMenu">
+                        Voltar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Result Modal -->
+        <div class="modal-overlay" id="resultModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="resultTitle">Vitória!</h2>
+                    <div class="header-divider">❦ ◊ ❦</div>
+                </div>
+                
+                <div class="result-content">
+                    <div class="exp-reward">
+                        <span class="reward-label">Experiência:</span>
+                        <span class="reward-value" id="expGained">0</span>
+                    </div>
+                    <div class="level-up" id="levelUpDisplay" style="display: none;">
+                        <div class="level-up-text">✧ Nível Elevado! ✧</div>
+                        <div class="new-level">Nível <span id="newLevel">2</span></div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="modal-btn primary" id="continueGame">
+                        Continuar
+                    </button>
+                    <button class="modal-btn secondary" id="newBattle">
+                        Nova Batalha
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen" style="display: flex;">
+            <div class="loading-content">
+                <div class="loading-ornament">
+                    <div class="ornament-spin">❋</div>
+                </div>
+                <div class="loading-text">Preparando Sistema Modular...</div>
+                <div class="loading-subtext">BattleMechanics + VintageBattleUI</div>
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loadingBar"></div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script src="battlemechanics.js"></script>
+    <script src="battle-refactored.js"></script>
+</body>
+</html>

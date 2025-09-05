@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos Heritage - Cultural Adaptive Battle System</title>
+    
+    <!-- Cultural Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@300;400;500;700&family=Cinzel:wght@400;500;600&family=Uncial+Antiqua&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Base Cultural System */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 8px;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-medium: 0 4px 16px rgba(0,0,0,0.15);
+            --shadow-heavy: 0 8px 32px rgba(0,0,0,0.25);
+            
+            /* Default (Universal) Theme */
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+        
+        /* Japanese Cultural Theme */
+        .theme-japanese {
+            --primary: #dc2626; /* Vermelho Cinábrio */
+            --secondary: #991b1b; /* Vermelho Escuro */
+            --accent: #fbbf24; /* Dourado Japonês */
+            --background: #fdf5e6; /* Papel Washi */
+            --surface: #ffffff;
+            --text: #1c1917;
+            --text-light: #78716c;
+            --border: #e7e5e4;
+            --pattern-color: #fef3c7;
+            
+            font-family: 'Noto Serif JP', 'Noto Sans JP', serif;
+        }
+        
+        .theme-japanese .cultural-pattern {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(251, 191, 36, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(220, 38, 38, 0.1) 2px, transparent 2px);
+            background-size: 40px 40px;
+        }
+        
+        /* Nordic Cultural Theme */
+        .theme-nordic {
+            --primary: #0ea5e9; /* Azul Gelo */
+            --secondary: #1e40af; /* Azul Profundo */
+            --accent: #f59e0b; /* Âmbar */
+            --background: #f1f5f9; /* Gelo */
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-light: #475569;
+            --border: #cbd5e1;
+            --pattern-color: #dbeafe;
+            
+            font-family: 'Cinzel', 'Cormorant Garamond', serif;
+        }
+        
+        .theme-nordic .cultural-pattern {
+            background-image: 
+                linear-gradient(45deg, rgba(14, 165, 233, 0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(245, 158, 11, 0.1) 25%, transparent 25%);
+            background-size: 30px 30px;
+        }
+        
+        /* Celtic Cultural Theme */
+        .theme-celtic {
+            --primary: #059669; /* Verde Esmeralda */
+            --secondary: #047857; /* Verde Floresta */
+            --accent: #d97706; /* Âmbar Celta */
+            --background: #f0fdf4; /* Verde Claro */
+            --surface: #ffffff;
+            --text: #14532d;
+            --text-light: #166534;
+            --border: #bbf7d0;
+            --pattern-color: #dcfce7;
+            
+            font-family: 'Uncial Antiqua', 'Cormorant Garamond', serif;
+        }
+        
+        .theme-celtic .cultural-pattern {
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.1) 3px, transparent 3px);
+            background-size: 35px 35px;
+        }
+        
+        /* Base Layout */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .battle-stage {
+            position: relative;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .cultural-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        .cultural-pattern {
+            width: 100%;
+            height: 100%;
+            transition: var(--transition);
+        }
+        
+        /* Header */
+        .battle-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border: 2px solid var(--primary);
+        }
+        
+        .header-ornament {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .battle-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .cultural-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+        
+        .turn-display {
+            font-size: 1.2rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        /* Arena Layout */
+        .duel-arena {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        /* Character Cards */
+        .combatant-card {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            border: 3px solid var(--primary);
+            transition: var(--transition);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .combatant-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        .card-frame {
+            position: relative;
+            flex: 1;
+        }
+        
+        .frame-corners {
+            position: absolute;
+            inset: -8px;
+            pointer-events: none;
+        }
+        
+        .corner {
+            position: absolute;
+            font-size: 1.2rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .corner.tl { top: 0; left: 0; }
+        .corner.tr { top: 0; right: 0; }
+        .corner.bl { bottom: 0; left: 0; }
+        .corner.br { bottom: 0; right: 0; }
+        
+        .nameplate {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .nameplate h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .level-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--surface);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .portrait-area {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .portrait-frame {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .stats-area {
+            flex: 1;
+        }
+        
+        .stat-bar {
+            margin-bottom: 1rem;
+        }
+        
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .bar-container {
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .bar-fill.hp {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+        }
+        
+        .bar-fill.anima {
+            background: linear-gradient(90deg, var(--accent), #fbbf24);
+        }
+        
+        /* VS Section */
+        .vs-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .vs-ornament {
+            background: var(--primary);
+            color: var(--surface);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: var(--shadow-medium);
+            border: 4px solid var(--accent);
+        }
+        
+        /* Actions Panel */
+        .actions-panel {
+            margin-top: 2rem;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-light);
+            border: 2px solid var(--border);
+        }
+        
+        .panel-title {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--surface);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-light);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        
+        .action-btn .icon {
+            font-size: 1.5rem;
+        }
+        
+        /* Culture Switcher */
+        .culture-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface);
+            border: 2px solid var(--primary);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            box-shadow: var(--shadow-medium);
+            z-index: 1000;
+        }
+        
+        .culture-switcher h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .culture-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .culture-btn {
+            background: var(--border);
+            border: 1px solid var(--primary);
+            border-radius: var(--border-radius);
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+        
+        .culture-btn:hover {
+            background: var(--primary);
+            color: var(--surface);
+        }
+        
+        .culture-btn.active {
+            background: var(--primary);
+            color: var(--surface);
+        }
+        
+        /* Battle Log */
+        .battle-log {
+            margin-top: 2rem;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            border: 2px solid var(--border);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-header {
+            background: var(--primary);
+            color: var(--surface);
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .log-content {
+            padding: 1rem;
+        }
+        
+        .log-entry {
+            padding: 0.5rem;
+            border-left: 3px solid var(--accent);
+            margin-bottom: 0.5rem;
+            background: rgba(255,255,255,0.5);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        /* Character Selection Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem;
+        }
+        
+        .modal-container {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 3px solid var(--primary);
+        }
+        
+        .modal-title {
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .character-option {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .character-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .character-option.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--surface);
+        }
+        
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+        }
+        
+        .loading-bar {
+            width: 300px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .loading-text {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        /* Cultural Animations */
+        @keyframes japanese-wave {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-4px) rotate(1deg); }
+        }
+        
+        @keyframes nordic-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes celtic-spiral {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) scale(1.1); }
+        }
+        
+        .theme-japanese .cultural-animation {
+            animation: japanese-wave 3s ease-in-out infinite;
+        }
+        
+        .theme-nordic .cultural-animation {
+            animation: nordic-pulse 2s ease-in-out infinite;
+        }
+        
+        .theme-celtic .cultural-animation {
+            animation: celtic-spiral 4s linear infinite;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .duel-arena {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .vs-section {
+                order: -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .battle-stage {
+                padding: 1rem;
+            }
+            
+            .battle-title {
+                font-size: 2rem;
+            }
+            
+            .combatant-card {
+                min-height: 300px;
+            }
+            
+            .culture-switcher {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Damage Numbers */
+        .damage-number {
+            position: absolute;
+            font-size: 2rem;
+            font-weight: bold;
+            z-index: 100;
+            pointer-events: none;
+            animation: damageFloat 2s ease-out forwards;
+        }
+        
+        .damage-number.critical {
+            font-size: 2.5rem;
+            color: var(--accent);
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .damage-number.heal {
+            color: var(--secondary);
+        }
+        
+        @keyframes damageFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px);
+            }
+        }
+    </style>
+</head>
+<body class="theme-japanese">
+    <!-- Cultural Backdrop -->
+    <div class="cultural-backdrop">
+        <div class="cultural-pattern"></div>
+    </div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-title cultural-animation">Chronos Heritage</div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+            <div class="loading-text" id="loadingText">Carregando herança cultural...</div>
+        </div>
+    </div>
+    
+    <!-- Culture Switcher -->
+    <div class="culture-switcher">
+        <h4>Herança Cultural</h4>
+        <div class="culture-buttons">
+            <button class="culture-btn active" onclick="switchCulture('japanese')">🏯 JP</button>
+            <button class="culture-btn" onclick="switchCulture('nordic')">⚔️ NO</button>
+            <button class="culture-btn" onclick="switchCulture('celtic')">🍀 CE</button>
+        </div>
+    </div>
+    
+    <div class="battle-stage">
+        <!-- Header -->
+        <header class="battle-header">
+            <div class="header-ornament cultural-animation">⟨ ❦ ⟩</div>
+            <h1 class="battle-title" id="battleTitle">Duelo Cultural</h1>
+            <div class="cultural-subtitle" id="culturalSubtitle">Herança Japonesa Ancestral</div>
+            <div class="turn-display">
+                Turno <span id="currentTurn">I</span>
+            </div>
+        </header>
+        
+        <!-- Main Battle Area -->
+        <main class="duel-arena">
+            <!-- Enemy Card -->
+            <div class="combatant-card enemy-card">
+                <div class="card-frame">
+                    <div class="frame-corners">
+                        <span class="corner tl">◊</span>
+                        <span class="corner tr">◊</span>
+                        <span class="corner bl">◊</span>
+                        <span class="corner br">◊</span>
+                    </div>
+                    
+                    <div class="nameplate">
+                        <h3 id="enemyName">Adversário Ancestral</h3>
+                        <div class="level-badge">Nv. <span id="enemyLevel">??</span></div>
+                    </div>
+                    
+                    <div class="portrait-area">
+                        <div class="portrait-frame" id="enemyPortrait">
+                            👹
+                        </div>
+                    </div>
+                    
+                    <div class="stats-area">
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Vida</span>
+                                <span><span id="enemyHP">300</span>/<span id="enemyMaxHP">300</span></span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill hp" id="enemyHPBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Ânima</span>
+                                <span><span id="enemyAnima">100</span>/<span id="enemyMaxAnima">100</span></span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill anima" id="enemyAnimaBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VS Section -->
+            <div class="vs-section">
+                <div class="vs-ornament cultural-animation">VS</div>
+            </div>
+            
+            <!-- Player Card -->
+            <div class="combatant-card player-card">
+                <div class="card-frame">
+                    <div class="frame-corners">
+                        <span class="corner tl">◊</span>
+                        <span class="corner tr">◊</span>
+                        <span class="corner bl">◊</span>
+                        <span class="corner br">◊</span>
+                    </div>
+                    
+                    <div class="nameplate">
+                        <h3 id="playerName">Herói Cultural</h3>
+                        <div class="level-badge">Nv. <span id="playerLevel">1</span></div>
+                    </div>
+                    
+                    <div class="portrait-area">
+                        <div class="portrait-frame" id="playerPortrait">
+                            🥷
+                        </div>
+                    </div>
+                    
+                    <div class="stats-area">
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Vida</span>
+                                <span><span id="playerHP">300</span>/<span id="playerMaxHP">300</span></span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill hp" id="playerHPBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Ânima</span>
+                                <span><span id="playerAnima">100</span>/<span id="playerMaxAnima">100</span></span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill anima" id="playerAnimaBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Actions Panel -->
+        <section class="actions-panel">
+            <h3 class="panel-title" id="actionsTitle">Ações de Combate Ancestral</h3>
+            <div class="action-grid">
+                <button class="action-btn" id="attackBtn" onclick="performAction('attack')">
+                    <span class="icon">⚔️</span>
+                    <span>Atacar</span>
+                </button>
+                <button class="action-btn" id="defendBtn" onclick="performAction('defend')">
+                    <span class="icon">🛡️</span>
+                    <span>Defender</span>
+                </button>
+                <button class="action-btn" id="meditateBtn" onclick="performAction('meditate')">
+                    <span class="icon">🧘</span>
+                    <span>Meditar</span>
+                </button>
+                <button class="action-btn" id="skillsBtn" onclick="performAction('skills')">
+                    <span class="icon">✨</span>
+                    <span>Habilidades</span>
+                </button>
+            </div>
+        </section>
+        
+        <!-- Battle Log -->
+        <section class="battle-log">
+            <div class="log-header" id="logTitle">Crônicas do Duelo Cultural</div>
+            <div class="log-content" id="battleLogContent">
+                <div class="log-entry">O duelo ancestral está prestes a começar...</div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Character Selection Modal -->
+    <div class="modal-overlay hidden" id="characterModal">
+        <div class="modal-container">
+            <h2 class="modal-title">Escolha seu Herói Cultural</h2>
+            <div class="character-grid" id="characterGrid">
+                <!-- Characters will be populated by JavaScript -->
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+                <button class="action-btn" onclick="startBattle()" id="startBattleBtn" disabled>
+                    <span>Iniciar Duelo</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Cultural Configuration
+        const CULTURES = {
+            japanese: {
+                title: 'Duelo Cultural',
+                subtitle: 'Herança Japonesa Ancestral',
+                actionsTitle: 'Ações de Bushido',
+                logTitle: 'Crônicas do Samurai',
+                characters: {
+                    'Sesshoumaru': { portrait: '🥷', culture: 'japanese' }
+                }
+            },
+            nordic: {
+                title: 'Duelo Valhalla',
+                subtitle: 'Herança Nórdica Viking',
+                actionsTitle: 'Ações de Guerra',
+                logTitle: 'Sagas do Norte',
+                characters: {
+                    'Loki': { portrait: '⚡', culture: 'nordic' }
+                }
+            },
+            celtic: {
+                title: 'Duelo Druídico',
+                subtitle: 'Herança Celta Mística',
+                actionsTitle: 'Ações dos Druidas',
+                logTitle: 'Lendas Celtas',
+                characters: {
+                    'Merlin': { portrait: '🧙', culture: 'celtic' }
+                }
+            }
+        };
+        
+        // Game State
+        let gameState = {
+            currentCulture: 'japanese',
+            playerCharacter: null,
+            enemyCharacter: null,
+            turnCounter: 1,
+            playerTurn: true,
+            battleActive: false,
+            characters: {}
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCharacters();
+        });
+        
+        function loadCharacters() {
+            // Show loading screen
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingProgress = document.getElementById('loadingProgress');
+            const loadingText = document.getElementById('loadingText');
+            
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                        showCharacterSelection();
+                    }, 500);
+                }
+                loadingProgress.style.width = progress + '%';
+                
+                const loadingMessages = [
+                    'Carregando herança cultural...',
+                    'Preparando artifacts ancestrais...',
+                    'Conectando com espíritos antigos...',
+                    'Invocando poderes culturais...'
+                ];
+                loadingText.textContent = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+            }, 200);
+            
+            // Try to load characters from API
+            fetch('/api/characters')
+                .then(response => response.json())
+                .then(data => {
+                    gameState.characters = data.characters || {};
+                })
+                .catch(() => {
+                    // Fallback characters
+                    gameState.characters = {
+                        'SESS001': {
+                            id: 'SESS001',
+                            name: 'Sesshoumaru',
+                            hp: 300, maxHP: 300,
+                            attack: 50, defense: 10,
+                            classe: 'Armamentista',
+                            anima: 100, critico: 70,
+                            culture: 'japanese'
+                        },
+                        'LOKI001': {
+                            id: 'LOKI001',
+                            name: 'Loki',
+                            hp: 300, maxHP: 300,
+                            attack: 50, defense: 10,
+                            classe: 'Lutador',
+                            anima: 100, critico: 50,
+                            culture: 'nordic'
+                        },
+                        'MERL001': {
+                            id: 'MERL001',
+                            name: 'Merlin',
+                            hp: 300, maxHP: 300,
+                            attack: 25, defense: 10,
+                            classe: 'Arcano',
+                            anima: 120, critico: 100,
+                            culture: 'celtic'
+                        }
+                    };
+                });
+        }
+        
+        function showCharacterSelection() {
+            const modal = document.getElementById('characterModal');
+            const grid = document.getElementById('characterGrid');
+            
+            grid.innerHTML = '';
+            
+            Object.values(gameState.characters).forEach(char => {
+                const option = document.createElement('div');
+                option.className = 'character-option';
+                option.onclick = () => selectCharacter(char);
+                
+                const culture = char.culture || getCultureByName(char.name);
+                const portrait = CULTURES[culture]?.characters[char.name]?.portrait || '⚔️';
+                
+                option.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">${portrait}</div>
+                    <h4>${char.name}</h4>
+                    <p>${char.classe}</p>
+                    <p style="font-size: 0.8rem; color: var(--text-light);">${getCultureName(culture)}</p>
+                `;
+                
+                grid.appendChild(option);
+            });
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function getCultureByName(name) {
+            if (name.toLowerCase().includes('sesshoumaru')) return 'japanese';
+            if (name.toLowerCase().includes('loki')) return 'nordic';
+            if (name.toLowerCase().includes('merlin')) return 'celtic';
+            return 'japanese'; // default
+        }
+        
+        function getCultureName(culture) {
+            const names = {
+                japanese: 'Herança Japonesa',
+                nordic: 'Herança Nórdica',
+                celtic: 'Herança Celta'
+            };
+            return names[culture] || 'Herança Ancestral';
+        }
+        
+        function selectCharacter(character) {
+            // Remove previous selections
+            document.querySelectorAll('.character-option').forEach(el => 
+                el.classList.remove('selected')
+            );
+            
+            // Select current
+            event.target.closest('.character-option').classList.add('selected');
+            
+            gameState.playerCharacter = character;
+            document.getElementById('startBattleBtn').disabled = false;
+            
+            // Switch to character's culture
+            const culture = character.culture || getCultureByName(character.name);
+            switchCulture(culture);
+        }
+        
+        function startBattle() {
+            if (!gameState.playerCharacter) return;
+            
+            document.getElementById('characterModal').classList.add('hidden');
+            
+            // Create enemy (simple random selection)
+            const enemyChars = Object.values(gameState.characters).filter(c => c.id !== gameState.playerCharacter.id);
+            gameState.enemyCharacter = enemyChars[Math.floor(Math.random() * enemyChars.length)] || 
+                { name: 'Sombra Ancestral', hp: 250, maxHP: 250, attack: 40, defense: 8, anima: 80, critico: 30 };
+            
+            updatePlayerUI();
+            updateEnemyUI();
+            
+            gameState.battleActive = true;
+            addBattleLog('O duelo cultural começou!');
+        }
+        
+        function switchCulture(culture) {
+            gameState.currentCulture = culture;
+            
+            // Update theme class
+            document.body.className = `theme-${culture}`;
+            
+            // Update culture buttons
+            document.querySelectorAll('.culture-btn').forEach(btn => btn.classList.remove('active'));
+            event?.target?.classList.add('active');
+            
+            // Update text content
+            const config = CULTURES[culture];
+            document.getElementById('battleTitle').textContent = config.title;
+            document.getElementById('culturalSubtitle').textContent = config.subtitle;
+            document.getElementById('actionsTitle').textContent = config.actionsTitle;
+            document.getElementById('logTitle').textContent = config.logTitle;
+        }
+        
+        function performAction(action) {
+            if (!gameState.battleActive || !gameState.playerTurn) return;
+            
+            let logMessage = '';
+            let damage = 0;
+            let heal = 0;
+            
+            switch(action) {
+                case 'attack':
+                    damage = Math.floor(Math.random() * 40) + 20;
+                    const isCrit = Math.random() < (gameState.playerCharacter.critico / 100);
+                    if (isCrit) {
+                        damage = Math.floor(damage * 1.5);
+                        logMessage = `${gameState.playerCharacter.name} desfere um golpe crítico! (${damage} dano)`;
+                        showDamageNumber(damage, true, 'enemy');
+                    } else {
+                        logMessage = `${gameState.playerCharacter.name} ataca! (${damage} dano)`;
+                        showDamageNumber(damage, false, 'enemy');
+                    }
+                    gameState.enemyCharacter.hp = Math.max(0, gameState.enemyCharacter.hp - damage);
+                    break;
+                    
+                case 'defend':
+                    const animaGain = Math.floor(Math.random() * 15) + 10;
+                    gameState.playerCharacter.anima = Math.min(gameState.playerCharacter.anima + animaGain, 100);
+                    logMessage = `${gameState.playerCharacter.name} defende e recupera ${animaGain} pontos de ânima`;
+                    break;
+                    
+                case 'meditate':
+                    heal = Math.floor(Math.random() * 30) + 20;
+                    const animaRecover = Math.floor(Math.random() * 20) + 15;
+                    gameState.playerCharacter.hp = Math.min(gameState.playerCharacter.hp + heal, gameState.playerCharacter.maxHP);
+                    gameState.playerCharacter.anima = Math.min(gameState.playerCharacter.anima + animaRecover, 100);
+                    logMessage = `${gameState.playerCharacter.name} medita: +${heal} HP, +${animaRecover} ânima`;
+                    showDamageNumber(heal, false, 'player', 'heal');
+                    break;
+                    
+                case 'skills':
+                    if (gameState.playerCharacter.anima >= 30) {
+                        damage = Math.floor(Math.random() * 60) + 40;
+                        gameState.playerCharacter.anima -= 30;
+                        gameState.enemyCharacter.hp = Math.max(0, gameState.enemyCharacter.hp - damage);
+                        logMessage = `${gameState.playerCharacter.name} usa habilidade especial! (${damage} dano)`;
+                        showDamageNumber(damage, true, 'enemy');
+                    } else {
+                        logMessage = `${gameState.playerCharacter.name} não tem ânima suficiente para habilidades`;
+                        return;
+                    }
+                    break;
+            }
+            
+            addBattleLog(logMessage);
+            updatePlayerUI();
+            updateEnemyUI();
+            
+            // Check victory
+            if (gameState.enemyCharacter.hp <= 0) {
+                setTimeout(() => {
+                    addBattleLog('Vitória! O duelo cultural foi conquistado!');
+                    gameState.battleActive = false;
+                }, 1000);
+                return;
+            }
+            
+            // Enemy turn
+            gameState.playerTurn = false;
+            setTimeout(enemyTurn, 1500);
+        }
+        
+        function enemyTurn() {
+            if (!gameState.battleActive) return;
+            
+            const actions = ['attack', 'defend', 'meditate'];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            
+            let logMessage = '';
+            let damage = 0;
+            
+            switch(action) {
+                case 'attack':
+                    damage = Math.floor(Math.random() * 35) + 15;
+                    gameState.playerCharacter.hp = Math.max(0, gameState.playerCharacter.hp - damage);
+                    logMessage = `${gameState.enemyCharacter.name} ataca! (${damage} dano)`;
+                    showDamageNumber(damage, false, 'player');
+                    break;
+                    
+                case 'defend':
+                    logMessage = `${gameState.enemyCharacter.name} se defende`;
+                    break;
+                    
+                case 'meditate':
+                    const heal = Math.floor(Math.random() * 25) + 15;
+                    gameState.enemyCharacter.hp = Math.min(gameState.enemyCharacter.hp + heal, gameState.enemyCharacter.maxHP);
+                    logMessage = `${gameState.enemyCharacter.name} medita e recupera ${heal} HP`;
+                    showDamageNumber(heal, false, 'enemy', 'heal');
+                    break;
+            }
+            
+            addBattleLog(logMessage);
+            updatePlayerUI();
+            updateEnemyUI();
+            
+            // Check defeat
+            if (gameState.playerCharacter.hp <= 0) {
+                setTimeout(() => {
+                    addBattleLog('Derrota... O adversário mostrou maior domínio cultural.');
+                    gameState.battleActive = false;
+                }, 1000);
+                return;
+            }
+            
+            // Next turn
+            gameState.turnCounter++;
+            document.getElementById('currentTurn').textContent = toRoman(gameState.turnCounter);
+            gameState.playerTurn = true;
+        }
+        
+        function updatePlayerUI() {
+            if (!gameState.playerCharacter) return;
+            
+            const char = gameState.playerCharacter;
+            document.getElementById('playerName').textContent = char.name;
+            document.getElementById('playerLevel').textContent = char.level || 1;
+            document.getElementById('playerHP').textContent = char.hp;
+            document.getElementById('playerMaxHP').textContent = char.maxHP;
+            document.getElementById('playerAnima').textContent = char.anima;
+            document.getElementById('playerMaxAnima').textContent = 100;
+            
+            const hpPercent = (char.hp / char.maxHP) * 100;
+            const animaPercent = (char.anima / 100) * 100;
+            
+            document.getElementById('playerHPBar').style.width = hpPercent + '%';
+            document.getElementById('playerAnimaBar').style.width = animaPercent + '%';
+            
+            // Update portrait based on culture
+            const culture = char.culture || getCultureByName(char.name);
+            const portrait = CULTURES[culture]?.characters[char.name]?.portrait || '⚔️';
+            document.getElementById('playerPortrait').textContent = portrait;
+        }
+        
+        function updateEnemyUI() {
+            if (!gameState.enemyCharacter) return;
+            
+            const char = gameState.enemyCharacter;
+            document.getElementById('enemyName').textContent = char.name;
+            document.getElementById('enemyLevel').textContent = char.level || 1;
+            document.getElementById('enemyHP').textContent = char.hp;
+            document.getElementById('enemyMaxHP').textContent = char.maxHP;
+            document.getElementById('enemyAnima').textContent = char.anima || 100;
+            document.getElementById('enemyMaxAnima').textContent = 100;
+            
+            const hpPercent = (char.hp / char.maxHP) * 100;
+            const animaPercent = ((char.anima || 100) / 100) * 100;
+            
+            document.getElementById('enemyHPBar').style.width = hpPercent + '%';
+            document.getElementById('enemyAnimaBar').style.width = animaPercent + '%';
+        }
+        
+        function showDamageNumber(amount, isCritical, target, type = 'damage') {
+            const targetElement = document.querySelector(target === 'player' ? '.player-card' : '.enemy-card');
+            const rect = targetElement.getBoundingClientRect();
+            
+            const damageEl = document.createElement('div');
+            damageEl.className = `damage-number ${isCritical ? 'critical' : ''} ${type}`;
+            damageEl.textContent = type === 'heal' ? `+${amount}` : `-${amount}`;
+            damageEl.style.left = (rect.left + rect.width / 2) + 'px';
+            damageEl.style.top = (rect.top + rect.height / 2) + 'px';
+            
+            document.body.appendChild(damageEl);
+            
+            setTimeout(() => {
+                damageEl.remove();
+            }, 2000);
+        }
+        
+        function addBattleLog(message) {
+            const logContent = document.getElementById('battleLogContent');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = message;
+            logContent.appendChild(entry);
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+        
+        function toRoman(num) {
+            const values = [10, 9, 5, 4, 1];
+            const numerals = ['X', 'IX', 'V', 'IV', 'I'];
+            let result = '';
+            
+            for (let i = 0; i < values.length; i++) {
+                while (num >= values[i]) {
+                    result += numerals[i];
+                    num -= values[i];
+                }
+            }
+            return result;
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (!gameState.battleActive || !gameState.playerTurn) return;
+            
+            switch(e.key) {
+                case '1': performAction('attack'); break;
+                case '2': performAction('defend'); break;
+                case '3': performAction('meditate'); break;
+                case '4': performAction('skills'); break;
+            }
+        });
+    </script>
+</body>
+</html>

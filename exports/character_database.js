@@ -1,18 +1,18 @@
-// Character Database - Generated automatically
-// Generated at: 2025-08-26T08:41:03.741Z
+// RPGStack Characters - Generated automatically
+// Generated at: 2025-09-04T21:13:12.240Z
 // Mixed ID System: Legacy IDs preserved + New Hexadecimal IDs
 
 const CharacterDatabase = {
   // ID: 045CCF3515 (HEX)
-  "robin": {
+  "milo_eleznikov": {
     "id": "045CCF3515",
-    "name": "Robin",
+    "name": "Miloš Železnikov",
     "level": 1,
-    "hp": 10,
-    "maxHP": 10,
-    "attack": 1,
-    "defense": 1,
-    "sprite": "assets/sprites/Robin.webp",
+    "hp": 300,
+    "maxHP": 300,
+    "attack": 50,
+    "defense": 10,
+    "sprite": "assets/sprites/milo_eleznikov.webp",
     "color": 4873507,
     "borderColor": 2962964,
     "size": 12,
@@ -23,1554 +23,616 @@ const CharacterDatabase = {
     ],
     "ai_type": "aggressive",
     "spawn_weight": 10,
-    "description": "",
+    "description": "Mestre ferreiro eslavo que forja armas lendárias usando técnicas ancestrais transmitidas por gerações de artesãos da resistência.",
     "drops": [],
-    "skills": [],
+    "skills": [
+        {
+            "skillName": "🔨 Forja do Dragão Eslavo",
+            "skillDamage": 95,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Armamentista",
+    "anima": 100,
+    "critico": 70,
     "created_at": "2025-08-25T23:57:38.589Z",
-    "updated_at": "2025-08-26T08:12:49.285Z"
+    "updated_at": "2025-09-04T18:51:51.299Z",
+    "defesa_especial": 28,
+    "cultura": "Eslava",
+    "artefato": "Koljčuga Drakonova - Armadura forjada com escamas de dragão eslavo, oferece resistência contra magia e frio ancestral.",
+    "elemento_cultural": "Tradições de ferraria e resistência às adversidades do inverno eslavo. Conexão espiritual com os ancestrais guerreiros."
 },
 
-  // ID: DE1A45C5EB (HEX)
-  "aria_nightwhisper": {
-    "id": "DE1A45C5EB",
-    "name": "Aria Nightwhisper",
-    "level": 12,
-    "hp": 85,
-    "maxHP": 85,
-    "attack": 28,
-    "defense": 22,
-    "sprite": null,
+  // ID: EA32D10F2D (HEX)
+  "shi_wuxing": {
+    "id": "EA32D10F2D",
+    "name": "Shi Wuxing",
+    "level": 1,
+    "hp": 300,
+    "maxHP": 300,
+    "attack": 50,
+    "defense": 10,
+    "sprite": "assets/sprites/shi_wuxing.webp",
     "color": 4873507,
     "borderColor": 2962964,
     "size": 12,
-    "experience": 15000,
+    "experience": 1,
     "goldRange": [
-        50,
-        120
+        1,
+        5
     ],
-    "ai_type": "caster",
+    "ai_type": "aggressive",
+    "spawn_weight": 10,
+    "description": "Guerreiro-filósofo que domina as artes marciais através da harmonia com os cinco elementos fundamentais da cosmologia chinesa.",
+    "drops": [],
+    "skills": [
+        {
+            "skillName": "🌊 Ciclo dos Cinco Elementos",
+            "skillDamage": 85,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Lutador",
+    "anima": 100,
+    "critico": 50,
+    "created_at": "2025-08-31T17:47:13.246Z",
+    "updated_at": "2025-09-04T18:26:59.721Z",
+    "defesa_especial": 32,
+    "cultura": "Chinesa",
+    "artefato": "Amuleto dos Cinco Elementos - Talismã que canaliza Wu Xing (五行), permitindo harmonizar as forças naturais em combate.",
+    "elemento_cultural": "Filosofia dos Cinco Elementos (Metal, Madeira, Água, Fogo, Terra) e práticas de cultivo interno de qi."
+},
+
+  // ID: A9C4N0001E (LEGACY)
+  "aurelius_ignisvox": {
+    "id": "A9C4N0001E",
+    "name": "Aurelius Ignisvox",
+    "level": 1,
+    "hp": 300,
+    "maxHP": 300,
+    "attack": 25,
+    "defense": 10,
+    "sprite": "assets/sprites/aurelius_ignisvox.webp",
+    "color": 8388736,
+    "borderColor": 5592405,
+    "size": 12,
+    "experience": 1,
+    "goldRange": [
+        2,
+        6
+    ],
+    "ai_type": "aggressive",
     "spawn_weight": 8,
-    "description": "Uma elfa mística especializada em magias sombrias e ilusões.",
+    "description": "Ex-senador romano que se tornou mago após descobrir pergaminhos arcanos nas bibliotecas de Alexandria, combinando liderança política com poder místico.",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:35:51.728Z"
-},
-
-  // ID: 17E928B7DF (HEX)
-  "thorgar_ironbeard": {
-    "id": "17E928B7DF",
-    "name": "Thorgar Ironbeard",
-    "level": 18,
-    "hp": 140,
-    "maxHP": 140,
-    "attack": 45,
-    "defense": 38,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 28000,
-    "goldRange": [
-        80,
-        200
+    "skills": [
+        {
+            "skillName": "🏛️ Decreto Senatorial Arcano",
+            "skillDamage": 110,
+            "skillCost": 0,
+            "source": "legacy"
+        }
     ],
-    "ai_type": "tank",
-    "spawn_weight": 6,
-    "description": "Anão guerreiro veterano com armadura pesada e machado lendário.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:35:58.916Z"
+    "classe": "Arcano",
+    "anima": 120,
+    "critico": 100,
+    "created_at": "2025-09-01T10:00:00.000Z",
+    "updated_at": "2025-09-04T18:26:49.532Z",
+    "defesa_especial": 47,
+    "cultura": "Romana",
+    "artefato": "Báculo do Senatus - Cetro consular que amplifica autoridade e poder de comando sobre elementos arcanos.",
+    "elemento_cultural": "Tradição senatorial romana e conhecimento das leis arcanas estabelecidas pelo Império. Oratória persuasiva e liderança natural."
 },
 
-  // ID: 023C56A2EB (HEX)
-  "zara_swiftarrow": {
-    "id": "023C56A2EB",
-    "name": "Zara Swiftarrow",
-    "level": 10,
-    "hp": 75,
-    "maxHP": 75,
-    "attack": 32,
-    "defense": 18,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
+  // ID: 7A8B9C0D1E (HEX)
+  "pythia_kassandra": {
+    "id": "7A8B9C0D1E",
+    "name": "Pythia Kassandra",
+    "level": 1,
+    "hp": 280,
+    "maxHP": 280,
+    "attack": 35,
+    "defense": 15,
+    "sprite": "assets/sprites/pythia_kassandra.webp",
+    "color": 9109504,
+    "borderColor": 6966323,
     "size": 12,
-    "experience": 8500,
+    "experience": 1,
+    "goldRange": [
+        10,
+        25
+    ],
+    "ai_type": "aggressive",
+    "spawn_weight": 5,
+    "description": "Oráculo de Delphi - Sempre prevê desgraças, mas ninguém acredita",
+    "drops": [],
+    "skills": [
+        {
+            "skillName": "🔮 Visão Oracular Délfica",
+            "skillDamage": 0,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Oráculo",
+    "anima": 150,
+    "critico": 85,
+    "cultura": "Grécia Antiga",
+    "artefato": "Trípode de bronze com inscrições délficas",
+    "elemento_cultural": "Templo de Delphi, vapores oraculares sagrados",
+    "created_at": "2025-09-04T17:30:00.000Z",
+    "updated_at": "2025-09-04T20:31:39.757Z",
+    "defesa_especial": 70
+},
+
+  // ID: 2F3E4D5C6B (HEX)
+  "itzel_nahualli": {
+    "id": "2F3E4D5C6B",
+    "name": "Itzel Nahualli",
+    "level": 1,
+    "hp": 320,
+    "maxHP": 320,
+    "attack": 45,
+    "defense": 20,
+    "sprite": "assets/sprites/itzel_nahualli.webp",
+    "color": 8388736,
+    "borderColor": 5592405,
+    "size": 12,
+    "experience": 1,
+    "goldRange": [
+        15,
+        30
+    ],
+    "ai_type": "aggressive",
+    "spawn_weight": 4,
+    "description": "Nahualli Asteca - Transforma-se em jaguar durante rituais de sangue",
+    "drops": [],
+    "skills": [
+        {
+            "skillName": "🐆 Transformação Jaguar",
+            "skillDamage": 85,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Oráculo",
+    "anima": 180,
+    "critico": 95,
+    "cultura": "Asteca/Mexica",
+    "artefato": "Espelho de obsidiana de Tezcatlipoca",
+    "elemento_cultural": "Códices astecas, calendário de 260 dias, obsidiana ritual",
+    "created_at": "2025-09-04T17:35:00.000Z",
+    "updated_at": "2025-09-04T20:18:30.533Z",
+    "defesa_especial": 73
+},
+
+  // ID: 9A8B7C6D5E (HEX)
+  "giovanni_da_ferrara": {
+    "id": "9A8B7C6D5E",
+    "name": "Giovanni da Ferrara",
+    "level": 1,
+    "hp": 300,
+    "maxHP": 300,
+    "attack": 40,
+    "defense": 25,
+    "sprite": "assets/sprites/giovanni_da_ferrara.webp",
+    "color": 16776960,
+    "borderColor": 13421568,
+    "size": 12,
+    "experience": 1,
+    "goldRange": [
+        20,
+        40
+    ],
+    "ai_type": "aggressive",
+    "spawn_weight": 3,
+    "description": "Artífice Renascentista - Cria autômatos movidos por engrenagens celestiais",
+    "drops": [],
+    "skills": [
+        {
+            "skillName": "⚙️ Autômato Celestial",
+            "skillDamage": 60,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Artífice",
+    "anima": 160,
+    "critico": 75,
+    "cultura": "Renascimento Italiano",
+    "artefato": "Esfera armilar mecânica que prevê movimentos planetários",
+    "elemento_cultural": "Workshop renascentista, manuscritos de Leonardo, geometria sagrada",
+    "created_at": "2025-09-04T17:40:00.000Z",
+    "updated_at": "2025-09-04T20:23:59.992Z",
+    "defesa_especial": 56
+},
+
+  // ID: 4F3E2D1C0B (HEX)
+  "yamazaki_karakuri": {
+    "id": "4F3E2D1C0B",
+    "name": "Yamazaki Karakuri",
+    "level": 1,
+    "hp": 290,
+    "maxHP": 290,
+    "attack": 50,
+    "defense": 30,
+    "sprite": "assets/sprites/yamazaki_karakuri.webp",
+    "color": 16711935,
+    "borderColor": 13369548,
+    "size": 12,
+    "experience": 1,
+    "goldRange": [
+        25,
+        45
+    ],
+    "ai_type": "aggressive",
+    "spawn_weight": 2,
+    "description": "Mestre Karakuri - Especialista em bonecas que imitam vida humana",
+    "drops": [],
+    "skills": [
+        {
+            "skillName": "🎭 Boneca Viva",
+            "skillDamage": 70,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Artífice",
+    "anima": 170,
+    "critico": 80,
+    "cultura": "Japão Período Edo",
+    "artefato": "Kit de ferramentas com 99 instrumentos diferentes",
+    "elemento_cultural": "Teatro kabuki, precisão artesanal japonesa, mono no aware",
+    "created_at": "2025-09-04T17:45:00.000Z",
+    "updated_at": "2025-09-04T20:39:55.692Z",
+    "defesa_especial": 57
+},
+
+  // ID: 8A9B0C1D2E (HEX)
+  "aiyana_windtalker": {
+    "id": "8A9B0C1D2E",
+    "name": "Aiyana Windtalker",
+    "level": 1,
+    "hp": 400,
+    "maxHP": 400,
+    "attack": 55,
+    "defense": 35,
+    "sprite": "assets/sprites/aiyana_windtalker.webp",
+    "color": 9109504,
+    "borderColor": 6966323,
+    "size": 12,
+    "experience": 1,
     "goldRange": [
         30,
+        60
+    ],
+    "ai_type": "aggressive",
+    "spawn_weight": 2,
+    "description": "Guardião Lakota - Comunica-se com espíritos dos bisões das Grandes Planícies",
+    "drops": [],
+    "skills": [
+        {
+            "skillName": "🌪️ Chamado dos Quatro Ventos",
+            "skillDamage": 90,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Guardião da Natureza",
+    "anima": 200,
+    "critico": 90,
+    "cultura": "Lakota/Dakota",
+    "artefato": "Cachimbo sagrado chanupa conectado aos quatro ventos",
+    "elemento_cultural": "Cocar sagrado, pinturas corporais rituais, tradição oral",
+    "created_at": "2025-09-04T17:50:00.000Z",
+    "updated_at": "2025-09-04T20:44:01.643Z",
+    "defesa_especial": 65
+},
+
+  // ID: 3F4E5D6C7B (HEX)
+  "bjrn_ulfhednar": {
+    "id": "3F4E5D6C7B",
+    "name": "Björn Ulfhednar",
+    "level": 1,
+    "hp": 450,
+    "maxHP": 450,
+    "attack": 70,
+    "defense": 40,
+    "sprite": "assets/sprites/bjrn_ulfhednar.webp",
+    "color": 4210752,
+    "borderColor": 2763306,
+    "size": 12,
+    "experience": 1,
+    "goldRange": [
+        40,
         80
     ],
     "ai_type": "aggressive",
-    "spawn_weight": 12,
-    "description": "Arqueira élfica ágil com pontaria mortal.",
+    "spawn_weight": 1,
+    "description": "Berserker Viking - Canaliza o espírito do lobo Fenrir",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.026Z"
-},
-
-  // ID: 19AAAFD9DB (HEX)
-  "marcus_flameward": {
-    "id": "19AAAFD9DB",
-    "name": "Marcus Flameward",
-    "level": 15,
-    "hp": 110,
-    "maxHP": 110,
-    "attack": 38,
-    "defense": 28,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 18000,
-    "goldRange": [
-        60,
-        150
+    "skills": [
+        {
+            "skillName": "🐺 Fúria do Fenrir",
+            "skillDamage": 120,
+            "skillCost": 0,
+            "source": "legacy"
+        }
     ],
-    "ai_type": "guardian",
-    "spawn_weight": 7,
-    "description": "Paladino humano protetor dos inocentes.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.042Z"
+    "classe": "Guardião da Natureza",
+    "anima": 220,
+    "critico": 110,
+    "cultura": "Viking/Nórdico",
+    "artefato": "Braceletes rúnicos que amplificam a ira divina",
+    "elemento_cultural": "Runas bind, pele de lobo sagrada, fúria controlada",
+    "created_at": "2025-09-04T17:55:00.000Z",
+    "updated_at": "2025-09-04T20:28:57.409Z",
+    "defesa_especial": 67
 },
 
-  // ID: 655D9B99F5 (HEX)
-  "nyx_shadowbane": {
-    "id": "655D9B99F5",
-    "name": "Nyx Shadowbane",
-    "level": 20,
-    "hp": 95,
-    "maxHP": 95,
-    "attack": 50,
-    "defense": 25,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
+  // ID: 6A7B8C9D0E (HEX)
+  "hadji_abdulrahman_albaghdadi": {
+    "id": "6A7B8C9D0E",
+    "name": "Hadji Abdul-Rahman al-Baghdadi",
+    "level": 1,
+    "hp": 350,
+    "maxHP": 350,
+    "attack": 45,
+    "defense": 32,
+    "sprite": "assets/sprites/hadji_abdulrahman_albaghdadi.webp",
+    "color": 16776960,
+    "borderColor": 13421568,
     "size": 12,
-    "experience": 35000,
-    "goldRange": [
-        100,
-        250
-    ],
-    "ai_type": "ambush",
-    "spawn_weight": 5,
-    "description": "Assassino halfling mestre das sombras.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.056Z"
-},
-
-  // ID: 6EC2FFF3CF (HEX)
-  "luna_frostcaller": {
-    "id": "6EC2FFF3CF",
-    "name": "Luna Frostcaller",
-    "level": 14,
-    "hp": 80,
-    "maxHP": 80,
-    "attack": 30,
-    "defense": 20,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 16000,
-    "goldRange": [
-        55,
-        130
-    ],
-    "ai_type": "caster",
-    "spawn_weight": 9,
-    "description": "Maga humana especialista em magia de gelo.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.072Z"
-},
-
-  // ID: 3ABFA7EE7A (HEX)
-  "grimjaw_bonecrusher": {
-    "id": "3ABFA7EE7A",
-    "name": "Grimjaw Bonecrusher",
-    "level": 22,
-    "hp": 160,
-    "maxHP": 160,
-    "attack": 48,
-    "defense": 35,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 42000,
-    "goldRange": [
-        120,
-        300
-    ],
-    "ai_type": "aggressive",
-    "spawn_weight": 4,
-    "description": "Orc bárbaro brutal com sede de batalha.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.085Z"
-},
-
-  // ID: AE58CBA11C (HEX)
-  "elara_moonweaver": {
-    "id": "AE58CBA11C",
-    "name": "Elara Moonweaver",
-    "level": 11,
-    "hp": 70,
-    "maxHP": 70,
-    "attack": 25,
-    "defense": 22,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 10000,
-    "goldRange": [
-        40,
-        90
-    ],
-    "ai_type": "caster",
-    "spawn_weight": 10,
-    "description": "Druida élfica em harmonia com a natureza.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.101Z"
-},
-
-  // ID: F0C301E926 (HEX)
-  "viktor_ironshield": {
-    "id": "F0C301E926",
-    "name": "Viktor Ironshield",
-    "level": 16,
-    "hp": 125,
-    "maxHP": 125,
-    "attack": 35,
-    "defense": 42,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 20000,
-    "goldRange": [
-        70,
-        180
-    ],
-    "ai_type": "tank",
-    "spawn_weight": 6,
-    "description": "Guerreiro humano com defesa impenetrável.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.116Z"
-},
-
-  // ID: 23DE5E6052 (HEX)
-  "raven_nightstrike": {
-    "id": "23DE5E6052",
-    "name": "Raven Nightstrike",
-    "level": 13,
-    "hp": 85,
-    "maxHP": 85,
-    "attack": 40,
-    "defense": 20,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 13500,
+    "experience": 1,
     "goldRange": [
         50,
-        120
-    ],
-    "ai_type": "ambush",
-    "spawn_weight": 8,
-    "description": "Ranger meio-elfo caçador silencioso.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.129Z"
-},
-
-  // ID: 829254F42E (HEX)
-  "malachar_voidbringer": {
-    "id": "829254F42E",
-    "name": "Malachar Voidbringer",
-    "level": 25,
-    "hp": 130,
-    "maxHP": 130,
-    "attack": 55,
-    "defense": 30,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 60000,
-    "goldRange": [
-        150,
-        400
-    ],
-    "ai_type": "caster",
-    "spawn_weight": 3,
-    "description": "Necromante sombrio com poderes devastadores.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.142Z"
-},
-
-  // ID: 936A5DD465 (HEX)
-  "sylvia_stormcaller": {
-    "id": "936A5DD465",
-    "name": "Sylvia Stormcaller",
-    "level": 17,
-    "hp": 95,
-    "maxHP": 95,
-    "attack": 42,
-    "defense": 25,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 24000,
-    "goldRange": [
-        75,
-        190
-    ],
-    "ai_type": "caster",
-    "spawn_weight": 7,
-    "description": "Feiticeira élfica mestra dos elementos.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:36:47.158Z"
-},
-
-  // ID: F82114B2DA (HEX)
-  "kaelen_frostbite": {
-    "id": "F82114B2DA",
-    "name": "Kaelen Frostbite",
-    "level": 8,
-    "hp": 60,
-    "maxHP": 60,
-    "attack": 22,
-    "defense": 15,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 5000,
-    "goldRange": [
-        25,
-        60
-    ],
-    "ai_type": "passive",
-    "spawn_weight": 15,
-    "description": "Jovem mago aprendiz de magias de gelo.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.059Z"
-},
-
-  // ID: 85DDCAD93C (HEX)
-  "seraphina_lightbringer": {
-    "id": "85DDCAD93C",
-    "name": "Seraphina Lightbringer",
-    "level": 19,
-    "hp": 105,
-    "maxHP": 105,
-    "attack": 40,
-    "defense": 30,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 32000,
-    "goldRange": [
-        90,
-        220
-    ],
-    "ai_type": "guardian",
-    "spawn_weight": 5,
-    "description": "Clériga élfica defensora da luz divina.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.071Z"
-},
-
-  // ID: 89A0158B38 (HEX)
-  "drakus_flameheart": {
-    "id": "89A0158B38",
-    "name": "Drakus Flameheart",
-    "level": 21,
-    "hp": 145,
-    "maxHP": 145,
-    "attack": 52,
-    "defense": 28,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 38000,
-    "goldRange": [
-        110,
-        280
+        100
     ],
     "ai_type": "aggressive",
-    "spawn_weight": 4,
-    "description": "Dragão humanoide com poder sobre o fogo.",
+    "spawn_weight": 2,
+    "description": "Mercador Abássida - Carrega bolsa infinita com tesouros de todo mundo conhecido",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.084Z"
-},
-
-  // ID: 31D9B1BF62 (HEX)
-  "whisper_moonshade": {
-    "id": "31D9B1BF62",
-    "name": "Whisper Moonshade",
-    "level": 9,
-    "hp": 65,
-    "maxHP": 65,
-    "attack": 28,
-    "defense": 12,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 6500,
-    "goldRange": [
-        20,
-        50
+    "skills": [
+        {
+            "skillName": "✨ Tapete das Mil e Uma Noites",
+            "skillDamage": 0,
+            "skillCost": 0,
+            "source": "legacy"
+        }
     ],
-    "ai_type": "ambush",
-    "spawn_weight": 14,
-    "description": "Ladina halfling especialista em furtividade.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.099Z"
+    "classe": "Mercador-Diplomata",
+    "anima": 190,
+    "critico": 65,
+    "cultura": "Califado Abássida",
+    "artefato": "Tapete voador tecido com fios de luz das estrelas",
+    "elemento_cultural": "Rota da Seda, caligrafia árabe, hospitalidade islâmica",
+    "created_at": "2025-09-04T18:00:00.000Z",
+    "updated_at": "2025-09-04T20:48:29.572Z",
+    "defesa_especial": 62
 },
 
-  // ID: 997A32C335 (HEX)
-  "gorath_stonebreaker": {
-    "id": "997A32C335",
-    "name": "Gorath Stonebreaker",
-    "level": 24,
-    "hp": 180,
-    "maxHP": 180,
-    "attack": 46,
-    "defense": 45,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 50000,
-    "goldRange": [
-        140,
-        350
-    ],
-    "ai_type": "tank",
-    "spawn_weight": 3,
-    "description": "Golem de pedra ancestral com força descomunal.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.113Z"
-},
-
-  // ID: 7DF42DF5D2 (HEX)
-  "lydia_starweaver": {
-    "id": "7DF42DF5D2",
-    "name": "Lydia Starweaver",
-    "level": 16,
-    "hp": 90,
-    "maxHP": 90,
+  // ID: 1F2E3D4C5B (HEX)
+  "lady_catherine_ashworth": {
+    "id": "1F2E3D4C5B",
+    "name": "Lady Catherine Ashworth",
+    "level": 1,
+    "hp": 280,
+    "maxHP": 280,
     "attack": 35,
-    "defense": 24,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
+    "defense": 28,
+    "sprite": "assets/sprites/lady_catherine_ashworth.webp",
+    "color": 16711935,
+    "borderColor": 13369548,
     "size": 12,
-    "experience": 21000,
+    "experience": 1,
     "goldRange": [
-        65,
-        160
+        35,
+        70
     ],
-    "ai_type": "caster",
-    "spawn_weight": 7,
-    "description": "Encantadora humana tecedora de magias estelares.",
+    "ai_type": "aggressive",
+    "spawn_weight": 3,
+    "description": "Dama Vitoriana - Manipula alta sociedade através de chás ritualizados e fofocas codificadas",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.126Z"
+    "skills": [
+        {
+            "skillName": "🍵 Chá da Revelação",
+            "skillDamage": 0,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Mercador-Diplomata",
+    "anima": 165,
+    "critico": 70,
+    "cultura": "Inglaterra Vitoriana",
+    "artefato": "Serviço de chá que revela segredos alheios",
+    "elemento_cultural": "Etiqueta vitoriana, linguagem dos leques, salões literários",
+    "created_at": "2025-09-04T18:05:00.000Z",
+    "updated_at": "2025-09-04T20:56:23.810Z",
+    "defesa_especial": 59
 },
 
-  // ID: 41D2292BF5 (HEX)
-  "fenrir_bloodclaw": {
-    "id": "41D2292BF5",
-    "name": "Fenrir Bloodclaw",
-    "level": 23,
-    "hp": 155,
-    "maxHP": 155,
-    "attack": 58,
-    "defense": 32,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
+  // ID: 5A6B7C8D9E (HEX)
+  "ly_if_babalawo": {
+    "id": "5A6B7C8D9E",
+    "name": "Ọlọ́yẹ̀ Ifá Babalawo",
+    "level": 1,
+    "hp": 380,
+    "maxHP": 380,
+    "attack": 50,
+    "defense": 38,
+    "sprite": "assets/sprites/ly_if_babalawo.webp",
+    "color": 8388736,
+    "borderColor": 5592405,
     "size": 12,
-    "experience": 45000,
-    "goldRange": [
-        130,
-        320
-    ],
-    "ai_type": "pack",
-    "spawn_weight": 4,
-    "description": "Lobisomem alfa líder de matilha selvagem.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.144Z"
-},
-
-  // ID: 11830A0FFD (HEX)
-  "celestine_dawnblade": {
-    "id": "11830A0FFD",
-    "name": "Celestine Dawnblade",
-    "level": 20,
-    "hp": 115,
-    "maxHP": 115,
-    "attack": 48,
-    "defense": 35,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 36000,
-    "goldRange": [
-        100,
-        250
-    ],
-    "ai_type": "guardian",
-    "spawn_weight": 5,
-    "description": "Paladina élfica portadora da lâmina sagrada.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.158Z"
-},
-
-  // ID: 2A68DC2276 (HEX)
-  "shadow_the_silent": {
-    "id": "2A68DC2276",
-    "name": "Shadow the Silent",
-    "level": 15,
-    "hp": 80,
-    "maxHP": 80,
-    "attack": 44,
-    "defense": 18,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 19000,
-    "goldRange": [
-        55,
-        140
-    ],
-    "ai_type": "ambush",
-    "spawn_weight": 8,
-    "description": "Assassino encapuzado mestre do silêncio mortal.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.171Z"
-},
-
-  // ID: F38A2DFFD7 (HEX)
-  "ember_wildheart": {
-    "id": "F38A2DFFD7",
-    "name": "Ember Wildheart",
-    "level": 12,
-    "hp": 75,
-    "maxHP": 75,
-    "attack": 30,
-    "defense": 20,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 12000,
+    "experience": 1,
     "goldRange": [
         45,
-        110
-    ],
-    "ai_type": "pack",
-    "spawn_weight": 10,
-    "description": "Druida meio-orc com espíritos animais.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:19.185Z"
-},
-
-  // ID: 71AC333023 (HEX)
-  "zephyr_windwalker": {
-    "id": "71AC333023",
-    "name": "Zephyr Windwalker",
-    "level": 18,
-    "hp": 100,
-    "maxHP": 100,
-    "attack": 36,
-    "defense": 22,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 26000,
-    "goldRange": [
-        80,
-        200
+        90
     ],
     "ai_type": "aggressive",
-    "spawn_weight": 6,
-    "description": "Élfico ranger mestre dos ventos e rastreamento.",
+    "spawn_weight": 1,
+    "description": "Babalawo Iorubá - Lê destinos através de 256 configurações de búzios sagrados",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.631Z"
-},
-
-  // ID: 31F867B5F4 (HEX)
-  "ravenna_soulreaper": {
-    "id": "31F867B5F4",
-    "name": "Ravenna Soulreaper",
-    "level": 26,
-    "hp": 140,
-    "maxHP": 140,
-    "attack": 60,
-    "defense": 28,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 65000,
-    "goldRange": [
-        200,
-        500
+    "skills": [
+        {
+            "skillName": "🪙 Leitura dos 256 Odús",
+            "skillDamage": 0,
+            "skillCost": 0,
+            "source": "legacy"
+        }
     ],
-    "ai_type": "caster",
-    "spawn_weight": 2,
-    "description": "Bruxa sombria coletora de almas perdidas.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.645Z"
+    "classe": "Curandeiro Ritualista",
+    "anima": 240,
+    "critico": 105,
+    "cultura": "Reino de Oyó/Iorubá",
+    "artefato": "Opele (corrente divinatória) conectada aos 401 Orixás",
+    "elemento_cultural": "Culto aos Orixás, medicina tradicional yorubá, tradição oral Ifá",
+    "created_at": "2025-09-04T18:10:00.000Z",
+    "updated_at": "2025-09-04T20:59:55.891Z",
+    "defesa_especial": 84
 },
 
-  // ID: 53EF89B852 (HEX)
-  "captain_goldbeard": {
-    "id": "53EF89B852",
-    "name": "Captain Goldbeard",
-    "level": 14,
-    "hp": 95,
-    "maxHP": 95,
-    "attack": 38,
-    "defense": 26,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
+  // ID: 0F1E2D3C4B (HEX)
+  "dr_dmitri_raskolnikov": {
+    "id": "0F1E2D3C4B",
+    "name": "Dr. Dmitri Raskolnikov",
+    "level": 1,
+    "hp": 420,
+    "maxHP": 420,
+    "attack": 55,
+    "defense": 42,
+    "sprite": "assets/sprites/dr_dmitri_raskolnikov.webp",
+    "color": 4210752,
+    "borderColor": 2763306,
     "size": 12,
-    "experience": 17000,
-    "goldRange": [
-        60,
-        150
-    ],
-    "ai_type": "guardian",
-    "spawn_weight": 8,
-    "description": "Capitão pirata anão protetor de tesouros.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.660Z"
-},
-
-  // ID: A9B98CFE5F (HEX)
-  "mystral_the_enchantress": {
-    "id": "A9B98CFE5F",
-    "name": "Mystral the Enchantress",
-    "level": 17,
-    "hp": 85,
-    "maxHP": 85,
-    "attack": 33,
-    "defense": 24,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 23000,
-    "goldRange": [
-        70,
-        175
-    ],
-    "ai_type": "caster",
-    "spawn_weight": 7,
-    "description": "Feiticeira humana especialista em encantamentos.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.674Z"
-},
-
-  // ID: 5066C678F3 (HEX)
-  "ironjaw_the_berserker": {
-    "id": "5066C678F3",
-    "name": "Ironjaw the Berserker",
-    "level": 19,
-    "hp": 135,
-    "maxHP": 135,
-    "attack": 50,
-    "defense": 24,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 30000,
-    "goldRange": [
-        85,
-        210
-    ],
-    "ai_type": "aggressive",
-    "spawn_weight": 5,
-    "description": "Bárbaro meio-orc com fúria incontrolável.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.687Z"
-},
-
-  // ID: DB7DDF251E (HEX)
-  "serenity_moonblossom": {
-    "id": "DB7DDF251E",
-    "name": "Serenity Moonblossom",
-    "level": 13,
-    "hp": 78,
-    "maxHP": 78,
-    "attack": 26,
-    "defense": 28,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 14000,
+    "experience": 1,
     "goldRange": [
         50,
-        125
-    ],
-    "ai_type": "passive",
-    "spawn_weight": 9,
-    "description": "Clériga halfling curandeira da lua cheia.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.703Z"
-},
-
-  // ID: 1C0588D05E (HEX)
-  "vortex_stormfist": {
-    "id": "1C0588D05E",
-    "name": "Vortex Stormfist",
-    "level": 22,
-    "hp": 150,
-    "maxHP": 150,
-    "attack": 54,
-    "defense": 36,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 40000,
-    "goldRange": [
-        115,
-        290
+        100
     ],
     "ai_type": "aggressive",
-    "spawn_weight": 4,
-    "description": "Monge elemental controlador de tempestades.",
+    "spawn_weight": 1,
+    "description": "Médico-alquimista Russo - Obcecado com elixir da vida eterna",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.718Z"
-},
-
-  // ID: F0BB5FC41A (HEX)
-  "eclipse_shadowmancer": {
-    "id": "F0BB5FC41A",
-    "name": "Eclipse Shadowmancer",
-    "level": 27,
-    "hp": 120,
-    "maxHP": 120,
-    "attack": 58,
-    "defense": 25,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": 70000,
-    "goldRange": [
-        250,
-        600
+    "skills": [
+        {
+            "skillName": "🧪 Elixir da Imortalidade Russa",
+            "skillDamage": -100,
+            "skillCost": 0,
+            "source": "legacy"
+        }
     ],
-    "ai_type": "caster",
-    "spawn_weight": 2,
-    "description": "Mago sombrio mestre dos eclipses e trevas.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:37:49.733Z"
+    "classe": "Curandeiro Ritualista",
+    "anima": 250,
+    "critico": 115,
+    "cultura": "Império Russo",
+    "artefato": "Frasco de vodka benta que nunca se esvazia",
+    "elemento_cultural": "Laboratório ortodoxo, ícones religiosos, medicina popular russa",
+    "created_at": "2025-09-04T18:15:00.000Z",
+    "updated_at": "2025-09-04T21:03:50.480Z",
+    "defesa_especial": 85
 },
 
-  // ID: 0FD6C2835E (HEX)
-  "lyralei_windwhisper": {
-    "id": "0FD6C2835E",
-    "name": "Lyralei Windwhisper",
-    "level": 12,
-    "hp": 95,
-    "maxHP": 95,
-    "attack": 34,
-    "defense": 22,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Uma elfa arqueira mágica especializada em flechas encantadas e magia elemental.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:14.265Z"
-},
-
-  // ID: 94626F76D9 (HEX)
-  "thorgar_ironforge": {
-    "id": "94626F76D9",
-    "name": "Thorgar Ironforge",
-    "level": 18,
-    "hp": 140,
-    "maxHP": 140,
-    "attack": 45,
-    "defense": 38,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Anão guerreiro com martelo rúnico ancestral, mestre da forja e combate corpo a corpo.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:14.924Z"
-},
-
-  // ID: 48316D16DB (HEX)
-  "seraphina_dawnblade": {
-    "id": "48316D16DB",
-    "name": "Seraphina Dawnblade",
-    "level": 15,
-    "hp": 110,
-    "maxHP": 110,
-    "attack": 42,
-    "defense": 28,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Paladina humana portadora de uma lâmina sagrada que brilha com luz divina.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:16.063Z"
-},
-
-  // ID: 1CCC1D655B (HEX)
-  "zephyr_shadowstep": {
-    "id": "1CCC1D655B",
-    "name": "Zephyr Shadowstep",
-    "level": 8,
-    "hp": 70,
-    "maxHP": 70,
-    "attack": 28,
-    "defense": 16,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Halfling ladino especializado em ataques furtivos e manipulação de sombras.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:16.874Z"
-},
-
-  // ID: 4262842F26 (HEX)
-  "morgana_voidcaller": {
-    "id": "4262842F26",
-    "name": "Morgana Voidcaller",
-    "level": 22,
-    "hp": 125,
-    "maxHP": 125,
-    "attack": 55,
-    "defense": 25,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Bruxa élfica negra especializada em magia sombria e invocação de criaturas do vazio.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:17.575Z"
-},
-
-  // ID: F1FF28F3F3 (HEX)
-  "kaelen_stormrider": {
-    "id": "F1FF28F3F3",
-    "name": "Kaelen Stormrider",
-    "level": 10,
-    "hp": 85,
-    "maxHP": 85,
-    "attack": 30,
-    "defense": 20,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Bárbaro humano das montanhas que invoca a fúria dos trovões em batalha.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:34.667Z"
-},
-
-  // ID: 608CC07BB1 (HEX)
-  "whisper_moonfeather": {
-    "id": "608CC07BB1",
-    "name": "Whisper Moonfeather",
-    "level": 6,
-    "hp": 60,
-    "maxHP": 60,
-    "attack": 22,
-    "defense": 14,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Druida élfica jovem com conexão especial com criaturas da floresta.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:35.909Z"
-},
-
-  // ID: EFC48DAA94 (HEX)
-  "grimjaw_bonecrusher": {
-    "id": "EFC48DAA94",
-    "name": "Grimjaw Bonecrusher",
-    "level": 25,
-    "hp": 180,
-    "maxHP": 180,
-    "attack": 62,
-    "defense": 45,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Orc chefe de guerra com cicatrizes de batalhas e machado gigante encantado.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:36.545Z"
-},
-
-  // ID: 58E38C75FA (HEX)
-  "celestine_lightbringer": {
-    "id": "58E38C75FA",
-    "name": "Celestine Lightbringer",
-    "level": 20,
-    "hp": 115,
-    "maxHP": 115,
-    "attack": 38,
-    "defense": 35,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Clériga élfica alta especializada em magia curativa e proteção divina.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:37.220Z"
-},
-
-  // ID: 8A30FA3CDF (HEX)
-  "raven_nightblade": {
-    "id": "8A30FA3CDF",
-    "name": "Raven Nightblade",
-    "level": 14,
-    "hp": 95,
-    "maxHP": 95,
-    "attack": 40,
-    "defense": 24,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Assassina humana das guildas sombrias com lâminas envenenadas.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:37.853Z"
-},
-
-  // ID: 0A07D5F5C4 (HEX)
-  "fennec_swiftarrow": {
-    "id": "0A07D5F5C4",
-    "name": "Fennec Swiftarrow",
-    "level": 11,
-    "hp": 80,
-    "maxHP": 80,
-    "attack": 35,
-    "defense": 18,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Arqueiro élfico ágil especializado em tiros rápidos e táticas de grupo.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:56.545Z"
-},
-
-  // ID: 8744354A75 (HEX)
-  "draketh_flameheart": {
-    "id": "8744354A75",
-    "name": "Draketh Flameheart",
-    "level": 19,
-    "hp": 130,
-    "maxHP": 130,
-    "attack": 48,
-    "defense": 30,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Feiticeiro dracônico com domínio sobre magia de fogo e transformação.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:57.179Z"
-},
-
-  // ID: 65DD46E5A9 (HEX)
-  "luna_starweaver": {
-    "id": "65DD46E5A9",
-    "name": "Luna Starweaver",
-    "level": 16,
-    "hp": 100,
-    "maxHP": 100,
-    "attack": 32,
-    "defense": 26,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Bruxa lunar que manipula energia estelar e sonhos proféticos.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:57.688Z"
-},
-
-  // ID: 7B0D57EE43 (HEX)
-  "brock_ironshield": {
-    "id": "7B0D57EE43",
-    "name": "Brock Ironshield",
-    "level": 13,
-    "hp": 105,
-    "maxHP": 105,
-    "attack": 28,
-    "defense": 40,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Anão guardião com escudo mágico ancestral e martelo de guerra.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:58.326Z"
-},
-
-  // ID: 37A613E2B8 (HEX)
-  "vex_poisonthorn": {
-    "id": "37A613E2B8",
-    "name": "Vex Poisonthorn",
-    "level": 9,
-    "hp": 75,
-    "maxHP": 75,
-    "attack": 31,
-    "defense": 15,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Goblin alquimista expert em venenos e armadilhas explosivas.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:39:59.659Z"
-},
-
-  // ID: 6234A1F668 (HEX)
-  "sage_bookwarden": {
-    "id": "6234A1F668",
-    "name": "Sage Bookwarden",
-    "level": 7,
-    "hp": 65,
-    "maxHP": 65,
-    "attack": 24,
-    "defense": 17,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Gnomo erudito guardião de conhecimentos antigos e magias de proteção.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:17.748Z"
-},
-
-  // ID: 6944D9C399 (HEX)
-  "blade_stormcutter": {
-    "id": "6944D9C399",
-    "name": "Blade Stormcutter",
-    "level": 21,
-    "hp": 140,
-    "maxHP": 140,
-    "attack": 52,
-    "defense": 32,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Guerreiro humano mestre da espada com técnicas de combate lendárias.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:19.013Z"
-},
-
-  // ID: FE3568600F (HEX)
-  "echo_whisperwind": {
-    "id": "FE3568600F",
-    "name": "Echo Whisperwind",
-    "level": 17,
-    "hp": 90,
-    "maxHP": 90,
-    "attack": 36,
-    "defense": 22,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Bardo élfico que usa música mágica para controlar o campo de batalha.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:19.647Z"
-},
-
-  // ID: BC8D9C40CF (HEX)
-  "titan_rockcrusher": {
-    "id": "BC8D9C40CF",
-    "name": "Titan Rockcrusher",
-    "level": 24,
-    "hp": 170,
-    "maxHP": 170,
-    "attack": 55,
-    "defense": 48,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Gigante das montanhas com força descomunal e resistência lendária.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:20.150Z"
-},
-
-  // ID: 2478BE9BF5 (HEX)
-  "nyssa_shadowdancer": {
-    "id": "2478BE9BF5",
-    "name": "Nyssa Shadowdancer",
-    "level": 12,
-    "hp": 85,
-    "maxHP": 85,
-    "attack": 38,
-    "defense": 19,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Ninja élfica sombria especialista em assassinatos silenciosos.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:20.702Z"
-},
-
-  // ID: B2BF2A33F5 (HEX)
-  "frost_icevein": {
-    "id": "B2BF2A33F5",
-    "name": "Frost Icevein",
-    "level": 23,
-    "hp": 135,
-    "maxHP": 135,
-    "attack": 44,
-    "defense": 36,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Mago élfico do gelo com controle absoluto sobre temperaturas extremas.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:38.154Z"
-},
-
-  // ID: 74B0925F62 (HEX)
-  "jade_natureborn": {
-    "id": "74B0925F62",
-    "name": "Jade Natureborn",
-    "level": 5,
-    "hp": 55,
-    "maxHP": 55,
-    "attack": 20,
-    "defense": 12,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Druida jovem halfling conectada com os espíritos da natureza.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:38.635Z"
-},
-
-  // ID: E9EF630603 (HEX)
-  "hammer_ironbane": {
-    "id": "E9EF630603",
-    "name": "Hammer Ironbane",
-    "level": 16,
-    "hp": 125,
-    "maxHP": 125,
-    "attack": 46,
-    "defense": 34,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Anão guerreiro veterano com machado duplo encantado com runas.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:39.836Z"
-},
-
-  // ID: F8314EBF1F (HEX)
-  "silver_moonshot": {
-    "id": "F8314EBF1F",
-    "name": "Silver Moonshot",
-    "level": 14,
-    "hp": 90,
-    "maxHP": 90,
-    "attack": 41,
-    "defense": 23,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Ranger élfico caçador noturno com arco lunar prateado.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:40.441Z"
-},
-
-  // ID: 6769C6C8BB (HEX)
-  "storm_lightbringer": {
-    "id": "6769C6C8BB",
-    "name": "Storm Lightbringer",
-    "level": 18,
-    "hp": 110,
-    "maxHP": 110,
-    "attack": 39,
-    "defense": 31,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Paladino humano abençoado pelos deuses da tempestade.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:40:40.992Z"
-},
-
-  // ID: 9147978125 (HEX)
-  "void_nightcrawler": {
-    "id": "9147978125",
-    "name": "Void Nightcrawler",
-    "level": 26,
-    "hp": 150,
-    "maxHP": 150,
-    "attack": 58,
-    "defense": 28,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Assassino sombrio das dimensões obscuras com poderes de teletransporte.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:41:00.637Z"
-},
-
-  // ID: 84B4901C81 (HEX)
-  "willow_earthsong": {
-    "id": "84B4901C81",
-    "name": "Willow Earthsong",
-    "level": 3,
-    "hp": 45,
-    "maxHP": 45,
-    "attack": 16,
-    "defense": 10,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "Druida iniciante élfica com habilidades de cura natural.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:41:02.072Z"
-},
-
-  // ID: 59DFABD6FD (HEX)
-  "rex_battlehammer": {
-    "id": "59DFABD6FD",
-    "name": "Rex Battlehammer",
-    "level": 20,
-    "hp": 145,
-    "maxHP": 145,
-    "attack": 50,
-    "defense": 38,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
-    "size": 12,
-    "experience": null,
-    "goldRange": [
-        null,
-        null
-    ],
-    "spawn_weight": null,
-    "description": "General anão comandante de legiões com martelo de guerra ancestral.",
-    "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:41:02.746Z"
-},
-
-  // ID: FDE616A057 (HEX)
-  "mystic_voidweaver": {
-    "id": "FDE616A057",
-    "name": "Mystic Voidweaver",
-    "level": 27,
-    "hp": 120,
-    "maxHP": 120,
+  // ID: 4A5B6C7D8E (HEX)
+  "mei_lin_punhos_de_jade": {
+    "id": "4A5B6C7D8E",
+    "name": "Mei Lin \"Punhos de Jade\"",
+    "level": 1,
+    "hp": 340,
+    "maxHP": 340,
     "attack": 65,
-    "defense": 25,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
+    "defense": 30,
+    "sprite": "assets/sprites/mei_lin_punhos_de_jade.webp",
+    "color": 65280,
+    "borderColor": 32768,
     "size": 12,
-    "experience": null,
+    "experience": 1,
     "goldRange": [
-        null,
-        null
+        40,
+        80
     ],
-    "spawn_weight": null,
-    "description": "Arquimago élfico negro mestre das magias proibidas do vazio.",
+    "ai_type": "aggressive",
+    "spawn_weight": 2,
+    "description": "Lutadora-Artífice Chinesa - Forja suas próprias armas de jade durante o combate usando qi",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:41:03.255Z"
+    "skills": [
+        {
+            "skillName": "💎 Forja de Jade Imperial",
+            "skillDamage": 80,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Lutador",
+    "classe_secundaria": "Artífice",
+    "anima": 180,
+    "critico": 95,
+    "cultura": "China Imperial",
+    "artefato": "Anel imperial que transforma qi em jade sólido",
+    "elemento_cultural": "Feng shui, jade imperial como condutor de energia, artes marciais internas",
+    "created_at": "2025-09-04T18:20:00.000Z",
+    "updated_at": "2025-09-04T21:08:53.328Z",
+    "defesa_especial": 55
 },
 
-  // ID: C7C6E9184E (HEX)
-  "phoenix_flamewing": {
-    "id": "C7C6E9184E",
-    "name": "Phoenix Flamewing",
-    "level": 25,
-    "hp": 160,
-    "maxHP": 160,
-    "attack": 60,
-    "defense": 42,
-    "sprite": null,
-    "color": 4873507,
-    "borderColor": 2962964,
+  // ID: 9F0E1D2C3B (HEX)
+  "kwame_asante": {
+    "id": "9F0E1D2C3B",
+    "name": "Kwame Asante",
+    "level": 1,
+    "hp": 390,
+    "maxHP": 390,
+    "attack": 58,
+    "defense": 36,
+    "sprite": "assets/sprites/kwame_asante.webp",
+    "color": 16776960,
+    "borderColor": 13421568,
     "size": 12,
-    "experience": null,
+    "experience": 1,
     "goldRange": [
-        null,
-        null
+        45,
+        85
     ],
-    "spawn_weight": null,
-    "description": "Guardião dracônico com capacidade de renascimento das chamas.",
+    "ai_type": "aggressive",
+    "spawn_weight": 1,
+    "description": "Guerreiro-Sacerdote Ashanti - Lê futuro em padrões dos tecidos Kente",
     "drops": [],
-    "skills": [],
-    "created_at": "2025-08-26T08:41:03.739Z"
+    "skills": [
+        {
+            "skillName": "🥁 Tambores Ancestrais",
+            "skillDamage": 75,
+            "skillCost": 0,
+            "source": "legacy"
+        }
+    ],
+    "classe": "Guardião da Natureza",
+    "classe_secundaria": "Oráculo",
+    "anima": 210,
+    "critico": 100,
+    "cultura": "Reino Ashanti/Gana",
+    "artefato": "Tamboril falante que se comunica com ancestrais",
+    "elemento_cultural": "Tecidos Kente sagrados, tambores falantes, máscaras Adinkra",
+    "created_at": "2025-09-04T18:25:00.000Z",
+    "updated_at": "2025-09-04T21:13:12.239Z",
+    "defesa_especial": 66
 }
 
 };
 
 // Statistics:
-// Total characters: 61
-// Legacy IDs: 0
-// Hexadecimal IDs: 61
+// Total characters: 15
+// Legacy IDs: 1
+// Hexadecimal IDs: 14
 
+// Legacy ID Examples (PRESERVED):
+// Aurelius Ignisvox: A9C4N0001E
 // Hexadecimal ID Examples:
-// Robin: 045CCF3515
-// Aria Nightwhisper: DE1A45C5EB
-// Thorgar Ironbeard: 17E928B7DF
+// Miloš Železnikov: 045CCF3515
+// Shi Wuxing: EA32D10F2D
+// Pythia Kassandra: 7A8B9C0D1E
 
 module.exports = CharacterDatabase;
 // For ES6: export default CharacterDatabase;

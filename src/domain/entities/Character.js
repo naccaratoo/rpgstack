@@ -43,6 +43,9 @@ export class Character {
     gold = 0,
     experience = 0,
     skill_points = 0,
+    classe = 'Lutador',
+    anima = 100,
+    critico = 1.0,
     metadata = {},
   }) {
     // Validate required parameters
@@ -62,6 +65,9 @@ export class Character {
     this._gold = parseInt(gold, 10) || 0;
     this._experience = parseInt(experience, 10) || 0;
     this._skillPoints = parseInt(skill_points, 10) || 0;
+    this._classe = classe || 'Lutador';
+    this._anima = parseInt(anima, 10) || 100;
+    this._critico = parseFloat(critico) || 1.0;
     
     // Set metadata with defaults
     this._metadata = {
@@ -171,6 +177,22 @@ export class Character {
     if (this._skillPoints < 0) {
       throw new Error('Skill points cannot be negative');
     }
+    
+    // Classe validation
+    const validClasses = ['Lutador', 'Armamentista', 'Arcano', 'Oráculo', 'Artífice', 'Guardião da Natureza', 'Mercador-Diplomata', 'Curandeiro Ritualista'];
+    if (!validClasses.includes(this._classe)) {
+      throw new Error(`Invalid classe: "${this._classe}". Valid classes: ${validClasses.join(', ')}`);
+    }
+    
+    // Anima validation
+    if (this._anima < 0) {
+      throw new Error('Anima cannot be negative');
+    }
+    
+    // Critico validation
+    if (this._critico < 0) {
+      throw new Error('Critico cannot be negative');
+    }
   }
 
   // Getters
@@ -208,6 +230,18 @@ export class Character {
 
   get skillPoints() {
     return this._skillPoints;
+  }
+  
+  get classe() {
+    return this._classe;
+  }
+  
+  get anima() {
+    return this._anima;
+  }
+  
+  get critico() {
+    return this._critico;
   }
 
   get metadata() {
@@ -255,6 +289,9 @@ export class Character {
       gold: changes.gold !== undefined ? changes.gold : this._gold,
       experience: changes.experience !== undefined ? changes.experience : this._experience,
       skill_points: changes.skill_points !== undefined ? changes.skill_points : this._skillPoints,
+      classe: changes.classe !== undefined ? changes.classe : this._classe,
+      anima: changes.anima !== undefined ? changes.anima : this._anima,
+      critico: changes.critico !== undefined ? changes.critico : this._critico,
       metadata: {
         ...this._metadata,
         updatedAt: new Date().toISOString(),
@@ -408,6 +445,9 @@ export class Character {
       gold: this._gold,
       experience: this._experience,
       skill_points: this._skillPoints,
+      classe: this._classe,
+      anima: this._anima,
+      critico: this._critico,
       ...this._metadata,
     };
   }
@@ -433,6 +473,9 @@ export class Character {
       gold: obj.gold,
       experience: obj.experience,
       skill_points: obj.skill_points,
+      classe: obj.classe,
+      anima: obj.anima,
+      critico: obj.critico,
       created_at: obj.createdAt,
       updated_at: obj.updatedAt,
       version: obj.version,

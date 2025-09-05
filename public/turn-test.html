@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Sistema de Turnos - RPGStack v4.4</title>
+    <link rel="stylesheet" href="battle.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #2d1b69, #16213e);
+            min-height: 100vh;
+            font-family: var(--font-primary);
+            color: var(--cream);
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(54, 69, 79, 0.95);
+            border-radius: var(--radius-vintage);
+            border: 2px solid var(--gold-primary);
+            padding: var(--space-xl);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-ornate);
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            border-bottom: 2px solid var(--gold-primary);
+            padding-bottom: var(--space-lg);
+        }
+
+        .test-header h1 {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            color: var(--gold-light);
+            margin-bottom: var(--space-sm);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .test-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .test-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--radius-vintage);
+            padding: var(--space-lg);
+            border: 1px solid var(--gold-primary);
+        }
+
+        .section-title {
+            font-family: var(--font-ornate);
+            font-size: 1.3rem;
+            color: var(--gold-light);
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+        }
+
+        .turn-info {
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--radius-vintage);
+            padding: var(--space-md);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .demo-log {
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--radius-vintage);
+            padding: var(--space-md);
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .log-entry.system { color: #87CEEB; }
+        .log-entry.action { color: #90EE90; }
+        .log-entry.warning { color: #FFD700; }
+        .log-entry.timeout { color: #FF6B6B; }
+
+        .swap-controls {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+
+        .swap-counter {
+            font-weight: bold;
+            color: var(--gold-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🎯 Sistema de Turnos - Teste Interativo</h1>
+            <p>RPGStack v4.4.1 - Turn-Based Combat System</p>
+        </div>
+
+        <div class="test-controls">
+            <!-- Ações Principais -->
+            <div class="test-section">
+                <h3 class="section-title">⚔️ Ações Principais</h3>
+                <div class="action-buttons">
+                    <button class="action-btn" data-action="attack" data-priority="0">
+                        <span class="btn-icon">⚔️</span>
+                        <span class="btn-text">Atacar</span>
+                    </button>
+                    <button class="action-btn" data-action="defend" data-priority="1">
+                        <span class="btn-icon">🛡️</span>
+                        <span class="btn-text">Defender</span>
+                    </button>
+                    <button class="action-btn" data-action="meditate" data-priority="-1">
+                        <span class="btn-icon">🧘</span>
+                        <span class="btn-text">Meditar</span>
+                    </button>
+                    <button class="action-btn skill-btn" data-cost="25">
+                        <span class="btn-icon">✨</span>
+                        <span class="btn-text">Skill Teste</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sistema de Troca -->
+            <div class="test-section">
+                <h3 class="section-title">🔄 Sistema de Troca</h3>
+                <div class="swap-controls">
+                    <button class="action-btn secondary" onclick="testDemo.executeSwap('char1', 'char2')">
+                        <span class="btn-text">Executar Troca</span>
+                    </button>
+                    <div class="swap-counter">
+                        Trocas: <span id="swapCount">0</span>/1
+                    </div>
+                </div>
+                <p style="font-size: 0.8rem; opacity: 0.7; margin-top: var(--space-xs);">
+                    * Troca não consome ação principal
+                </p>
+            </div>
+
+            <!-- Controles de Teste -->
+            <div class="test-section">
+                <h3 class="section-title">🎮 Controles</h3>
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="testDemo.initTest()">
+                        <span class="btn-text">Iniciar Teste</span>
+                    </button>
+                    <button class="action-btn secondary" onclick="testDemo.simulateTimeout()">
+                        <span class="btn-text">Simular Timeout</span>
+                    </button>
+                    <button class="action-btn" onclick="testDemo.showTurnInfo()">
+                        <span class="btn-text">Info do Turno</span>
+                    </button>
+                    <button class="action-btn secondary" onclick="testDemo.clearLog()">
+                        <span class="btn-text">Limpar Log</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Informações do Turno -->
+            <div class="test-section">
+                <h3 class="section-title">📊 Status do Turno</h3>
+                <div class="turn-info" id="turnInfo">
+                    <div>Jogador: <span id="currentPlayer">-</span></div>
+                    <div>Fase: <span id="currentPhase">-</span></div>
+                    <div>Tempo: <span id="timeRemaining">-</span>s</div>
+                    <div>Trocas: <span id="swapsUsed">-</span>/1</div>
+                    <div>Ação: <span id="actionStatus">-</span></div>
+                </div>
+            </div>
+
+            <!-- Sistema de Prioridades -->
+            <div class="test-section">
+                <h3 class="section-title">🎯 Sistema de Prioridades</h3>
+                <div style="font-size: 0.8rem; line-height: 1.4;">
+                    <div><strong>+2:</strong> Emergência</div>
+                    <div><strong>+1:</strong> Defesa, Ataques Rápidos</div>
+                    <div><strong>0:</strong> Ataques, Skills Normais</div>
+                    <div><strong>-1:</strong> Meditação, Preparação</div>
+                    <div><strong>-2:</strong> Rituais, Campo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log de Atividades -->
+        <div class="test-section">
+            <h3 class="section-title">📋 Log de Atividades</h3>
+            <div class="demo-log" id="demoLog">
+                <div class="log-entry system">Sistema de turnos pronto para teste...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="battlemechanics.js"></script>
+    <script src="turn-system-demo.js"></script>
+    <script>
+        // Classe de teste específica para demonstração
+        class TurnSystemTest {
+            constructor() {
+                this.battleMechanics = null;
+                this.currentPhase = 'selection';
+                this.swapsUsed = 0;
+                this.maxSwapsPerTurn = 1;
+                this.turnTimer = null;
+                this.timeRemaining = 0;
+                this.turnTimeLimit = 20000;
+            }
+
+            initTest() {
+                // Inicializar BattleMechanics
+                if (typeof BattleMechanics !== 'undefined') {
+                    this.battleMechanics = new BattleMechanics();
+                    this.log('✅ BattleMechanics inicializado', 'system');
+                    
+                    // Personagens de teste
+                    const player = {
+                        id: "test_player",
+                        name: "Herói Teste",
+                        hp: 100, maxHP: 100,
+                        anima: 50, maxAnima: 50,
+                        velocidade: 80
+                    };
+                    
+                    const enemy = {
+                        id: "test_enemy",
+                        name: "Inimigo Teste",
+                        hp: 80, maxHP: 80,
+                        anima: 30, maxAnima: 30,
+                        velocidade: 60
+                    };
+                    
+                    this.battleMechanics.initializeBattle(player, enemy);
+                    this.log('⚔️ Batalha de teste inicializada', 'system');
+                    
+                    // Iniciar turno do jogador
+                    this.startPlayerTurn();
+                } else {
+                    this.log('❌ BattleMechanics não encontrado', 'system');
+                }
+                
+                this.setupButtons();
+            }
+
+            startPlayerTurn() {
+                this.currentPhase = 'player_turn';
+                this.swapsUsed = 0;
+                this.timeRemaining = this.turnTimeLimit;
+                
+                this.log('🎮 Turno do jogador iniciado (20s)', 'system');
+                this.updateUI();
+                this.startTimer();
+                this.enableButtons();
+            }
+
+            startTimer() {
+                this.updateTimerDisplay();
+                
+                this.turnTimer = setInterval(() => {
+                    this.timeRemaining -= 1000;
+                    this.updateTimerDisplay();
+                    
+                    if (this.timeRemaining === 5000) {
+                        this.log('⚠️ 5 segundos restantes!', 'warning');
+                    }
+                    
+                    if (this.timeRemaining <= 0) {
+                        this.onTimeout();
+                    }
+                }, 1000);
+            }
+
+            updateTimerDisplay() {
+                const seconds = Math.max(0, Math.ceil(this.timeRemaining / 1000));
+                document.getElementById('timeRemaining').textContent = seconds;
+                
+                // Atualizar timer visual se existir
+                const timerDisplay = document.getElementById('timerSeconds');
+                if (timerDisplay) {
+                    timerDisplay.textContent = seconds;
+                }
+            }
+
+            onTimeout() {
+                this.clearTimer();
+                this.log('⏰ Tempo esgotado! Executando ataque básico...', 'timeout');
+                this.executeAction('attack');
+            }
+
+            executeAction(actionType, actionData = {}) {
+                if (this.currentPhase !== 'player_turn') {
+                    this.log('🚫 Não é possível agir fora do seu turno', 'warning');
+                    return;
+                }
+
+                this.clearTimer();
+                this.currentPhase = 'processing';
+                this.disableButtons();
+                
+                this.log(`⚔️ Ação executada: ${actionType}`, 'action');
+                
+                // Simular processamento
+                setTimeout(() => {
+                    this.log(`✅ Ação ${actionType} processada`, 'system');
+                    this.endTurn();
+                }, 1500);
+            }
+
+            executeSwap(from, to) {
+                if (this.swapsUsed >= this.maxSwapsPerTurn) {
+                    this.log('🚫 Máximo de trocas por turno atingido!', 'warning');
+                    return;
+                }
+
+                this.swapsUsed++;
+                this.log(`🔄 Troca executada (${this.swapsUsed}/${this.maxSwapsPerTurn})`, 'action');
+                this.updateUI();
+            }
+
+            endTurn() {
+                this.currentPhase = 'enemy_turn';
+                this.log('🤖 Turno do inimigo...', 'system');
+                
+                // Simular turno do inimigo
+                setTimeout(() => {
+                    this.log('🤖 Inimigo ataca!', 'action');
+                    
+                    setTimeout(() => {
+                        this.startPlayerTurn(); // Próximo turno
+                    }, 2000);
+                }, 1500);
+            }
+
+            simulateTimeout() {
+                if (this.currentPhase === 'player_turn') {
+                    this.timeRemaining = 0;
+                    this.onTimeout();
+                } else {
+                    this.log('⚠️ Timeout só funciona durante turno do jogador', 'warning');
+                }
+            }
+
+            showTurnInfo() {
+                if (this.battleMechanics) {
+                    const info = this.battleMechanics.getCurrentTurnInfo();
+                    this.log(`📊 Turno: ${info.playerName} | Fase: ${info.phase} | Tempo: ${Math.ceil(info.timeRemaining/1000)}s`, 'system');
+                } else {
+                    this.log('📊 Sistema de turnos não inicializado', 'warning');
+                }
+            }
+
+            setupButtons() {
+                // Conectar botões de ação
+                document.querySelectorAll('[data-action]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const action = btn.dataset.action;
+                        this.executeAction(action);
+                    });
+                });
+
+                // Conectar botões de skill
+                document.querySelectorAll('.skill-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const cost = parseInt(btn.dataset.cost || 0);
+                        this.executeAction('skill', { cost });
+                    });
+                });
+            }
+
+            enableButtons() {
+                document.querySelectorAll('.action-btn').forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('disabled');
+                });
+            }
+
+            disableButtons() {
+                document.querySelectorAll('[data-action], .skill-btn').forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
+                });
+            }
+
+            clearTimer() {
+                if (this.turnTimer) {
+                    clearInterval(this.turnTimer);
+                    this.turnTimer = null;
+                }
+            }
+
+            updateUI() {
+                document.getElementById('currentPlayer').textContent = 
+                    this.currentPhase === 'player_turn' ? 'Jogador' : 'Inimigo';
+                document.getElementById('currentPhase').textContent = this.currentPhase;
+                document.getElementById('swapsUsed').textContent = this.swapsUsed;
+                document.getElementById('swapCount').textContent = this.swapsUsed;
+                document.getElementById('actionStatus').textContent = 
+                    this.currentPhase === 'player_turn' ? 'Aguardando' : 'Processando';
+            }
+
+            log(message, type = 'system') {
+                const logContainer = document.getElementById('demoLog');
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+
+            clearLog() {
+                const logContainer = document.getElementById('demoLog');
+                logContainer.innerHTML = '<div class="log-entry system">Log limpo...</div>';
+            }
+        }
+
+        // Inicializar teste
+        let testDemo;
+        document.addEventListener('DOMContentLoaded', () => {
+            testDemo = new TurnSystemTest();
+            console.log('🎮 Sistema de Teste de Turnos carregado!');
+            console.log('Execute testDemo.initTest() para começar');
+        });
+    </script>
+</body>
+</html>

@@ -4,8 +4,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import cors from 'cors';
 import crypto from 'crypto';
+import chokidar from 'chokidar';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { SkillController } from './src/presentation/controllers/SkillController.js';
+import { PassiveAbilityController } from './src/presentation/controllers/PassiveAbilityController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,8 +37,13 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
+    // Extract character name from the request
+    const characterName = req.body.name || 'character';
+    const extension = file.originalname.split('.').pop().toLowerCase();
+    
+    // Use spriteFilename if provided, otherwise generate from character name
     const filename = req.body.spriteFilename || 
-                    `character.${file.originalname.split('.').pop()}`;
+                    `${characterName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}.${extension}`;
     cb(null, filename);
   },
 });
@@ -165,6 +173,7 @@ async function saveDatabase(data) {
     // Garantir que nextId não seja salvo
     const dataToSave = {
       characters: data.characters || {},
+      system_classes: data.system_classes || [],
     };
     
     await fs.writeFile(DB_PATH, JSON.stringify(dataToSave, null, 2));
@@ -521,13 +530,16 @@ app.get('/api/characters', async (req, res) => {
 app.post('/api/characters', upload.single('sprite'), async (req, res) => {
   try {
     console.log('📝 Recebendo novo personagem...');
+    console.log('📋 Dados recebidos do frontend:', req.body);
     const data = await loadDatabase();
     
     const {
-      name, level, hp, attack, defense, experience,
-      goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename,
+      name, level, hp, attack, defense, defesa_especial, ataque_especial,
+      aiType, description,
+      skills, spriteFilename, classe, anima, critico,
     } = req.body;
+    
+    console.log('📊 Campos extraídos - classe:', classe, 'anima:', anima, 'critico:', critico);
 
     // **IMPORTANTE**: APENAS personagens NOVOS recebem ID hexadecimal
     const existingIds = Object.keys(data.characters || {});
@@ -552,17 +564,18 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
       maxHP: parseInt(hp),
       attack: parseInt(attack),
       defense: parseInt(defense),
+      defesa_especial: parseInt(defesa_especial) || 10,
+      ataque_especial: parseInt(ataque_especial) || parseInt(attack),
       sprite: spritePath,
       color: 0x4a5d23,
       borderColor: 0x2d3614,
       size: 12,
-      experience: parseInt(experience),
-      goldRange: [parseInt(goldMin), parseInt(goldMax)],
       ai_type: aiType,
-      spawn_weight: parseInt(spawnWeight),
       description,
-      drops: JSON.parse(drops || '[]'),
       skills: JSON.parse(skills || '[]'),
+      classe: classe || 'Lutador', // Campo classe adicionado
+      anima: parseInt(anima) || 100, // Campo anima adicionado
+      critico: parseFloat(critico) || 1.0, // Campo critico adicionado
       created_at: new Date().toISOString(),
     };
 
@@ -738,9 +751,9 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
     console.log(`🔄 Atualizando personagem: ${existingCharacter.name} (ID: ${id})`);
     
     const {
-      name, level, hp, attack, defense, experience,
-      goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename,
+      name, level, hp, attack, defense, defesa_especial, ataque_especial,
+      aiType, description,
+      skills, spriteFilename, classe, anima, critico,
     } = req.body;
 
     // Processar sprite se fornecida
@@ -772,14 +785,15 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       maxHP: hp ? parseInt(hp) : existingCharacter.maxHP,
       attack: attack ? parseInt(attack) : existingCharacter.attack,
       defense: defense ? parseInt(defense) : existingCharacter.defense,
+      defesa_especial: defesa_especial ? parseInt(defesa_especial) : (existingCharacter.defesa_especial || 10),
+      ataque_especial: ataque_especial ? parseInt(ataque_especial) : (existingCharacter.ataque_especial || existingCharacter.attack),
       sprite: spritePath,
-      experience: experience ? parseInt(experience) : existingCharacter.experience,
-      goldRange: goldMin && goldMax ? [parseInt(goldMin), parseInt(goldMax)] : existingCharacter.goldRange,
       ai_type: aiType || existingCharacter.ai_type,
-      spawn_weight: spawnWeight ? parseInt(spawnWeight) : existingCharacter.spawn_weight,
       description: description !== undefined ? description : existingCharacter.description,
-      drops: drops ? JSON.parse(drops) : existingCharacter.drops,
       skills: skills ? JSON.parse(skills) : existingCharacter.skills,
+      classe: classe || existingCharacter.classe,
+      anima: anima ? parseInt(anima) : existingCharacter.anima,
+      critico: critico ? parseFloat(critico) : existingCharacter.critico,
       updated_at: new Date().toISOString(), // Adicionar timestamp de atualização
     };
 
@@ -849,6 +863,130 @@ app.get('/api/generate-id', async (req, res) => {
       example: `Character ID: ${newId}`,
     });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// **NOVA ROTA**: Obter classes disponíveis
+app.get('/api/classes', async (req, res) => {
+  try {
+    const data = await loadDatabase();
+    
+    // Extrair classes únicas dos personagens
+    const classes = new Set();
+    Object.values(data.characters || {}).forEach(char => {
+      if (char.classe) {
+        classes.add(char.classe);
+      }
+    });
+    
+    // Adicionar classes persistentes do sistema (se existir)
+    if (data.system_classes && Array.isArray(data.system_classes)) {
+      data.system_classes.forEach(classe => classes.add(classe));
+    }
+    
+    res.json({
+      success: true,
+      classes: Array.from(classes).sort(),
+      total: classes.size
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// **NOVA ROTA**: Adicionar nova classe ao sistema
+app.post('/api/classes', async (req, res) => {
+  try {
+    const { className } = req.body;
+    
+    if (!className || typeof className !== 'string') {
+      return res.status(400).json({ error: 'Nome da classe é obrigatório' });
+    }
+    
+    const cleanClassName = className.trim();
+    if (!cleanClassName) {
+      return res.status(400).json({ error: 'Nome da classe não pode estar vazio' });
+    }
+    
+    const data = await loadDatabase();
+    
+    // Inicializar array de classes do sistema se não existir
+    if (!data.system_classes) {
+      data.system_classes = [];
+    }
+    
+    // Verificar se a classe já existe
+    const existingClasses = new Set();
+    Object.values(data.characters || {}).forEach(char => {
+      if (char.classe) existingClasses.add(char.classe);
+    });
+    data.system_classes.forEach(classe => existingClasses.add(classe));
+    
+    if (existingClasses.has(cleanClassName)) {
+      return res.status(409).json({ error: 'Classe já existe no sistema' });
+    }
+    
+    // Adicionar nova classe
+    data.system_classes.push(cleanClassName);
+    await saveDatabase(data);
+    
+    console.log(`✅ Nova classe adicionada: ${cleanClassName}`);
+    
+    res.json({
+      success: true,
+      message: `Classe '${cleanClassName}' adicionada com sucesso`,
+      className: cleanClassName
+    });
+  } catch (error) {
+    console.error('❌ Erro ao adicionar classe:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// **NOVA ROTA**: Deletar classe do sistema
+app.delete('/api/classes/:className', async (req, res) => {
+  try {
+    const { className } = req.params;
+    
+    if (!className || typeof className !== 'string') {
+      return res.status(400).json({ error: 'Nome da classe é obrigatório' });
+    }
+    
+    const cleanClassName = decodeURIComponent(className.trim());
+    if (!cleanClassName) {
+      return res.status(400).json({ error: 'Nome da classe não pode estar vazio' });
+    }
+    
+    const data = await loadDatabase();
+    
+    // Verificar se a classe está sendo usada por personagens
+    const charactersUsingClass = Object.values(data.characters || {}).filter(char => char.classe === cleanClassName);
+    if (charactersUsingClass.length > 0) {
+      return res.status(409).json({ 
+        error: `Não é possível deletar a classe "${cleanClassName}" pois está sendo usada por ${charactersUsingClass.length} personagem(s)`,
+        charactersCount: charactersUsingClass.length
+      });
+    }
+    
+    // Verificar se a classe existe no sistema
+    if (!data.system_classes || !data.system_classes.includes(cleanClassName)) {
+      return res.status(404).json({ error: 'Classe não encontrada no sistema' });
+    }
+    
+    // Remover classe do array
+    data.system_classes = data.system_classes.filter(classe => classe !== cleanClassName);
+    await saveDatabase(data);
+    
+    console.log(`🗑️ Classe removida: ${cleanClassName}`);
+    
+    res.json({
+      success: true,
+      message: `Classe '${cleanClassName}' removida com sucesso`,
+      className: cleanClassName
+    });
+  } catch (error) {
+    console.error('❌ Erro ao remover classe:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -936,16 +1074,14 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
           maxHP: parseInt(character.hp) || 10,
           attack: parseInt(character.attack) || 1,
           defense: parseInt(character.defense) || 1,
+          defesa_especial: parseInt(character.defesa_especial) || 10,
+          ataque_especial: parseInt(character.ataque_especial) || parseInt(character.attack) || 1,
           sprite: character.sprite || null,
           color: character.color || 0x4a5d23,
           borderColor: character.borderColor || 0x2d3614,
           size: character.size || 12,
-          experience: parseInt(character.experience) || 1,
-          goldRange: Array.isArray(character.goldRange) ? character.goldRange : [1, 3],
           ai_type: character.ai_type || 'aggressive',
-          spawn_weight: parseInt(character.spawn_weight) || 10,
           description: character.description || '',
-          drops: Array.isArray(character.drops) ? character.drops : [],
           skills: Array.isArray(character.skills) ? character.skills : [],
           created_at: character.created_at || new Date().toISOString(),
           imported_at: new Date().toISOString(),
@@ -1127,6 +1263,16 @@ app.get('/characters', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'character-database.html'));
 });
 
+// Skills Database Module
+app.get('/skills', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'skills.html'));
+});
+
+// Classes Database Module
+app.get('/class-database', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'class-database.html'));
+});
+
 // Maps Database Module
 app.get('/maps', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'maps-database.html'));
@@ -1163,6 +1309,7 @@ import { MapProgressService } from './src/application/maps/services/MapProgressS
 import { MapController } from './src/infrastructure/maps/web/controllers/MapController.js';
 import { createMapRoutes } from './src/infrastructure/maps/web/routes/mapRoutes.js';
 import { JsonCharacterRepository } from './src/infrastructure/repositories/JsonCharacterRepository.js';
+import { SecureBattleMechanics } from './src/battle/BattleMechanics.js';
 
 // Maps system instances
 let mapRepository;
@@ -1208,6 +1355,402 @@ async function initializeMapsSystem() {
   }
 }
 
+// 🎯 **SKILLS SYSTEM** - Skills Management System
+console.log('🎯 Inicializando Skills System...');
+
+// Initialize Skills Controller
+const skillController = new SkillController();
+
+// Initialize PassiveAbility Controller  
+const passiveAbilityController = new PassiveAbilityController();
+
+// Skills API Routes (specific routes first, then parameterized routes)
+app.get('/api/skills/search', skillController.searchSkills);
+app.get('/api/skills/basic', skillController.getBasicSkills);
+app.get('/api/skills/combat', skillController.getCombatSkills);
+app.get('/api/skills/statistics', skillController.getSkillStatistics);
+app.get('/api/skills/generate-id', skillController.generateSkillId);
+app.get('/api/skills/categories', skillController.getValidSkillCategories);
+app.get('/api/skills/type/:type', skillController.getSkillsByType);
+app.get('/api/skills/classe/:classe', skillController.getSkillsByClasse);
+app.get('/api/skills/category/:category', skillController.getSkillsByCategory);
+app.get('/api/skills/:id', skillController.getSkill);
+app.get('/api/skills', skillController.getAllSkills);
+
+app.post('/api/skills', skillController.createSkill);
+app.post('/api/skills/batch', skillController.createSkillsBatch);
+app.post('/api/skills/validate/category', skillController.validateSkillCategory);
+
+app.put('/api/skills/:id', skillController.updateSkill);
+
+app.delete('/api/skills/:id', skillController.deleteSkill);
+
+// Skill sprite endpoints (using memory storage for buffer access)
+const skillSpriteUpload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Formato não suportado'));
+    }
+  }
+});
+
+app.post('/api/skills/:id/sprite', skillSpriteUpload.single('sprite'), skillController.uploadSkillSprite);
+app.delete('/api/skills/:id/sprite', skillController.removeSkillSprite);
+
+console.log('✅ Skills System inicializado com sucesso');
+console.log('🎯 Skills API disponível em /api/skills');
+
+// PassiveAbility API Routes
+app.get('/api/passive-abilities/search', passiveAbilityController.searchPassiveAbilities);
+app.get('/api/passive-abilities/always-active', passiveAbilityController.getAlwaysActivePassiveAbilities);
+app.get('/api/passive-abilities/battle-triggered', passiveAbilityController.getBattleTriggeredPassiveAbilities);
+app.get('/api/passive-abilities/statistics', passiveAbilityController.getPassiveAbilityStatistics);
+app.get('/api/passive-abilities/generate-id', passiveAbilityController.generatePassiveAbilityId);
+app.get('/api/passive-abilities/valid-cultures', passiveAbilityController.getValidCultures);
+app.get('/api/passive-abilities/valid-triggers', passiveAbilityController.getValidTriggers);
+app.get('/api/passive-abilities/valid-effect-types', passiveAbilityController.getValidEffectTypes);
+app.get('/api/passive-abilities/culture/:culture', passiveAbilityController.getPassiveAbilitiesByCulture);
+app.get('/api/passive-abilities/trigger/:trigger', passiveAbilityController.getPassiveAbilitiesByTrigger);
+app.get('/api/passive-abilities/:id', passiveAbilityController.getPassiveAbility);
+app.get('/api/passive-abilities', passiveAbilityController.getAllPassiveAbilities);
+
+app.post('/api/passive-abilities', passiveAbilityController.createPassiveAbility);
+app.post('/api/passive-abilities/batch', passiveAbilityController.createPassiveAbilitiesBatch);
+
+app.put('/api/passive-abilities/:id', passiveAbilityController.updatePassiveAbility);
+app.delete('/api/passive-abilities/:id', passiveAbilityController.deletePassiveAbility);
+
+console.log('✅ PassiveAbilities System inicializado com sucesso');
+console.log('🎭 PassiveAbilities API disponível em /api/passive-abilities');
+
+// ⚔️ **SECURE BATTLE SYSTEM** - Anti-Cheat Backend
+const secureBattleMechanics = new SecureBattleMechanics();
+
+// Cleanup old battles every 5 minutes
+setInterval(() => {
+  secureBattleMechanics.cleanupOldBattles();
+}, 5 * 60 * 1000);
+
+// ⚔️ **SECURE BATTLE ROUTES** - Anti-Cheat System
+
+// Iniciar batalha 3v3 segura
+app.post('/api/secure-battle/start', async (req, res) => {
+  try {
+    const { playerTeam, enemyTeam, battleType } = req.body;
+    
+    if (!playerTeam || !Array.isArray(playerTeam) || playerTeam.length !== 3) {
+      return res.status(400).json({ error: 'Equipe do jogador deve ter exatamente 3 personagens' });
+    }
+
+    if (!enemyTeam || !Array.isArray(enemyTeam) || enemyTeam.length !== 3) {
+      return res.status(400).json({ error: 'Equipe inimiga deve ter exatamente 3 personagens' });
+    }
+
+    // Validar que todos os personagens existem no banco
+    const data = await loadDatabase();
+    
+    for (const char of [...playerTeam, ...enemyTeam]) {
+      if (!data.characters[char.id]) {
+        return res.status(404).json({ error: `Personagem ${char.id} não encontrado` });
+      }
+    }
+
+    const result = await secureBattleMechanics.createSecureBattle(playerTeam, enemyTeam, battleType || '3v3');
+    
+    console.log(`⚔️ Nova batalha segura iniciada: ${result.battleId}`);
+    
+    res.json({
+      success: true,
+      battleId: result.battleId,
+      battle: result.battle
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao iniciar batalha segura:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Obter estado atual da batalha
+app.get('/api/secure-battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const battle = secureBattleMechanics.getBattle(battleId);
+    
+    if (!battle) {
+      return res.status(404).json({ error: 'Batalha não encontrada' });
+    }
+
+    res.json({
+      success: true,
+      battle: battle
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao buscar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Executar ataque seguro
+app.post('/api/secure-battle/:battleId/attack', async (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const { attackerId, targetId, skillData } = req.body;
+
+    if (!attackerId || !targetId) {
+      return res.status(400).json({ error: 'Atacante e alvo são obrigatórios' });
+    }
+
+    const result = await secureBattleMechanics.executeAttack(battleId, attackerId, targetId, skillData);
+    
+    console.log(`⚔️ Ataque executado na batalha ${battleId}: ${result.damage} de dano`);
+    
+    res.json(result);
+
+  } catch (error) {
+    console.error('❌ Erro ao executar ataque:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Executar troca segura
+app.post('/api/secure-battle/:battleId/swap', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const { fromIndex, toIndex, newActiveIndex } = req.body;
+
+    console.log(`🔄 [DEBUG] Swap request - battleId: ${battleId}, fromIndex: ${fromIndex}, toIndex: ${toIndex}, newActiveIndex: ${newActiveIndex}`);
+
+    // Aceitar tanto o formato antigo (newActiveIndex) quanto o novo (toIndex)
+    const targetIndex = newActiveIndex !== undefined ? newActiveIndex : toIndex;
+
+    if (targetIndex === undefined || targetIndex === null) {
+      return res.status(400).json({ error: 'Índice do personagem de destino é obrigatório (toIndex ou newActiveIndex)' });
+    }
+
+    const result = secureBattleMechanics.executeSwap(battleId, targetIndex);
+    
+    console.log(`⚔️ Troca executada na batalha ${battleId}: ${result.swapsRemaining} trocas restantes`);
+    
+    res.json(result);
+
+  } catch (error) {
+    console.error('❌ Erro ao executar troca:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Encerrar batalha
+app.delete('/api/secure-battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    
+    if (secureBattleMechanics.activeBattles.has(battleId)) {
+      secureBattleMechanics.activeBattles.delete(battleId);
+      console.log(`⚔️ Batalha encerrada: ${battleId}`);
+      res.json({ success: true, message: 'Batalha encerrada com sucesso' });
+    } else {
+      res.status(404).json({ error: 'Batalha não encontrada' });
+    }
+
+  } catch (error) {
+    console.error('❌ Erro ao encerrar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const battle = battles.get(battleId);
+    
+    if (!battle) {
+      return res.status(404).json({ error: 'Battle not found' });
+    }
+
+    res.json({
+      success: true,
+      battle: {
+        id: battle.id,
+        player: battle.player,
+        enemy: battle.enemy,
+        turn: battle.turn,
+        round: battle.round,
+        status: battle.status,
+        log: battle.log
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao buscar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/battle/:battleId/action', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const { action, target } = req.body;
+    const battle = battles.get(battleId);
+    
+    if (!battle) {
+      return res.status(404).json({ error: 'Battle not found' });
+    }
+
+    if (battle.status !== 'active') {
+      return res.status(400).json({ error: 'Battle is not active' });
+    }
+
+    if (battle.turn !== 'player') {
+      return res.status(400).json({ error: 'Not player turn' });
+    }
+
+    // Process player action
+    let actionResult = processPlayerAction(battle, action);
+    battle.log.push(actionResult);
+
+    // Check battle end
+    if (battle.player.currentHP <= 0) {
+      battle.status = 'defeat';
+      battle.log.push({ message: `${battle.player.name} foi derrotado!`, type: 'defeat' });
+    } else if (battle.enemy.currentHP <= 0) {
+      battle.status = 'victory';
+      battle.log.push({ message: `${battle.enemy.name} foi derrotado!`, type: 'victory' });
+    } else {
+      // Enemy turn
+      battle.turn = 'enemy';
+      setTimeout(() => {
+        if (battles.has(battleId) && battle.status === 'active') {
+          const enemyResult = processEnemyAction(battle);
+          battle.log.push(enemyResult);
+          
+          // Check battle end after enemy action
+          if (battle.player.currentHP <= 0) {
+            battle.status = 'defeat';
+            battle.log.push({ message: `${battle.player.name} foi derrotado!`, type: 'defeat' });
+          } else {
+            battle.turn = 'player';
+            battle.round++;
+          }
+        }
+      }, 1000);
+    }
+
+    res.json({
+      success: true,
+      battle: {
+        id: battle.id,
+        player: battle.player,
+        enemy: battle.enemy,
+        turn: battle.turn,
+        round: battle.round,
+        status: battle.status,
+        log: battle.log.slice(-10) // Return last 10 log entries
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao processar ação de batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    
+    if (battles.has(battleId)) {
+      battles.delete(battleId);
+      console.log(`⚔️ Batalha encerrada: ${battleId}`);
+      res.json({ success: true, message: 'Battle ended' });
+    } else {
+      res.status(404).json({ error: 'Battle not found' });
+    }
+
+  } catch (error) {
+    console.error('❌ Erro ao encerrar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Battle action processors
+function processPlayerAction(battle, action) {
+  switch (action) {
+    case 'attack':
+      return processAttack(battle.player, battle.enemy, 'attack');
+    case 'defend':
+      battle.player.defending = true;
+      return { message: `${battle.player.name} está se defendendo!`, type: 'defend' };
+    case 'skill':
+      if (battle.player.currentMP >= 10) {
+        battle.player.currentMP -= 10;
+        return processAttack(battle.player, battle.enemy, 'skill');
+      } else {
+        return { message: 'MP insuficiente!', type: 'error' };
+      }
+    case 'item':
+      const healAmount = Math.floor(battle.player.maxHP * 0.3);
+      const oldHP = battle.player.currentHP;
+      battle.player.currentHP = Math.min(battle.player.maxHP, battle.player.currentHP + healAmount);
+      const actualHeal = battle.player.currentHP - oldHP;
+      return { message: `${battle.player.name} recuperou ${actualHeal} HP!`, type: 'heal' };
+    default:
+      return { message: 'Ação inválida!', type: 'error' };
+  }
+}
+
+function processEnemyAction(battle) {
+  const action = Math.random();
+  
+  if (action < 0.7) {
+    return processAttack(battle.enemy, battle.player, 'attack');
+  } else if (action < 0.9) {
+    return processAttack(battle.enemy, battle.player, 'skill');
+  } else {
+    battle.enemy.defending = true;
+    return { message: `${battle.enemy.name} está se defendendo!`, type: 'defend' };
+  }
+}
+
+function processAttack(attacker, defender, type) {
+  let baseDamage;
+  
+  if (type === 'skill') {
+    baseDamage = Math.floor(attacker.attack * 1.5) - Math.floor(defender.defense * 0.5);
+  } else {
+    baseDamage = attacker.attack - Math.floor(defender.defense * 0.7);
+  }
+  
+  // Add randomness and defending modifier
+  const randomMultiplier = 0.8 + (Math.random() * 0.4);
+  let finalDamage = Math.floor(baseDamage * randomMultiplier);
+  
+  if (defender.defending) {
+    finalDamage = Math.floor(finalDamage * 0.5);
+  }
+  
+  finalDamage = Math.max(1, finalDamage);
+  defender.currentHP = Math.max(0, defender.currentHP - finalDamage);
+  
+  const actionText = type === 'skill' ? 'usou uma habilidade' : 'atacou';
+  return {
+    message: `${attacker.name} ${actionText} ${defender.name} causando ${finalDamage} de dano!`,
+    type: 'damage',
+    damage: finalDamage
+  };
+}
+
+// Route to serve battle interface
+app.get('/battle', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'battle.html'));
+});
+
 // **FUNÇÃO ATUALIZADA**: Inicializar servidor SEM migração de IDs
 async function startServer() {
   try {
@@ -1218,6 +1761,29 @@ async function startServer() {
     
     // Inicializar Maps System
     await initializeMapsSystem();
+    
+    // Configurar auto-reload do banco de dados
+    console.log('🔄 Configurando auto-reload do banco de dados...');
+    let reloadTimeout;
+    chokidar.watch(DB_PATH, { ignoreInitial: true })
+      .on('change', () => {
+        // Debounce: aguardar 500ms sem mudanças antes de recarregar
+        clearTimeout(reloadTimeout);
+        reloadTimeout = setTimeout(async () => {
+          console.log('🔄 Banco de dados modificado, recarregando...');
+          try {
+            // A API já recarrega automaticamente via loadDatabase()
+            console.log('✅ Sistema atualizado com mudanças do banco!');
+          } catch (error) {
+            console.error('❌ Erro ao recarregar banco:', error);
+          }
+        }, 500);
+      })
+      .on('error', (error) => {
+        console.error('❌ Erro no watcher do banco:', error);
+      });
+    
+    console.log('✅ Auto-reload configurado para:', DB_PATH);
     
     app.listen(PORT, () => {
       console.log(`

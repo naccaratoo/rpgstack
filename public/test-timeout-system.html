@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Sistema de Timeout 3v3</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .warning { color: orange; font-weight: bold; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 3px; }
+        .passed { background-color: #e8f5e8; }
+        .failed { background-color: #ffeaea; }
+        .timeout-display { 
+            padding: 20px; 
+            border: 2px solid #ccc; 
+            border-radius: 10px; 
+            text-align: center;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+        }
+        .timeout-active { 
+            border-color: #ff6b35; 
+            background-color: #fff0ed;
+            animation: pulse 1s infinite;
+        }
+        .timeout-warning { 
+            border-color: #ff6b35; 
+            background-color: #ffeecc;
+            animation: warning-pulse 0.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        @keyframes warning-pulse {
+            0%, 100% { border-color: #ff6b35; }
+            50% { border-color: #ff0000; }
+        }
+        .stats { background-color: #f0f8ff; padding: 10px; border-radius: 5px; }
+        button { margin: 5px; padding: 10px; font-size: 14px; }
+        .big-button { padding: 15px 30px; font-size: 16px; font-weight: bold; }
+        pre { background-color: #f5f5f5; padding: 10px; border-radius: 3px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Teste do Sistema de Timeout 3v3</h1>
+    
+    <div id="test-results"></div>
+    
+    <div class="test-section">
+        <h3>Simulação de Timeout em Tempo Real</h3>
+        <div id="timeout-display" class="timeout-display">
+            <div id="timer-display" style="font-size: 24px; font-weight: bold;">20</div>
+            <div>Segundos Restantes</div>
+            <div id="status-display" style="margin-top: 10px; font-size: 14px;">Sistema Inicializado</div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="big-button" onclick="startTimeoutTest()">Iniciar Teste de Timeout (5s)</button>
+            <button onclick="simulateAction()">Declarar Ação (Cancela Timeout)</button>
+            <button onclick="resetTimeoutTest()">Reset</button>
+            <button onclick="configureCustomTimeout()">Configurar Timeout Customizado</button>
+        </div>
+        
+        <div id="stats-display" class="stats" style="margin-top: 15px;"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Testes Automatizados</h3>
+        <button onclick="runAllTimeoutTests()">Executar Todos os Testes</button>
+        <button onclick="testTimeoutCallbacks()">Testar Callbacks</button>
+        <button onclick="showTimeoutStats()">Mostrar Estatísticas</button>
+    </div>
+
+    <script src="battlemechanics.js"></script>
+    <script>
+        let battleMechanics;
+        let testResults = [];
+        let timeoutTestActive = false;
+        let timeoutTestInterval = null;
+        let timeoutTestTime = 5; // 5 segundos para teste rápido
+        
+        // Dados de teste
+        const testTeam = [
+            { name: "Guerreiro", hp: 300, maxHp: 300, attack: 150, defense: 120 },
+            { name: "Mago", hp: 200, maxHp: 200, attack: 80, specialAttack: 180, spirit: 100 },
+            { name: "Arqueiro", hp: 250, maxHp: 250, attack: 140, defense: 80 }
+        ];
+
+        function runTest(testName, testFunction, expectedToPass = true) {
+            try {
+                const result = testFunction();
+                if (expectedToPass) {
+                    testResults.push({ name: testName, result: 'PASSOU', details: result, type: 'success' });
+                    console.log(`✓ ${testName}: PASSOU`);
+                } else {
+                    testResults.push({ name: testName, result: 'FALHOU (esperava erro)', details: 'Não deveria ter passado', type: 'failed' });
+                    console.error(`✗ ${testName}: FALHOU - Esperava que falhasse mas passou`);
+                }
+                return true;
+            } catch (error) {
+                if (expectedToPass) {
+                    testResults.push({ name: testName, result: 'FALHOU', details: error.message, type: 'failed' });
+                    console.error(`✗ ${testName}: FALHOU - ${error.message}`);
+                } else {
+                    testResults.push({ name: testName, result: 'PASSOU (erro esperado)', details: error.message, type: 'success' });
+                    console.log(`✓ ${testName}: PASSOU (erro esperado) - ${error.message}`);
+                }
+                return false;
+            }
+        }
+
+        function test1_InitializeTimeoutSystem() {
+            battleMechanics = new BattleMechanics();
+            battleMechanics.initialize3v3Battle(testTeam, testTeam);
+            
+            const stats = battleMechanics.getTimeoutStats();
+            if (stats.timeLimit !== 20000) {
+                throw new Error(`Tempo limite incorreto: ${stats.timeLimit}`);
+            }
+            
+            if (stats.timeoutCount !== 0) {
+                throw new Error(`Contagem de timeout deveria ser 0: ${stats.timeoutCount}`);
+            }
+            
+            return `Sistema inicializado com timeout de ${stats.timeLimit}ms`;
+        }
+
+        function test2_ConfigureTimeout() {
+            const config = battleMechanics.configureTimeout({
+                timeLimit: 10000,
+                autoAction: 'defend',
+                warningTime: 3000
+            });
+            
+            if (config.timeLimit !== 10000) {
+                throw new Error(`Configuração de timeout falhou: ${config.timeLimit}`);
+            }
+            
+            const stats = battleMechanics.getTimeoutStats();
+            if (stats.timeLimit !== 10000) {
+                throw new Error(`Timeout não foi aplicado: ${stats.timeLimit}`);
+            }
+            
+            return `Timeout configurado para ${config.timeLimit}ms com ação padrão '${config.autoAction}'`;
+        }
+
+        function test3_TimeoutCallbacks() {
+            let timeoutCalled = false;
+            let warningCalled = false;
+            
+            battleMechanics.setTimeoutCallbacks(
+                (data) => { timeoutCalled = true; console.log('Timeout callback:', data); },
+                (data) => { warningCalled = true; console.log('Warning callback:', data); }
+            );
+            
+            if (!battleMechanics.onTimeoutCallback || !battleMechanics.onTimeoutWarningCallback) {
+                throw new Error('Callbacks não foram configurados corretamente');
+            }
+            
+            return 'Callbacks de timeout configurados com sucesso';
+        }
+
+        function test4_TimeoutStats() {
+            const stats = battleMechanics.getTimeoutStats();
+            
+            const expectedFields = ['timeLimit', 'currentTimeRemaining', 'timeElapsed', 'currentPlayer', 'autoAction', 'timeoutCount', 'averageTurnTime'];
+            expectedFields.forEach(field => {
+                if (stats[field] === undefined) {
+                    throw new Error(`Campo '${field}' ausente nas estatísticas`);
+                }
+            });
+            
+            return `Estatísticas completas: ${Object.keys(stats).length} campos`;
+        }
+
+        function test5_SimulateTimeout() {
+            // Simular um timeout diretamente
+            battleMechanics.battleState.turnStartTime = Date.now();
+            battleMechanics.battleState.turnPhase = 'action_select';
+            
+            const initialTimeoutCount = battleMechanics.battleState.timeoutCount;
+            battleMechanics.onTurnTimeout();
+            
+            if (battleMechanics.battleState.timeoutCount !== initialTimeoutCount + 1) {
+                throw new Error('Contagem de timeout não foi incrementada');
+            }
+            
+            return `Timeout simulado: contagem agora é ${battleMechanics.battleState.timeoutCount}`;
+        }
+
+        function test6_AverageTurnTime() {
+            // Simular alguns turnos com tempos diferentes
+            battleMechanics.battleState.turnTimes = [5000, 10000, 15000, 8000];
+            
+            const average = battleMechanics.calculateAverageTurnTime();
+            const expectedAverage = (5000 + 10000 + 15000 + 8000) / 4;
+            
+            if (Math.abs(average - expectedAverage) > 1) {
+                throw new Error(`Média incorreta: esperado ${expectedAverage}, atual ${average}`);
+            }
+            
+            return `Tempo médio calculado corretamente: ${average}ms`;
+        }
+
+        function startTimeoutTest() {
+            if (timeoutTestActive) {
+                resetTimeoutTest();
+                return;
+            }
+            
+            if (!battleMechanics) {
+                battleMechanics = new BattleMechanics();
+                battleMechanics.initialize3v3Battle(testTeam, testTeam);
+            }
+            
+            // Configurar timeout rápido para teste
+            battleMechanics.configureTimeout({
+                timeLimit: timeoutTestTime * 1000,
+                autoAction: 'attack',
+                warningTime: 2000
+            });
+            
+            // Configurar callbacks para UI
+            battleMechanics.setTimeoutCallbacks(
+                (data) => {
+                    console.log('🔥 TIMEOUT!', data);
+                    updateStatus(`TIMEOUT! ${data.player} executou ${data.action}`, 'error');
+                    timeoutTestActive = false;
+                    if (timeoutTestInterval) {
+                        clearInterval(timeoutTestInterval);
+                    }
+                },
+                (data) => {
+                    console.log('⚠️ Aviso de timeout!', data);
+                    updateStatus(`Aviso: ${data.timeRemaining/1000}s restantes!`, 'warning');
+                    document.getElementById('timeout-display').className = 'timeout-display timeout-warning';
+                }
+            );
+            
+            timeoutTestActive = true;
+            document.getElementById('timeout-display').className = 'timeout-display timeout-active';
+            updateStatus('Teste de timeout iniciado!', 'success');
+            
+            let remaining = timeoutTestTime;
+            timeoutTestInterval = setInterval(() => {
+                remaining--;
+                document.getElementById('timer-display').textContent = remaining;
+                
+                if (remaining <= 0) {
+                    battleMechanics.onTurnTimeout();
+                    clearInterval(timeoutTestInterval);
+                    timeoutTestActive = false;
+                }
+            }, 1000);
+        }
+
+        function simulateAction() {
+            if (timeoutTestActive && battleMechanics) {
+                try {
+                    battleMechanics.battleState.turnStartTime = Date.now() - (timeoutTestTime * 1000 - 3000); // Simular 3s restantes
+                    const result = battleMechanics.declareAction('attack');
+                    updateStatus(`Ação declarada: ${result.actionType} em ${Math.floor(result.timeTaken/1000)}s`, 'success');
+                    resetTimeoutTest();
+                } catch (error) {
+                    updateStatus(`Erro ao declarar ação: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('Inicie um teste de timeout primeiro', 'warning');
+            }
+        }
+
+        function resetTimeoutTest() {
+            timeoutTestActive = false;
+            if (timeoutTestInterval) {
+                clearInterval(timeoutTestInterval);
+                timeoutTestInterval = null;
+            }
+            document.getElementById('timer-display').textContent = timeoutTestTime;
+            document.getElementById('timeout-display').className = 'timeout-display';
+            updateStatus('Sistema resetado', 'success');
+            updateStatsDisplay();
+        }
+
+        function configureCustomTimeout() {
+            const seconds = prompt('Digite o tempo limite em segundos (1-60):', '10');
+            if (seconds && !isNaN(seconds) && seconds >= 1 && seconds <= 60) {
+                timeoutTestTime = parseInt(seconds);
+                if (!battleMechanics) {
+                    battleMechanics = new BattleMechanics();
+                    battleMechanics.initialize3v3Battle(testTeam, testTeam);
+                }
+                
+                battleMechanics.configureTimeout({
+                    timeLimit: timeoutTestTime * 1000,
+                    autoAction: 'attack'
+                });
+                
+                updateStatus(`Timeout configurado para ${timeoutTestTime}s`, 'success');
+                updateStatsDisplay();
+            }
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status-display');
+            statusEl.textContent = message;
+            statusEl.className = type;
+        }
+
+        function updateStatsDisplay() {
+            if (!battleMechanics) return;
+            
+            const stats = battleMechanics.getTimeoutStats();
+            const statsEl = document.getElementById('stats-display');
+            
+            statsEl.innerHTML = `
+                <strong>Estatísticas de Timeout:</strong><br>
+                Limite de Tempo: ${stats.timeLimit / 1000}s<br>
+                Total de Turnos: ${stats.totalTurns}<br>
+                Timeouts: ${stats.timeoutCount}<br>
+                Tempo Médio: ${stats.averageTurnTime / 1000}s<br>
+                Ação Padrão: ${stats.autoAction}<br>
+                Jogador Atual: ${stats.currentPlayer}
+            `;
+        }
+
+        function runAllTimeoutTests() {
+            console.log('=== INICIANDO TESTES DE SISTEMA DE TIMEOUT ===');
+            testResults = []; // Reset
+            
+            runTest('1. Inicializar Sistema de Timeout', test1_InitializeTimeoutSystem, true);
+            runTest('2. Configurar Timeout', test2_ConfigureTimeout, true);
+            runTest('3. Callbacks de Timeout', test3_TimeoutCallbacks, true);
+            runTest('4. Estatísticas de Timeout', test4_TimeoutStats, true);
+            runTest('5. Simular Timeout', test5_SimulateTimeout, true);
+            runTest('6. Cálculo de Tempo Médio', test6_AverageTurnTime, true);
+            
+            displayResults();
+            updateStatsDisplay();
+            
+            console.log('=== TESTES DE TIMEOUT CONCLUÍDOS ===');
+        }
+
+        function testTimeoutCallbacks() {
+            if (!battleMechanics) {
+                battleMechanics = new BattleMechanics();
+                battleMechanics.initialize3v3Battle(testTeam, testTeam);
+            }
+            
+            let results = { timeout: false, warning: false };
+            
+            battleMechanics.setTimeoutCallbacks(
+                (data) => { 
+                    results.timeout = true; 
+                    console.log('Timeout callback teste:', data);
+                },
+                (data) => { 
+                    results.warning = true; 
+                    console.log('Warning callback teste:', data);
+                }
+            );
+            
+            // Testar callback de timeout
+            battleMechanics.onTurnTimeout();
+            
+            if (results.timeout) {
+                updateStatus('Callbacks testados com sucesso!', 'success');
+            } else {
+                updateStatus('Erro: Callback de timeout não foi chamado', 'error');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function showTimeoutStats() {
+            if (!battleMechanics) {
+                updateStatus('Inicialize o sistema primeiro', 'warning');
+                return;
+            }
+            
+            const stats = battleMechanics.getTimeoutStats();
+            const statsWindow = window.open('', '_blank', 'width=500,height=400');
+            statsWindow.document.write(`
+                <html>
+                <head><title>Estatísticas Detalhadas de Timeout</title></head>
+                <body style="font-family: Arial, sans-serif; padding: 20px;">
+                    <h2>📊 Estatísticas Detalhadas de Timeout</h2>
+                    <pre>${JSON.stringify(stats, null, 2)}</pre>
+                    <h3>Histórico de Tempos de Turno:</h3>
+                    <pre>${JSON.stringify(battleMechanics.battleState.turnTimes || [], null, 2)}</pre>
+                </body>
+                </html>
+            `);
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '<h3>Resultados dos Testes de Timeout:</h3>';
+            
+            const passed = testResults.filter(t => t.type === 'success').length;
+            const total = testResults.length;
+            
+            html += `<div class="test-result ${total === passed ? 'passed' : 'failed'}">
+                <strong>Total: ${passed}/${total} testes passaram</strong>
+            </div>`;
+            
+            testResults.forEach(test => {
+                const className = test.type === 'success' ? 'success' : 'error';
+                html += `<div class="test-result ${test.type === 'success' ? 'passed' : 'failed'}">
+                    <span class="${className}"><strong>${test.name}</strong>: ${test.result}</span><br>
+                    <em>${test.details}</em>
+                </div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Inicialização
+        window.onload = function() {
+            updateStatsDisplay();
+        };
+    </script>
+</body>
+</html>

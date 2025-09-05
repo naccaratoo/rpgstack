@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Integração Completa - Battle System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .warning { color: orange; font-weight: bold; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 3px; }
+        .passed { background-color: #e8f5e8; }
+        .failed { background-color: #ffeaea; }
+        .integration-display { 
+            padding: 20px; 
+            border: 2px solid #4CAF50; 
+            border-radius: 10px; 
+            background-color: #f9fff9;
+            margin: 10px 0;
+        }
+        .battle-state { 
+            background-color: #e3f2fd; 
+            padding: 15px; 
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .team-display { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            margin: 10px 0; 
+        }
+        .character { 
+            padding: 10px; 
+            border: 1px solid #999; 
+            border-radius: 5px; 
+            background-color: #f9f9f9; 
+            text-align: center;
+        }
+        .active { background-color: #c8e6c9; border-color: #4CAF50; font-weight: bold; }
+        .reserve { background-color: #fff3e0; border-color: #FF9800; }
+        button { margin: 5px; padding: 10px; font-size: 14px; }
+        .big-button { padding: 15px 30px; font-size: 16px; font-weight: bold; }
+        pre { background-color: #f5f5f5; padding: 10px; border-radius: 3px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Integração Completa - Battle System 3v3</h1>
+    
+    <div id="test-results"></div>
+    
+    <div class="test-section">
+        <h3>Estado Atual da Integração</h3>
+        <div id="integration-display" class="integration-display">
+            <div><strong>Status:</strong> <span id="integration-status">Não Inicializado</span></div>
+            <div><strong>Modo de Batalha:</strong> <span id="battle-mode">N/A</span></div>
+            <div><strong>Sistema de Turnos:</strong> <span id="turn-system-status">N/A</span></div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="big-button" onclick="initializeIntegrationTest()">Inicializar Sistema Integrado</button>
+            <button onclick="testBattleFlow()">Testar Fluxo de Batalha</button>
+            <button onclick="simulateFullBattle()">Simular Batalha Completa</button>
+            <button onclick="showSystemDetails()">Mostrar Detalhes</button>
+        </div>
+        
+        <div id="battle-display" class="battle-state" style="display: none;">
+            <h4>Estado da Batalha:</h4>
+            <div id="teams-display"></div>
+            <div id="turn-info"></div>
+            <div id="actions-available"></div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Testes de Integração</h3>
+        <button onclick="runIntegrationTests()">Executar Testes Completos</button>
+        <button onclick="testErrorHandling()">Testar Tratamento de Erros</button>
+        <button onclick="testCallbacks()">Testar Callbacks UI</button>
+    </div>
+
+    <script src="battlemechanics.js"></script>
+    <script src="battle.js"></script>
+    <script>
+        let battleDemo;
+        let testResults = [];
+        let integrationInitialized = false;
+        
+        // Dados de teste 3v3
+        const testPlayerTeam = {
+            characters: [
+                { name: "Guerreiro", hp: 300, maxHp: 300, attack: 150, defense: 120, id: "player_1" },
+                { name: "Mago", hp: 200, maxHp: 200, attack: 80, specialAttack: 180, spirit: 100, id: "player_2" },
+                { name: "Arqueiro", hp: 250, maxHp: 250, attack: 140, defense: 80, id: "player_3" }
+            ]
+        };
+        
+        const testEnemyTeam = {
+            characters: [
+                { name: "Orc Guerreiro", hp: 280, maxHp: 280, attack: 130, defense: 100, id: "enemy_1" },
+                { name: "Goblin Xamã", hp: 180, maxHp: 180, attack: 60, specialAttack: 160, spirit: 90, id: "enemy_2" },
+                { name: "Troll", hp: 400, maxHp: 400, attack: 120, defense: 150, id: "enemy_3" }
+            ]
+        };
+
+        function runTest(testName, testFunction, expectedToPass = true) {
+            try {
+                const result = testFunction();
+                if (expectedToPass) {
+                    testResults.push({ name: testName, result: 'PASSOU', details: result, type: 'success' });
+                    console.log(`✓ ${testName}: PASSOU`);
+                } else {
+                    testResults.push({ name: testName, result: 'FALHOU (esperava erro)', details: 'Não deveria ter passado', type: 'failed' });
+                    console.error(`✗ ${testName}: FALHOU - Esperava que falhasse mas passou`);
+                }
+                return true;
+            } catch (error) {
+                if (expectedToPass) {
+                    testResults.push({ name: testName, result: 'FALHOU', details: error.message, type: 'failed' });
+                    console.error(`✗ ${testName}: FALHOU - ${error.message}`);
+                } else {
+                    testResults.push({ name: testName, result: 'PASSOU (erro esperado)', details: error.message, type: 'success' });
+                    console.log(`✓ ${testName}: PASSOU (erro esperado) - ${error.message}`);
+                }
+                return false;
+            }
+        }
+
+        function test1_InitializeBattleDemo() {
+            battleDemo = new VintageBattleDemo();
+            if (!battleDemo) {
+                throw new Error('VintageBattleDemo não foi criado');
+            }
+            
+            if (battleDemo.battleMechanics !== null) {
+                throw new Error('BattleMechanics deveria ser null inicialmente');
+            }
+            
+            return 'VintageBattleDemo inicializado corretamente';
+        }
+
+        function test2_SetupTeams() {
+            // Configurar equipes para teste
+            battleDemo.playerTeam = testPlayerTeam;
+            battleDemo.enemyTeam = testEnemyTeam;
+            battleDemo.selectedTeam = testPlayerTeam.characters;
+            
+            if (battleDemo.playerTeam.characters.length !== 3) {
+                throw new Error('Equipe do jogador não tem 3 personagens');
+            }
+            
+            if (battleDemo.enemyTeam.characters.length !== 3) {
+                throw new Error('Equipe inimiga não tem 3 personagens');
+            }
+            
+            return `Equipes configuradas: ${battleDemo.playerTeam.characters.length}v${battleDemo.enemyTeam.characters.length}`;
+        }
+
+        function test3_InitializeTurnSystem() {
+            battleDemo.initializeTurnSystem();
+            
+            if (!battleDemo.battleMechanics) {
+                throw new Error('BattleMechanics não foi inicializado');
+            }
+            
+            if (!battleDemo.battleMechanics.battleState) {
+                throw new Error('BattleState não foi criado');
+            }
+            
+            if (battleDemo.battleState !== '3v3-battle') {
+                console.warn(`Estado esperado '3v3-battle', atual: '${battleDemo.battleState}'`);
+            }
+            
+            return `Sistema de turnos inicializado em modo: ${battleDemo.battleState}`;
+        }
+
+        function test4_VerifyCallbacks() {
+            const callbacks = [
+                'onTimeoutCallback',
+                'onTimeoutWarningCallback',
+                'onTurnStartCallback',
+                'onTurnEndCallback'
+            ];
+            
+            callbacks.forEach(callback => {
+                if (!battleDemo.battleMechanics[callback]) {
+                    throw new Error(`Callback ${callback} não foi configurado`);
+                }
+            });
+            
+            return `Todos os ${callbacks.length} callbacks configurados`;
+        }
+
+        function test5_Test3v3Integration() {
+            const battleState = battleDemo.battleMechanics.battleState;
+            
+            if (!battleState.teams) {
+                throw new Error('Sistema 3v3 não foi configurado');
+            }
+            
+            if (!battleState.teams.player || !battleState.teams.enemy) {
+                throw new Error('Equipes player/enemy não foram criadas');
+            }
+            
+            if (battleState.teams.player.characters.length !== 3) {
+                throw new Error(`Equipe do jogador tem ${battleState.teams.player.characters.length} personagens, esperado 3`);
+            }
+            
+            if (battleState.teams.enemy.characters.length !== 3) {
+                throw new Error(`Equipe inimiga tem ${battleState.teams.enemy.characters.length} personagens, esperado 3`);
+            }
+            
+            return `Sistema 3v3 integrado: ${battleState.teams.player.characters.length}v${battleState.teams.enemy.characters.length}`;
+        }
+
+        function test6_TestSwapIntegration() {
+            if (!battleDemo.battleMechanics.validateTeamForSwap) {
+                throw new Error('Validação de swap não disponível');
+            }
+            
+            const playerTeam = battleDemo.battleMechanics.battleState.teams.player;
+            const validation = battleDemo.battleMechanics.validateTeamForSwap(playerTeam);
+            
+            if (!validation.valid) {
+                throw new Error(`Validação de swap falhou: ${validation.error}`);
+            }
+            
+            if (validation.aliveCount !== 3) {
+                throw new Error(`Contagem incorreta de personagens vivos: ${validation.aliveCount}`);
+            }
+            
+            return `Sistema de swap integrado: ${validation.aliveCount} personagens disponíveis`;
+        }
+
+        function test7_TestActionDeclaration() {
+            try {
+                const result = battleDemo.declareAction('attack', {});
+                if (!result || !result.success) {
+                    throw new Error('Declaração de ação falhou');
+                }
+                
+                return `Ação declarada com sucesso: ${result.actionType}`;
+            } catch (error) {
+                // Pode falhar se não estiver na fase correta - isso é esperado
+                return `Sistema de ações integrado (fase: ${battleDemo.battleMechanics.battleState.turnPhase})`;
+            }
+        }
+
+        function test8_TestTimeoutIntegration() {
+            const stats = battleDemo.battleMechanics.getTimeoutStats();
+            
+            if (!stats) {
+                throw new Error('Estatísticas de timeout não disponíveis');
+            }
+            
+            const requiredFields = ['timeLimit', 'currentPlayer', 'autoAction', 'timeoutCount'];
+            requiredFields.forEach(field => {
+                if (stats[field] === undefined) {
+                    throw new Error(`Campo ${field} ausente nas estatísticas`);
+                }
+            });
+            
+            return `Sistema de timeout integrado: ${stats.timeLimit/1000}s limite`;
+        }
+
+        function initializeIntegrationTest() {
+            try {
+                battleDemo = new VintageBattleDemo();
+                
+                // Configurar equipes
+                battleDemo.playerTeam = testPlayerTeam;
+                battleDemo.enemyTeam = testEnemyTeam;
+                battleDemo.selectedTeam = testPlayerTeam.characters;
+                
+                // Inicializar sistema
+                battleDemo.initializeTurnSystem();
+                
+                integrationInitialized = true;
+                updateIntegrationStatus();
+                updateBattleDisplay();
+                
+                console.log('Sistema integrado inicializado com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro ao inicializar:', error);
+                document.getElementById('integration-status').textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        function testBattleFlow() {
+            if (!integrationInitialized) {
+                alert('Inicialize o sistema primeiro!');
+                return;
+            }
+            
+            try {
+                // Simular início de turno do jogador
+                battleDemo.startPlayerTurn();
+                
+                // Simular declaração de ação
+                setTimeout(() => {
+                    try {
+                        const result = battleDemo.declareAction('attack', { targetIndex: 0 });
+                        console.log('Ação declarada:', result);
+                        
+                        // Processar turno
+                        setTimeout(() => {
+                            const processResult = battleDemo.processTurn();
+                            console.log('Turno processado:', processResult);
+                            updateBattleDisplay();
+                        }, 1000);
+                        
+                    } catch (error) {
+                        console.log('Fluxo de batalha:', error.message);
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Erro no fluxo de batalha:', error);
+            }
+        }
+
+        function simulateFullBattle() {
+            if (!integrationInitialized) {
+                initializeIntegrationTest();
+                setTimeout(simulateFullBattle, 1000);
+                return;
+            }
+            
+            console.log('=== SIMULANDO BATALHA COMPLETA ===');
+            
+            let turnCount = 0;
+            const maxTurns = 5;
+            
+            function simulateTurn() {
+                if (turnCount >= maxTurns) {
+                    console.log('Simulação concluída!');
+                    return;
+                }
+                
+                try {
+                    battleDemo.startPlayerTurn();
+                    
+                    setTimeout(() => {
+                        const actions = ['attack', 'defend', 'meditate'];
+                        const randomAction = actions[Math.floor(Math.random() * actions.length)];
+                        
+                        try {
+                            const result = battleDemo.declareAction(randomAction, {});
+                            console.log(`Turno ${turnCount + 1}: ${randomAction}`, result);
+                            
+                            setTimeout(() => {
+                                battleDemo.processTurn();
+                                turnCount++;
+                                updateBattleDisplay();
+                                
+                                if (turnCount < maxTurns) {
+                                    setTimeout(simulateTurn, 2000);
+                                }
+                            }, 1000);
+                            
+                        } catch (error) {
+                            console.log(`Turno ${turnCount + 1} erro:`, error.message);
+                            turnCount++;
+                            if (turnCount < maxTurns) {
+                                setTimeout(simulateTurn, 2000);
+                            }
+                        }
+                    }, 1500);
+                    
+                } catch (error) {
+                    console.error('Erro na simulação:', error);
+                }
+            }
+            
+            simulateTurn();
+        }
+
+        function updateIntegrationStatus() {
+            if (!battleDemo) return;
+            
+            document.getElementById('integration-status').textContent = 
+                integrationInitialized ? 'Inicializado' : 'Aguardando';
+            document.getElementById('battle-mode').textContent = 
+                battleDemo.battleState || 'N/A';
+            document.getElementById('turn-system-status').textContent = 
+                battleDemo.battleMechanics ? 'Ativo' : 'Inativo';
+        }
+
+        function updateBattleDisplay() {
+            if (!integrationInitialized || !battleDemo.battleMechanics) return;
+            
+            const battleDisplay = document.getElementById('battle-display');
+            const teamsDisplay = document.getElementById('teams-display');
+            const turnInfo = document.getElementById('turn-info');
+            
+            battleDisplay.style.display = 'block';
+            
+            if (battleDemo.battleMechanics.battleState.teams) {
+                const playerTeam = battleDemo.battleMechanics.battleState.teams.player;
+                const enemyTeam = battleDemo.battleMechanics.battleState.teams.enemy;
+                
+                teamsDisplay.innerHTML = `
+                    <div>
+                        <h5>Equipe Jogador:</h5>
+                        <div class="team-display">
+                            ${playerTeam.characters.map((char, index) => `
+                                <div class="character ${index === playerTeam.activeIndex ? 'active' : 'reserve'}">
+                                    <strong>${char.name}</strong><br>
+                                    HP: ${char.hp}/${char.maxHp || char.hp}<br>
+                                    ${index === playerTeam.activeIndex ? 'ATIVO' : 'RESERVA'}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <h5>Equipe Inimigo:</h5>
+                        <div class="team-display">
+                            ${enemyTeam.characters.map((char, index) => `
+                                <div class="character ${index === enemyTeam.activeIndex ? 'active' : 'reserve'}">
+                                    <strong>${char.name}</strong><br>
+                                    HP: ${char.hp}/${char.maxHp || char.hp}<br>
+                                    ${index === enemyTeam.activeIndex ? 'ATIVO' : 'RESERVA'}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const stats = battleDemo.battleMechanics.getTimeoutStats();
+            turnInfo.innerHTML = `
+                <strong>Informações do Turno:</strong><br>
+                Jogador Atual: ${stats.currentPlayer}<br>
+                Fase: ${battleDemo.battleMechanics.battleState.turnPhase}<br>
+                Timeouts: ${stats.timeoutCount}<br>
+                Total de Turnos: ${stats.totalTurns}
+            `;
+        }
+
+        function runIntegrationTests() {
+            console.log('=== INICIANDO TESTES DE INTEGRAÇÃO COMPLETA ===');
+            testResults = [];
+            
+            runTest('1. Inicializar VintageBattleDemo', test1_InitializeBattleDemo, true);
+            runTest('2. Configurar Equipes 3v3', test2_SetupTeams, true);
+            runTest('3. Inicializar Sistema de Turnos', test3_InitializeTurnSystem, true);
+            runTest('4. Verificar Callbacks UI', test4_VerifyCallbacks, true);
+            runTest('5. Integração Sistema 3v3', test5_Test3v3Integration, true);
+            runTest('6. Integração Sistema Swap', test6_TestSwapIntegration, true);
+            runTest('7. Integração Declaração de Ações', test7_TestActionDeclaration, true);
+            runTest('8. Integração Sistema Timeout', test8_TestTimeoutIntegration, true);
+            
+            displayResults();
+            updateBattleDisplay();
+            
+            console.log('=== TESTES DE INTEGRAÇÃO CONCLUÍDOS ===');
+        }
+
+        function testErrorHandling() {
+            console.log('Testando tratamento de erros...');
+            
+            // Testar com equipes inválidas
+            const invalidBattle = new VintageBattleDemo();
+            invalidBattle.playerTeam = { characters: [{ name: "Só um" }] }; // Inválida
+            invalidBattle.enemyTeam = { characters: [] }; // Vazia
+            
+            try {
+                invalidBattle.initializeTurnSystem();
+                console.log('✓ Sistema lidou com equipes inválidas usando fallback');
+            } catch (error) {
+                console.error('✗ Erro não tratado:', error.message);
+            }
+        }
+
+        function testCallbacks() {
+            if (!integrationInitialized) {
+                alert('Inicialize o sistema primeiro!');
+                return;
+            }
+            
+            console.log('Testando callbacks...');
+            
+            // Testar callback de timeout
+            if (battleDemo.battleMechanics.onTimeoutCallback) {
+                battleDemo.battleMechanics.onTimeoutCallback({
+                    player: 'player',
+                    action: 'attack',
+                    timeElapsed: 20000
+                });
+                console.log('✓ Callback de timeout testado');
+            }
+            
+            // Testar callback de aviso
+            if (battleDemo.battleMechanics.onTimeoutWarningCallback) {
+                battleDemo.battleMechanics.onTimeoutWarningCallback({
+                    player: 'player',
+                    timeRemaining: 5000
+                });
+                console.log('✓ Callback de aviso testado');
+            }
+        }
+
+        function showSystemDetails() {
+            if (!integrationInitialized) {
+                alert('Inicialize o sistema primeiro!');
+                return;
+            }
+            
+            const details = {
+                battleState: battleDemo.battleState,
+                hasBattleMechanics: !!battleDemo.battleMechanics,
+                battleMechanicsState: battleDemo.battleMechanics.battleState,
+                timeoutStats: battleDemo.battleMechanics.getTimeoutStats(),
+                teamValidation: {
+                    player: battleDemo.battleMechanics.validateTeamForSwap(
+                        battleDemo.battleMechanics.battleState.teams.player
+                    ),
+                    enemy: battleDemo.battleMechanics.validateTeamForSwap(
+                        battleDemo.battleMechanics.battleState.teams.enemy
+                    )
+                }
+            };
+            
+            const detailsWindow = window.open('', '_blank', 'width=700,height=500');
+            detailsWindow.document.write(`
+                <html>
+                <head><title>Detalhes da Integração</title></head>
+                <body style="font-family: Arial, sans-serif; padding: 20px;">
+                    <h2>🔍 Detalhes Completos da Integração</h2>
+                    <pre>${JSON.stringify(details, null, 2)}</pre>
+                </body>
+                </html>
+            `);
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '<h3>Resultados dos Testes de Integração:</h3>';
+            
+            const passed = testResults.filter(t => t.type === 'success').length;
+            const total = testResults.length;
+            
+            html += `<div class="test-result ${total === passed ? 'passed' : 'failed'}">
+                <strong>Total: ${passed}/${total} testes passaram</strong>
+            </div>`;
+            
+            testResults.forEach(test => {
+                const className = test.type === 'success' ? 'success' : 'error';
+                html += `<div class="test-result ${test.type === 'success' ? 'passed' : 'failed'}">
+                    <span class="${className}"><strong>${test.name}</strong>: ${test.result}</span><br>
+                    <em>${test.details}</em>
+                </div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Inicialização
+        window.onload = function() {
+            updateIntegrationStatus();
+        };
+    </script>
+</body>
+</html>

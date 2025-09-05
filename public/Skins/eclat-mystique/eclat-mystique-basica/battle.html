@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⟨ ❦ ⟩ Duelo Ancestral ⟨ ❦ ⟩ - RPGStack</title>
+    
+    <!-- Google Fonts para tipografia vintage -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Cinzel:wght@400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== ÉCLAT MYSTIQUE - ART NOUVEAU BATTLE SYSTEM ===== */
+        
+        /* === DESIGN TOKENS === */
+        :root {
+            /* Paleta Vintage Principal */
+            --gold-primary: #D4AF37;
+            --gold-light: #F7E98E;
+            --gold-dark: #B8860B;
+            
+            --burgundy: #722F37;
+            --burgundy-light: #8B4B5C;
+            --burgundy-dark: #5A252A;
+            
+            --emerald: #355E3B;
+            --emerald-light: #4A7C59;
+            --emerald-dark: #2A4A30;
+            
+            --parchment: #FDF5E6;
+            --sepia-base: #F5F5DC;
+            --aged-paper: #F0E68C;
+            
+            --charcoal: #36454F;
+            --charcoal-light: #708090;
+            
+            /* Tipografia Clássica */
+            --font-title: 'Playfair Display', serif;
+            --font-ornate: 'Cinzel', serif;
+            --font-script: 'Dancing Script', cursive;
+            --font-body: 'Georgia', serif;
+            
+            /* Espaçamentos Art Nouveau */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Bordas e Curvas */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 20px;
+            
+            /* Transições Elegantes */
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* === RESET E BASE === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, 
+                var(--parchment) 0%, 
+                var(--sepia-base) 50%, 
+                var(--aged-paper) 100%
+            );
+            min-height: 100vh;
+            color: var(--charcoal);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* === CONTAINER PRINCIPAL === */
+        .battle-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* === HEADER ORNAMENTAL === */
+        .battle-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            position: relative;
+        }
+        
+        .battle-header::before,
+        .battle-header::after {
+            content: '⟨ ❦ ⟩';
+            font-size: 2.5rem;
+            color: var(--gold-primary);
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .battle-header::before {
+            left: -120px;
+        }
+        
+        .battle-header::after {
+            right: -120px;
+        }
+        
+        .battle-title {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            text-shadow: 2px 2px 4px rgba(212, 175, 55, 0.3);
+            margin-bottom: var(--space-sm);
+            background: linear-gradient(135deg, var(--charcoal), var(--charcoal-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .battle-subtitle {
+            font-family: var(--font-script);
+            font-size: 1.5rem;
+            color: var(--gold-dark);
+            opacity: 0.8;
+        }
+        
+        /* === ARENA PRINCIPAL === */
+        .battle-arena {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+            flex: 1;
+        }
+        
+        /* === CARDS DE PERSONAGEM === */
+        .combatant-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .character-card {
+            background: linear-gradient(135deg, 
+                var(--parchment) 0%, 
+                var(--sepia-base) 100%
+            );
+            border: 3px solid var(--gold-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            width: 100%;
+            max-width: 350px;
+            position: relative;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.2),
+                inset 0 2px 10px rgba(212, 175, 55, 0.1);
+            transition: all var(--transition-normal);
+            overflow: hidden;
+        }
+        
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .character-card > * {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .character-card.enemy {
+            border-color: var(--burgundy);
+            background: linear-gradient(135deg, 
+                var(--aged-paper) 0%, 
+                var(--parchment) 100%
+            );
+        }
+        
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 40px rgba(0,0,0,0.3),
+                inset 0 2px 15px rgba(212, 175, 55, 0.2);
+        }
+        
+        /* === CORNER FLOURISHES === */
+        .character-card::after {
+            content: '◊';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            opacity: 0.7;
+        }
+        
+        .character-name {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--charcoal);
+            margin-bottom: var(--space-lg);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .character-class {
+            font-family: var(--font-ornate);
+            font-size: 1rem;
+            text-align: center;
+            color: var(--gold-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: var(--space-lg);
+        }
+        
+        /* === BARRAS DE STATUS === */
+        .status-bars {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .status-bar {
+            margin-bottom: var(--space-md);
+            position: relative;
+        }
+        
+        .status-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xs);
+            font-family: var(--font-ornate);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--charcoal);
+        }
+        
+        .status-bar-container {
+            height: 16px;
+            background: rgba(54, 69, 79, 0.2);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--gold-primary);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .status-bar-fill {
+            height: 100%;
+            transition: width var(--transition-normal);
+            position: relative;
+            border-radius: var(--radius-sm);
+        }
+        
+        .hp-bar .status-bar-fill {
+            background: linear-gradient(135deg, 
+                var(--burgundy) 0%, 
+                var(--burgundy-light) 100%
+            );
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
+        }
+        
+        .anima-bar .status-bar-fill {
+            background: linear-gradient(135deg, 
+                var(--emerald) 0%, 
+                var(--emerald-light) 100%
+            );
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
+        }
+        
+        /* === VS CENTRAL === */
+        .vs-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        
+        .vs-symbol {
+            font-family: var(--font-ornate);
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--gold-primary);
+            text-shadow: 
+                3px 3px 6px rgba(0,0,0,0.3),
+                0 0 20px rgba(212, 175, 55, 0.5);
+            animation: vsGlow 3s ease-in-out infinite alternate;
+            position: relative;
+        }
+        
+        .vs-symbol::before,
+        .vs-symbol::after {
+            content: '⚔';
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--charcoal-light);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .vs-symbol::before {
+            left: -40px;
+        }
+        
+        .vs-symbol::after {
+            right: -40px;
+        }
+        
+        @keyframes vsGlow {
+            0% { 
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.3), 
+                           0 0 20px rgba(212, 175, 55, 0.3);
+            }
+            100% { 
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.3), 
+                           0 0 30px rgba(212, 175, 55, 0.7);
+            }
+        }
+        
+        .turn-indicator {
+            margin-top: var(--space-lg);
+            text-align: center;
+            font-family: var(--font-ornate);
+            font-size: 1.2rem;
+            color: var(--charcoal);
+        }
+        
+        /* === PAINEL DE AÇÕES === */
+        .actions-panel {
+            background: linear-gradient(135deg, 
+                var(--sepia-base) 0%, 
+                var(--parchment) 100%
+            );
+            border: 3px solid var(--gold-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-top: var(--space-xl);
+            position: relative;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.2),
+                inset 0 2px 10px rgba(212, 175, 55, 0.1);
+        }
+        
+        .actions-panel::before {
+            content: '⟨ Ações de Batalha ⟩';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--parchment);
+            padding: 0 var(--space-md);
+            font-family: var(--font-ornate);
+            font-size: 1.1rem;
+            color: var(--gold-dark);
+            font-weight: 600;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-top: var(--space-md);
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, 
+                var(--gold-primary) 0%, 
+                var(--gold-light) 100%
+            );
+            border: 2px solid var(--gold-dark);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            font-family: var(--font-ornate);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255,255,255,0.3), 
+                transparent
+            );
+            transition: left var(--transition-slow);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 20px rgba(212, 175, 55, 0.4),
+                inset 0 2px 8px rgba(255,255,255,0.2);
+        }
+        
+        .action-button:hover::before {
+            left: 100%;
+        }
+        
+        .action-button:active {
+            transform: translateY(-1px);
+        }
+        
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .action-button.attack {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
+            color: var(--parchment);
+        }
+        
+        .action-button.defend {
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
+            color: var(--parchment);
+        }
+        
+        .action-button.meditate {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-light) 100%);
+        }
+        
+        .action-button.skills {
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--charcoal-light) 100%);
+            color: var(--parchment);
+        }
+        
+        /* === SKILLS MENU === */
+        .skills-menu {
+            display: none;
+            background: var(--parchment);
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-lg);
+            margin-top: var(--space-lg);
+            padding: var(--space-lg);
+        }
+        
+        .skills-menu.active {
+            display: block;
+            animation: slideDown var(--transition-normal) ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .skills-title {
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            color: var(--charcoal);
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-md);
+        }
+        
+        .skill-card {
+            background: var(--sepia-base);
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .skill-name {
+            font-family: var(--font-ornate);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .skill-cost {
+            font-size: 0.9rem;
+            color: var(--emerald-dark);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .skill-description {
+            font-size: 0.9rem;
+            color: var(--charcoal-light);
+            line-height: 1.4;
+        }
+        
+        /* === BATTLE LOG === */
+        .battle-log {
+            background: var(--sepia-base);
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-lg);
+            margin-top: var(--space-xl);
+            position: relative;
+            max-height: 300px;
+            overflow: hidden;
+        }
+        
+        .battle-log::before {
+            content: '⟨ Crônicas da Batalha ⟩';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--sepia-base);
+            padding: 0 var(--space-md);
+            font-family: var(--font-ornate);
+            font-size: 1rem;
+            color: var(--charcoal);
+            font-weight: 600;
+        }
+        
+        .battle-log-content {
+            padding: var(--space-xl) var(--space-lg) var(--space-lg);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin-bottom: var(--space-sm);
+            padding: var(--space-sm);
+            border-left: 3px solid var(--gold-primary);
+            background: rgba(255,255,255,0.3);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
+        
+        .log-entry.damage {
+            border-left-color: var(--burgundy);
+        }
+        
+        .log-entry.heal {
+            border-left-color: var(--emerald);
+        }
+        
+        .log-entry.critical {
+            border-left-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        /* === MODALS === */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal {
+            background: var(--parchment);
+            border: 3px solid var(--gold-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            animation: modalSlide var(--transition-normal) ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-title {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--charcoal);
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .character-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .character-option {
+            background: var(--sepia-base);
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .character-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+        }
+        
+        .character-option.selected {
+            background: var(--gold-light);
+            border-color: var(--gold-dark);
+        }
+        
+        /* === DAMAGE NUMBERS === */
+        .damage-number {
+            position: absolute;
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--burgundy);
+            pointer-events: none;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: damageFloat 2s ease-out forwards;
+        }
+        
+        .damage-number.critical {
+            color: var(--gold-primary);
+            font-size: 2.5rem;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.5),
+                0 0 20px rgba(212, 175, 55, 0.8);
+        }
+        
+        .damage-number.heal {
+            color: var(--emerald);
+        }
+        
+        @keyframes damageFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px);
+            }
+        }
+        
+        /* === PARTICLES === */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--gold-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) rotate(360deg);
+            }
+        }
+        
+        /* === RESPONSIVIDADE === */
+        @media (max-width: 1200px) {
+            .battle-header::before,
+            .battle-header::after {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .battle-arena {
+                flex-direction: column;
+                gap: var(--space-xl);
+            }
+            
+            .vs-section {
+                order: 2;
+                min-width: auto;
+            }
+            
+            .vs-symbol {
+                font-size: 3rem;
+            }
+            
+            .vs-symbol::before,
+            .vs-symbol::after {
+                display: none;
+            }
+            
+            .character-card {
+                max-width: 100%;
+            }
+            
+            .battle-title {
+                font-size: 2.5rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-md);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .battle-container {
+                padding: var(--space-md);
+            }
+            
+            .battle-title {
+                font-size: 2rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .character-selection-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* === LOADING === */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--parchment), var(--sepia-base));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-title {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            color: var(--charcoal);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .loading-spinner {
+            font-size: 3rem;
+            color: var(--gold-primary);
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* === UTILITY CLASSES === */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-lg {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .fade-in {
+            animation: fadeIn var(--transition-normal) ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <h1 class="loading-title">⟨ ❦ ⟩ Preparando Duelo ⟨ ❦ ⟩</h1>
+            <div class="loading-spinner">◊</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="battle-container">
+        <!-- Header -->
+        <header class="battle-header">
+            <h1 class="battle-title">Duelo Ancestral</h1>
+            <p class="battle-subtitle">Sistema de Batalha RPGStack</p>
+        </header>
+
+        <!-- Battle Arena -->
+        <main class="battle-arena">
+            <!-- Player Section -->
+            <section class="combatant-section">
+                <div class="character-card" id="playerCard">
+                    <h2 class="character-name" id="playerName">Selecionar Herói</h2>
+                    <p class="character-class" id="playerClass">Classe Ancestral</p>
+                    
+                    <div class="status-bars">
+                        <div class="status-bar hp-bar">
+                            <div class="status-label">
+                                <span>Vida</span>
+                                <span id="playerHP">0/0</span>
+                            </div>
+                            <div class="status-bar-container">
+                                <div class="status-bar-fill" id="playerHPBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-bar anima-bar">
+                            <div class="status-label">
+                                <span>Ânima</span>
+                                <span id="playerAnima">0/0</span>
+                            </div>
+                            <div class="status-bar-container">
+                                <div class="status-bar-fill" id="playerAnimaBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VS Section -->
+            <section class="vs-section">
+                <div class="vs-symbol">VS</div>
+                <div class="turn-indicator">
+                    <span>Turno </span>
+                    <span id="turnCounter" style="font-family: var(--font-ornate);">I</span>
+                </div>
+            </section>
+
+            <!-- Enemy Section -->
+            <section class="combatant-section">
+                <div class="character-card enemy" id="enemyCard">
+                    <h2 class="character-name" id="enemyName">Adversário Sombrio</h2>
+                    <p class="character-class" id="enemyClass">Inimigo</p>
+                    
+                    <div class="status-bars">
+                        <div class="status-bar hp-bar">
+                            <div class="status-label">
+                                <span>Vida</span>
+                                <span id="enemyHP">0/0</span>
+                            </div>
+                            <div class="status-bar-container">
+                                <div class="status-bar-fill" id="enemyHPBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-bar anima-bar">
+                            <div class="status-label">
+                                <span>Ânima</span>
+                                <span id="enemyAnima">0/0</span>
+                            </div>
+                            <div class="status-bar-container">
+                                <div class="status-bar-fill" id="enemyAnimaBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Actions Panel -->
+        <section class="actions-panel">
+            <div class="actions-grid">
+                <button class="action-button attack" onclick="performAction('attack')" id="attackBtn">
+                    ⚔ Atacar
+                </button>
+                <button class="action-button defend" onclick="performAction('defend')" id="defendBtn">
+                    🛡 Defender
+                </button>
+                <button class="action-button meditate" onclick="performAction('meditate')" id="meditateBtn">
+                    🧘 Meditar
+                </button>
+                <button class="action-button skills" onclick="toggleSkillsMenu()" id="skillsBtn">
+                    📜 Habilidades
+                </button>
+            </div>
+
+            <!-- Skills Menu -->
+            <div class="skills-menu" id="skillsMenu">
+                <h3 class="skills-title">⟨ Grimório de Habilidades ⟩</h3>
+                <div class="skills-grid" id="skillsGrid">
+                    <!-- Skills populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Battle Log -->
+        <section class="battle-log">
+            <div class="battle-log-content" id="battleLog">
+                <div class="log-entry">
+                    ◊ Duelo iniciado! Que a honra prevaleça!
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Character Selection Modal -->
+    <div class="modal-overlay hidden" id="characterModal">
+        <div class="modal">
+            <h2 class="modal-title">⟨ Escolha Seu Herói Ancestral ⟩</h2>
+            <div class="character-selection-grid" id="characterSelection">
+                <!-- Characters populated dynamically -->
+            </div>
+            <div style="text-align: center;">
+                <button class="action-button" onclick="startBattle()" id="startBattleBtn">
+                    ⚔ Iniciar Duelo Ancestral
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory/Defeat Modal -->
+    <div class="modal-overlay hidden" id="resultModal">
+        <div class="modal">
+            <h2 class="modal-title" id="resultTitle">⟨ Resultado do Duelo ⟩</h2>
+            <div id="resultContent" class="text-center">
+                <!-- Result content populated dynamically -->
+            </div>
+            <div style="text-align: center; margin-top: var(--space-xl);">
+                <button class="action-button" onclick="resetBattle()">
+                    ↻ Novo Duelo
+                </button>
+                <button class="action-button" onclick="window.location.href='/'" style="margin-left: var(--space-md);">
+                    🏠 Voltar ao Início
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== SISTEMA DE BATALHA ÉCLAT MYSTIQUE =====
+        
+        class BattleSystem {
+            constructor() {
+                this.player = null;
+                this.enemy = null;
+                this.characters = {};
+                this.turn = 1;
+                this.playerTurn = true;
+                this.battleActive = false;
+                this.animating = false;
+                
+                this.init();
+            }
+            
+            async init() {
+                console.log('🎭 Iniciando Sistema Éclat Mystique...');
+                
+                // Simular loading
+                await this.delay(2000);
+                
+                // Carregar personagens
+                await this.loadCharacters();
+                
+                // Ocultar loading e mostrar seleção
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                this.showCharacterSelection();
+                
+                // Setup keyboard controls
+                this.setupKeyboardControls();
+            }
+            
+            async loadCharacters() {
+                try {
+                    const response = await fetch('/api/characters');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.characters = data.characters || {};
+                    } else {
+                        // Fallback characters se API falhar
+                        this.characters = {
+                            "045CCF3515": {
+                                "id": "045CCF3515",
+                                "name": "Sesshoumaru",
+                                "level": 1,
+                                "hp": 7000,
+                                "maxHP": 7000,
+                                "attack": 30,
+                                "defense": 10,
+                                "classe": "Armamentista",
+                                "anima": 100,
+                                "critico": 70,
+                                "skills": [{
+                                    "skillName": "Arsenal Adaptativo",
+                                    "skillDamage": 0,
+                                    "skillMana": 0,
+                                    "skillType": "buff"
+                                }]
+                            },
+                            "EA32D10F2D": {
+                                "id": "EA32D10F2D",
+                                "name": "Loki",
+                                "level": 1,
+                                "hp": 7000,
+                                "maxHP": 7000,
+                                "attack": 50,
+                                "defense": 10,
+                                "classe": "Lutador",
+                                "anima": 100,
+                                "critico": 50,
+                                "skills": [{
+                                    "skillName": "🐉 Cadência do Dragão v6.0.0 REWORK",
+                                    "skillDamage": 0,
+                                    "skillMana": 0,
+                                    "skillType": "buff"
+                                }]
+                            },
+                            "A9C4N0001E": {
+                                "id": "A9C4N0001E",
+                                "name": "Merlin",
+                                "level": 1,
+                                "hp": 7000,
+                                "maxHP": 7000,
+                                "attack": 25,
+                                "defense": 10,
+                                "classe": "Arcano",
+                                "anima": 120,
+                                "critico": 100,
+                                "skills": [{
+                                    "skillName": "Convergência Ânima",
+                                    "skillDamage": 0,
+                                    "skillMana": 0,
+                                    "skillType": "buff"
+                                }]
+                            }
+                        };
+                    }
+                    
+                    console.log('📚 Personagens carregados:', Object.keys(this.characters).length);
+                } catch (error) {
+                    console.error('❌ Erro ao carregar personagens:', error);
+                    this.characters = {};
+                }
+            }
+            
+            showCharacterSelection() {
+                const modal = document.getElementById('characterModal');
+                const selection = document.getElementById('characterSelection');
+                
+                selection.innerHTML = '';
+                
+                Object.values(this.characters).forEach(char => {
+                    const option = document.createElement('div');
+                    option.className = 'character-option';
+                    option.onclick = () => this.selectCharacter(char.id);
+                    option.innerHTML = `
+                        <h4>${char.name}</h4>
+                        <p>${char.classe}</p>
+                        <small>Nível ${char.level}</small>
+                    `;
+                    selection.appendChild(option);
+                });
+                
+                modal.classList.remove('hidden');
+            }
+            
+            selectCharacter(characterId) {
+                // Remove seleção anterior
+                document.querySelectorAll('.character-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Seleciona novo
+                event.currentTarget.classList.add('selected');
+                this.selectedCharacterId = characterId;
+                
+                console.log('👤 Personagem selecionado:', this.characters[characterId].name);
+            }
+            
+            startBattle() {
+                if (!this.selectedCharacterId) {
+                    alert('Por favor, selecione um herói para o duelo!');
+                    return;
+                }
+                
+                // Setup player
+                this.player = JSON.parse(JSON.stringify(this.characters[this.selectedCharacterId]));
+                this.player.currentHP = this.player.hp;
+                this.player.currentAnima = this.player.anima;
+                
+                // Setup enemy (outro personagem aleatório)
+                const availableEnemies = Object.values(this.characters).filter(c => c.id !== this.selectedCharacterId);
+                const randomEnemy = availableEnemies[Math.floor(Math.random() * availableEnemies.length)];
+                
+                this.enemy = JSON.parse(JSON.stringify(randomEnemy));
+                this.enemy.currentHP = this.enemy.hp;
+                this.enemy.currentAnima = this.enemy.anima;
+                
+                // Ocultar modal e iniciar batalha
+                document.getElementById('characterModal').classList.add('hidden');
+                this.battleActive = true;
+                this.playerTurn = true;
+                this.turn = 1;
+                
+                this.updateUI();
+                this.updateSkills();
+                this.logMessage(`◊ ${this.player.name} enfrenta ${this.enemy.name}!`);
+                
+                console.log('⚔ Duelo iniciado!', this.player.name, 'vs', this.enemy.name);
+            }
+            
+            updateUI() {
+                // Player UI
+                document.getElementById('playerName').textContent = this.player.name;
+                document.getElementById('playerClass').textContent = this.player.classe;
+                document.getElementById('playerHP').textContent = `${this.player.currentHP}/${this.player.maxHP}`;
+                document.getElementById('playerAnima').textContent = `${this.player.currentAnima}/${this.player.anima}`;
+                
+                const playerHPPercentage = (this.player.currentHP / this.player.maxHP) * 100;
+                const playerAnimaPercentage = (this.player.currentAnima / this.player.anima) * 100;
+                document.getElementById('playerHPBar').style.width = playerHPPercentage + '%';
+                document.getElementById('playerAnimaBar').style.width = playerAnimaPercentage + '%';
+                
+                // Enemy UI
+                document.getElementById('enemyName').textContent = this.enemy.name;
+                document.getElementById('enemyClass').textContent = this.enemy.classe;
+                document.getElementById('enemyHP').textContent = `${this.enemy.currentHP}/${this.enemy.maxHP}`;
+                document.getElementById('enemyAnima').textContent = `${this.enemy.currentAnima}/${this.enemy.anima}`;
+                
+                const enemyHPPercentage = (this.enemy.currentHP / this.enemy.maxHP) * 100;
+                const enemyAnimaPercentage = (this.enemy.currentAnima / this.enemy.anima) * 100;
+                document.getElementById('enemyHPBar').style.width = enemyHPPercentage + '%';
+                document.getElementById('enemyAnimaBar').style.width = enemyAnimaPercentage + '%';
+                
+                // Turn counter
+                document.getElementById('turnCounter').textContent = this.romanNumeral(this.turn);
+                
+                // Action buttons
+                const buttons = ['attackBtn', 'defendBtn', 'meditateBtn', 'skillsBtn'];
+                buttons.forEach(btnId => {
+                    const btn = document.getElementById(btnId);
+                    btn.disabled = !this.playerTurn || this.animating;
+                });
+            }
+            
+            updateSkills() {
+                const skillsGrid = document.getElementById('skillsGrid');
+                skillsGrid.innerHTML = '';
+                
+                if (this.player.skills && this.player.skills.length > 0) {
+                    this.player.skills.forEach(skill => {
+                        const skillCard = document.createElement('div');
+                        skillCard.className = 'skill-card';
+                        skillCard.onclick = () => this.useSkill(skill);
+                        skillCard.innerHTML = `
+                            <div class="skill-name">${skill.skillName}</div>
+                            <div class="skill-cost">${skill.skillMana || 0} Ânima</div>
+                            <div class="skill-description">Habilidade especial da classe ${this.player.classe}</div>
+                        `;
+                        skillsGrid.appendChild(skillCard);
+                    });
+                } else {
+                    skillsGrid.innerHTML = '<p style="text-align: center; color: var(--charcoal-light);">Nenhuma habilidade especial disponível</p>';
+                }
+            }
+            
+            performAction(action) {
+                if (!this.battleActive || !this.playerTurn || this.animating) return;
+                
+                this.animating = true;
+                
+                switch(action) {
+                    case 'attack':
+                        this.playerAttack();
+                        break;
+                    case 'defend':
+                        this.playerDefend();
+                        break;
+                    case 'meditate':
+                        this.playerMeditate();
+                        break;
+                }
+                
+                // Fechar menu de skills se aberto
+                document.getElementById('skillsMenu').classList.remove('active');
+            }
+            
+            playerAttack() {
+                const damage = this.calculateDamage(this.player.attack, this.enemy.defense);
+                const isCritical = Math.random() * 100 < (this.player.critico / 10);
+                const finalDamage = isCritical ? Math.floor(damage * 1.5) : damage;
+                
+                this.enemy.currentHP = Math.max(0, this.enemy.currentHP - finalDamage);
+                
+                this.showDamageNumber(finalDamage, isCritical, 'enemy');
+                this.logMessage(`⚔ ${this.player.name} ataca causando ${finalDamage} de dano${isCritical ? ' CRÍTICO' : ''}!`, isCritical ? 'critical' : 'damage');
+                
+                this.checkBattleEnd(() => {
+                    this.nextTurn();
+                });
+            }
+            
+            playerDefend() {
+                const animaCost = 10;
+                if (this.player.currentAnima >= animaCost) {
+                    this.player.currentAnima -= animaCost;
+                    this.logMessage(`🛡 ${this.player.name} se concentra em sua defesa (${animaCost} ânima consumida)!`);
+                } else {
+                    this.logMessage(`🛡 ${this.player.name} tenta se defender, mas está sem ânima!`);
+                }
+                
+                this.nextTurn();
+            }
+            
+            playerMeditate() {
+                const animaCost = 15;
+                const animaRestore = 25;
+                
+                if (this.player.currentAnima >= animaCost) {
+                    this.player.currentAnima = Math.min(this.player.anima, this.player.currentAnima - animaCost + animaRestore);
+                    this.logMessage(`🧘 ${this.player.name} medita e restaura energia espiritual!`, 'heal');
+                } else {
+                    this.logMessage(`🧘 ${this.player.name} tenta meditar, mas precisa de pelo menos ${animaCost} ânima!`);
+                }
+                
+                this.nextTurn();
+            }
+            
+            useSkill(skill) {
+                const animaCost = skill.skillMana || 0;
+                
+                if (this.player.currentAnima >= animaCost) {
+                    this.player.currentAnima -= animaCost;
+                    this.logMessage(`✨ ${this.player.name} usa ${skill.skillName}!`, 'critical');
+                    
+                    // Aplicar efeito da skill (simplificado)
+                    if (skill.skillType === 'buff') {
+                        this.logMessage(`📈 ${skill.skillName} ativa! Poder aumentado!`);
+                    }
+                } else {
+                    this.logMessage(`✨ ${skill.skillName} requer ${animaCost} ânima!`);
+                }
+                
+                document.getElementById('skillsMenu').classList.remove('active');
+                this.nextTurn();
+            }
+            
+            enemyTurn() {
+                if (!this.battleActive) return;
+                
+                // IA simples do inimigo
+                const actions = ['attack', 'defend', 'meditate'];
+                const randomAction = actions[Math.floor(Math.random() * actions.length)];
+                
+                setTimeout(() => {
+                    switch(randomAction) {
+                        case 'attack':
+                            this.enemyAttack();
+                            break;
+                        case 'defend':
+                            this.logMessage(`🛡 ${this.enemy.name} se defende!`);
+                            break;
+                        case 'meditate':
+                            this.enemy.currentAnima = Math.min(this.enemy.anima, this.enemy.currentAnima + 20);
+                            this.logMessage(`🧘 ${this.enemy.name} medita e recupera ânima!`, 'heal');
+                            break;
+                    }
+                    
+                    this.checkBattleEnd(() => {
+                        this.nextTurn();
+                    });
+                }, 1500);
+            }
+            
+            enemyAttack() {
+                const damage = this.calculateDamage(this.enemy.attack, this.player.defense);
+                const isCritical = Math.random() * 100 < (this.enemy.critico / 10);
+                const finalDamage = isCritical ? Math.floor(damage * 1.5) : damage;
+                
+                this.player.currentHP = Math.max(0, this.player.currentHP - finalDamage);
+                
+                this.showDamageNumber(finalDamage, isCritical, 'player');
+                this.logMessage(`⚔ ${this.enemy.name} ataca causando ${finalDamage} de dano${isCritical ? ' CRÍTICO' : ''}!`, isCritical ? 'critical' : 'damage');
+            }
+            
+            calculateDamage(attack, defense) {
+                const baseDamage = Math.max(1, attack - defense);
+                const variance = Math.random() * 0.4 + 0.8; // 80% a 120%
+                return Math.floor(baseDamage * variance);
+            }
+            
+            showDamageNumber(damage, isCritical, target) {
+                const card = document.getElementById(target === 'player' ? 'playerCard' : 'enemyCard');
+                const damageEl = document.createElement('div');
+                
+                damageEl.className = `damage-number ${isCritical ? 'critical' : ''}`;
+                damageEl.textContent = isCritical ? `${damage} CRÍTICO!` : damage;
+                damageEl.style.left = Math.random() * 100 + 'px';
+                damageEl.style.top = Math.random() * 50 + 'px';
+                
+                card.style.position = 'relative';
+                card.appendChild(damageEl);
+                
+                setTimeout(() => {
+                    if (damageEl.parentNode) {
+                        damageEl.parentNode.removeChild(damageEl);
+                    }
+                }, 2000);
+            }
+            
+            nextTurn() {
+                setTimeout(() => {
+                    this.playerTurn = !this.playerTurn;
+                    if (this.playerTurn) {
+                        this.turn++;
+                    }
+                    
+                    this.animating = false;
+                    this.updateUI();
+                    
+                    if (!this.playerTurn) {
+                        this.enemyTurn();
+                    }
+                }, 1000);
+            }
+            
+            checkBattleEnd(callback) {
+                if (this.player.currentHP <= 0) {
+                    this.endBattle(false);
+                } else if (this.enemy.currentHP <= 0) {
+                    this.endBattle(true);
+                } else {
+                    callback();
+                }
+            }
+            
+            endBattle(victory) {
+                this.battleActive = false;
+                
+                const modal = document.getElementById('resultModal');
+                const title = document.getElementById('resultTitle');
+                const content = document.getElementById('resultContent');
+                
+                if (victory) {
+                    title.innerHTML = '⟨ ✨ Vitória Gloriosa ✨ ⟩';
+                    content.innerHTML = `
+                        <h3 style="color: var(--emerald); margin-bottom: var(--space-lg);">🏆 Triunfo Ancestral!</h3>
+                        <p><strong>${this.player.name}</strong> emerge vitorioso do duelo contra <strong>${this.enemy.name}</strong>!</p>
+                        <p style="margin-top: var(--space-md); color: var(--gold-dark);">Que a honra dos ancestrais o acompanhe!</p>
+                    `;
+                    this.logMessage(`🏆 ${this.player.name} vence o duelo ancestral!`, 'critical');
+                } else {
+                    title.innerHTML = '⟨ ⚔ Derrota Honrosa ⚔ ⟩';
+                    content.innerHTML = `
+                        <h3 style="color: var(--burgundy); margin-bottom: var(--space-lg);">💀 Derrota no Campo de Batalha</h3>
+                        <p><strong>${this.enemy.name}</strong> provou ser mais forte neste duelo.</p>
+                        <p style="margin-top: var(--space-md); color: var(--gold-dark);">A honra permanece intacta. Treine e retorne!</p>
+                    `;
+                    this.logMessage(`💀 ${this.enemy.name} vence o duelo!`);
+                }
+                
+                modal.classList.remove('hidden');
+            }
+            
+            resetBattle() {
+                this.player = null;
+                this.enemy = null;
+                this.turn = 1;
+                this.playerTurn = true;
+                this.battleActive = false;
+                this.animating = false;
+                this.selectedCharacterId = null;
+                
+                // Limpar UI
+                document.getElementById('playerName').textContent = 'Selecionar Herói';
+                document.getElementById('enemyName').textContent = 'Adversário Sombrio';
+                document.getElementById('battleLog').innerHTML = '<div class="log-entry">◊ Preparando novo duelo ancestral...</div>';
+                
+                // Ocultar modals
+                document.getElementById('resultModal').classList.add('hidden');
+                
+                // Mostrar seleção novamente
+                this.showCharacterSelection();
+            }
+            
+            toggleSkillsMenu() {
+                const menu = document.getElementById('skillsMenu');
+                menu.classList.toggle('active');
+            }
+            
+            logMessage(message, type = '') {
+                const log = document.getElementById('battleLog');
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.innerHTML = `◊ ${message}`;
+                
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+                
+                // Limitar entradas do log
+                const entries = log.querySelectorAll('.log-entry');
+                if (entries.length > 20) {
+                    log.removeChild(entries[0]);
+                }
+            }
+            
+            romanNumeral(num) {
+                const romans = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+                return romans[Math.min(num, 10)] || `${num}`;
+            }
+            
+            setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    if (!this.battleActive || !this.playerTurn || this.animating) return;
+                    
+                    switch(e.key) {
+                        case '1':
+                            this.performAction('attack');
+                            break;
+                        case '2':
+                            this.performAction('defend');
+                            break;
+                        case '3':
+                            this.performAction('meditate');
+                            break;
+                        case '4':
+                            this.toggleSkillsMenu();
+                            break;
+                        case 'Escape':
+                            document.getElementById('skillsMenu').classList.remove('active');
+                            break;
+                    }
+                });
+            }
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+        
+        // Inicializar sistema quando DOM carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            window.battleSystem = new BattleSystem();
+        });
+        
+        // Funções globais para compatibilidade
+        function performAction(action) {
+            if (window.battleSystem) {
+                window.battleSystem.performAction(action);
+            }
+        }
+        
+        function toggleSkillsMenu() {
+            if (window.battleSystem) {
+                window.battleSystem.toggleSkillsMenu();
+            }
+        }
+        
+        function startBattle() {
+            if (window.battleSystem) {
+                window.battleSystem.startBattle();
+            }
+        }
+        
+        function resetBattle() {
+            if (window.battleSystem) {
+                window.battleSystem.resetBattle();
+            }
+        }
+    </script>
+</body>
+</html>

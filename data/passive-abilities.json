@@ -1,0 +1,274 @@
+{
+  "passiveAbilities": {
+    "QWR14QR2Q5": {
+      "id": "QWR14QR2Q5",
+      "name": "🏛️ Disciplina Militar Romana",
+      "description": "A disciplina férrea das legiões romanas concede bônus defensivo quando lutando em grupo",
+      "culture": "Romana",
+      "trigger": "battle_start",
+      "effect": {
+        "type": "defense_bonus",
+        "value": 15,
+        "condition": "allies_within_range >= 1"
+      },
+      "cultural_lore": "As legiões romanas eram famosas por sua disciplina impecável. Esta característica ancestral se manifesta como proteção natural quando lutando em formação.",
+      "icon": null,
+      "rarity": "uncommon",
+      "metadata": {},
+      "created_at": "2025-09-05T10:13:55.006Z",
+      "updated_at": "2025-09-05T10:13:55.006Z"
+    },
+    "KUKTXM93CG": {
+      "id": "KUKTXM93CG",
+      "name": "🐉 Harmonia dos Elementos",
+      "description": "A filosofia chinesa dos cinco elementos concede regeneração de Ânima gradual durante o combate",
+      "culture": "Chinesa",
+      "trigger": "per_turn",
+      "effect": {
+        "type": "anima_regeneration",
+        "value": 3,
+        "condition": "turn_start"
+      },
+      "cultural_lore": "Os mestres taoístas compreendem que a harmonia entre os cinco elementos (Wu Xing) gera energia vital contínua.",
+      "icon": null,
+      "rarity": "common",
+      "metadata": {},
+      "created_at": "2025-09-05T10:14:07.182Z",
+      "updated_at": "2025-09-05T10:14:07.182Z"
+    },
+    "XKC1XXO5AA": {
+      "id": "XKC1XXO5AA",
+      "name": "⚡ Força dos Ancestrais",
+      "description": "A resistência eslava desperta quando a vida está em perigo, aumentando o poder de ataque",
+      "culture": "Eslava",
+      "trigger": "low_hp",
+      "effect": {
+        "type": "damage_bonus",
+        "value": 25,
+        "condition": "hp_below_30_percent"
+      },
+      "cultural_lore": "Os guerreiros eslavos invocam a força de seus ancestrais nos momentos mais desesperadores.",
+      "icon": null,
+      "rarity": "uncommon",
+      "metadata": {},
+      "created_at": "2025-09-05T10:14:23.874Z",
+      "updated_at": "2025-09-05T10:14:23.874Z"
+    },
+    "QAECOLZS2F": {
+      "id": "QAECOLZS2F",
+      "name": "🦉 Sabedoria Clássica",
+      "description": "A educação grega clássica aumenta a chance de críticos em ataques intelectuais",
+      "culture": "Grega",
+      "trigger": "spell_cast",
+      "effect": {
+        "type": "critical_bonus",
+        "value": 15,
+        "condition": "using_magic_skills"
+      },
+      "cultural_lore": "A paideia grega cultivava mente e corpo, resultando em precisão intelectual superior.",
+      "icon": null,
+      "rarity": "rare",
+      "metadata": {},
+      "created_at": "2025-09-05T10:14:23.874Z",
+      "updated_at": "2025-09-05T10:14:23.874Z"
+    },
+    "KDP6NUIS5E": {
+      "id": "KDP6NUIS5E",
+      "name": "🌟 Conexão Cósmica",
+      "description": "A cosmologia asteca permite regeneração de Ânima através da conexão com os astros",
+      "culture": "Asteca",
+      "trigger": "per_turn",
+      "effect": {
+        "type": "anima_regeneration",
+        "value": 2,
+        "condition": "night_time_or_outdoor"
+      },
+      "cultural_lore": "Os sacerdotes aztecas compreendiam que o cosmos fornece energia vital àqueles que sabem ouvir.",
+      "icon": null,
+      "rarity": "common",
+      "metadata": {},
+      "created_at": "2025-09-05T10:14:23.875Z",
+      "updated_at": "2025-09-05T10:14:23.875Z"
+    },
+    "X8TQGEBNC8": {
+      "id": "X8TQGEBNC8",
+      "name": "🎨 Perícia Artesã",
+      "description": "A maestria renascentista italiana concede precisão aumentada em ataques técnicos",
+      "culture": "Italiana",
+      "trigger": "on_critical",
+      "effect": {
+        "type": "critical_bonus",
+        "value": 20,
+        "condition": "using_precision_skills"
+      },
+      "cultural_lore": "Os mestres artesãos italianos combinavam arte e técnica, alcançando perfeição em seus ofícios.",
+      "icon": null,
+      "rarity": "uncommon",
+      "metadata": {},
+      "created_at": "2025-09-05T10:14:23.875Z",
+      "updated_at": "2025-09-05T10:14:23.875Z"
+    },
+    "5ZH9FKR6T7": {
+      "id": "5ZH9FKR6T7",
+      "name": "⚔️ Bushido",
+      "description": "O código samurai concede resistência mental contra efeitos de medo e confusão",
+      "culture": "Japonesa",
+      "trigger": "when_attacked",
+      "effect": {
+        "type": "mental_resistance",
+        "value": 30,
+        "condition": "debuff_effects"
+      },
+      "cultural_lore": "O bushido ensina que a mente disciplinada é mais forte que qualquer lâmina.",
+      "icon": null,
+      "rarity": "rare",
+      "metadata": {},
+      "created_at": "2025-09-05T10:14:23.875Z",
+      "updated_at": "2025-09-05T10:14:23.875Z"
+    },
+    "LKT1234567": {
+      "id": "LKT1234567",
+      "name": "🌍 Espírito da Terra",
+      "description": "A conexão ancestral com a terra aumenta a defesa natural",
+      "culture": "Lakota",
+      "trigger": "passive_always",
+      "effect": {
+        "type": "defense_bonus",
+        "value": 15,
+        "condition": "always_active"
+      },
+      "cultural_lore": "Os guerreiros Lakota viviam em harmonia com Maka (Terra-Mãe), desenvolvendo resistência natural.",
+      "icon": null,
+      "rarity": "common",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    },
+    "VKG1234567": {
+      "id": "VKG1234567",
+      "name": "⚡ Fúria Berserker",
+      "description": "A fúria nórdica desperta quando a vida está em perigo, aumentando o poder de ataque",
+      "culture": "Viking",
+      "trigger": "low_hp",
+      "effect": {
+        "type": "damage_bonus",
+        "value": 30,
+        "condition": "hp_below_25_percent"
+      },
+      "cultural_lore": "Os berserkers entravam em transe quando feridos, canalizando a fúria de Odin.",
+      "icon": null,
+      "rarity": "uncommon",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    },
+    "ABD1234567": {
+      "id": "ABD1234567",
+      "name": "⭐ Sabedoria das Estrelas",
+      "description": "O conhecimento astronômico abássida concede visão estratégica, aumentando chance de críticos",
+      "culture": "Abássida",
+      "trigger": "spell_cast",
+      "effect": {
+        "type": "critical_bonus",
+        "value": 12,
+        "condition": "using_intelligence_skills"
+      },
+      "cultural_lore": "Os sábios da Casa da Sabedoria de Bagdá dominavam a astronomia e matemática.",
+      "icon": null,
+      "rarity": "rare",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    },
+    "VCT1234567": {
+      "id": "VCT1234567",
+      "name": "🎩 Etiqueta Refinada",
+      "description": "A educação vitoriana concede resistência mental contra efeitos de manipulação",
+      "culture": "Vitoriana",
+      "trigger": "when_attacked",
+      "effect": {
+        "type": "mental_resistance",
+        "value": 20,
+        "condition": "mental_attacks"
+      },
+      "cultural_lore": "A etiqueta e compostura vitoriana forjavam mentes disciplinadas e inabaláveis.",
+      "icon": null,
+      "rarity": "common",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    },
+    "YRB1234567": {
+      "id": "YRB1234567",
+      "name": "🌟 Bênção dos Orixás",
+      "description": "A proteção dos orixás concede cura natural gradual durante o combate",
+      "culture": "Iorubá",
+      "trigger": "per_turn",
+      "effect": {
+        "type": "regeneration",
+        "value": 5,
+        "condition": "turn_start"
+      },
+      "cultural_lore": "Os orixás concedem axé (força vital) aos seus filhos, manifestando como cura contínua.",
+      "icon": null,
+      "rarity": "common",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    },
+    "RUS1234567": {
+      "id": "RUS1234567",
+      "name": "❄️ Resistência Siberiana",
+      "description": "A resistência russa ao frio concede regeneração de HP quando ferido",
+      "culture": "Russa",
+      "trigger": "per_turn",
+      "effect": {
+        "type": "regeneration",
+        "value": 8,
+        "condition": "hp_below_50_percent"
+      },
+      "cultural_lore": "A dureza do inverno siberiano forjou corpos que se recuperam rapidamente de ferimentos.",
+      "icon": null,
+      "rarity": "uncommon",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    },
+    "ASH1234567": {
+      "id": "ASH1234567",
+      "name": "👑 Ouro Ancestral",
+      "description": "A prosperidade ashanti otimiza o uso de recursos, reduzindo custos de Ânima",
+      "culture": "Ashanti",
+      "trigger": "spell_cast",
+      "effect": {
+        "type": "anima_regeneration",
+        "value": 2,
+        "condition": "using_skills"
+      },
+      "cultural_lore": "O Reino Ashanti controlava as rotas de ouro, desenvolvendo eficiência em recursos.",
+      "icon": null,
+      "rarity": "rare",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    },
+    "CHN1234567": {
+      "id": "CHN1234567",
+      "name": "🐲 Harmonia Imperial",
+      "description": "A harmonia imperial única concede equilíbrio perfeito, aumentando todas as estatísticas",
+      "culture": "Chinesa Imperial",
+      "trigger": "battle_start",
+      "effect": {
+        "type": "stat_bonus",
+        "value": 8,
+        "condition": "battle_active"
+      },
+      "cultural_lore": "O Mandato do Céu confere equilíbrio supremo aos imperadores, manifestando harmonia total.",
+      "icon": null,
+      "rarity": "legendary",
+      "metadata": {},
+      "created_at": "2025-09-05T11:00:50.000Z",
+      "updated_at": "2025-09-05T11:00:50.000Z"
+    }
+  }
+}

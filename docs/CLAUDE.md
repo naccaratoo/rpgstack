@@ -1,0 +1,1 @@
+- sempre registre mudanças nas tasks realizadas nos arquivos .md de tarefas.

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste 3v3 Swap System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .team-display { display: flex; gap: 10px; margin: 10px 0; }
+        .character { padding: 10px; border: 1px solid #999; border-radius: 5px; }
+        .active { background-color: #e8f5e8; font-weight: bold; }
+        .reserve { background-color: #f0f0f0; }
+        button { margin: 5px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Teste do Sistema 3v3 - Troca de Personagens</h1>
+    
+    <div id="test-results"></div>
+    
+    <div class="test-section">
+        <h3>Simulação Visual</h3>
+        <div id="team-display"></div>
+        <button onclick="testSwap(0, 1)">Trocar Ativo (0) → Reserva 1 (1)</button>
+        <button onclick="testSwap(1, 2)">Trocar Ativo (1) → Reserva 2 (2)</button>
+        <button onclick="testSwap(2, 0)">Trocar Ativo (2) → Reserva 1 (0)</button>
+        <button onclick="resetTest()">Reset</button>
+    </div>
+
+    <script src="battlemechanics.js"></script>
+    <script>
+        let battleMechanics;
+        let testResults = [];
+        
+        // Dados de teste
+        const testPlayerTeam = [
+            { name: "Guerreiro", hp: 300, maxHp: 300, attack: 150, defense: 120 },
+            { name: "Mago", hp: 200, maxHp: 200, attack: 80, specialAttack: 180, spirit: 100 },
+            { name: "Arqueiro", hp: 250, maxHp: 250, attack: 140, defense: 80 }
+        ];
+        
+        const testEnemyTeam = [
+            { name: "Orc", hp: 280, maxHp: 280, attack: 130, defense: 100 },
+            { name: "Goblin Xamã", hp: 180, maxHp: 180, attack: 60, specialAttack: 160, spirit: 90 },
+            { name: "Troll", hp: 400, maxHp: 400, attack: 120, defense: 150 }
+        ];
+
+        function runTest(testName, testFunction) {
+            try {
+                const result = testFunction();
+                testResults.push({ name: testName, result: 'PASSOU', details: result });
+                console.log(`✓ ${testName}: PASSOU`);
+                return true;
+            } catch (error) {
+                testResults.push({ name: testName, result: 'FALHOU', details: error.message });
+                console.error(`✗ ${testName}: FALHOU - ${error.message}`);
+                return false;
+            }
+        }
+
+        function test1_Initialize3v3() {
+            battleMechanics = new BattleMechanics();
+            battleMechanics.initialize3v3Battle(testPlayerTeam, testEnemyTeam);
+            
+            const teams = battleMechanics.battleState.teams;
+            if (!teams.player || !teams.enemy) {
+                throw new Error('Teams não foram inicializadas');
+            }
+            
+            if (teams.player.characters.length !== 3 || teams.enemy.characters.length !== 3) {
+                throw new Error('Equipes não têm 3 personagens cada');
+            }
+            
+            if (teams.player.activeIndex !== 0 || teams.enemy.activeIndex !== 0) {
+                throw new Error('Índices ativos não começaram em 0');
+            }
+            
+            return 'Sistema 3v3 inicializado corretamente';
+        }
+
+        function test2_ValidSwap() {
+            const result = battleMechanics.executeSwap(0, 1);
+            
+            if (!result.success) {
+                throw new Error('Troca válida falhou');
+            }
+            
+            const team = battleMechanics.battleState.teams.player;
+            if (team.activeIndex !== 1) {
+                throw new Error(`Índice ativo não atualizou. Esperado: 1, Atual: ${team.activeIndex}`);
+            }
+            
+            return `Troca executada: ${result.details}`;
+        }
+
+        function test3_InvalidSwapSameCharacter() {
+            try {
+                battleMechanics.executeSwap(1, 1);
+                throw new Error('Deveria falhar ao tentar trocar personagem por ele mesmo');
+            } catch (error) {
+                if (error.message.includes('mesmo personagem')) {
+                    return 'Validação funcionou corretamente';
+                }
+                throw error;
+            }
+        }
+
+        function test4_SwapLimitPerTurn() {
+            // Primeiro reset para garantir que não há swaps usados
+            battleMechanics.battleState.player.swapsUsed = 1; // Já usou 1 swap (MAX = 1)
+            
+            try {
+                battleMechanics.executeSwap(1, 2);
+                throw new Error('Deveria falhar por exceder limite de swaps');
+            } catch (error) {
+                if (error.message.includes('Máximo de trocas')) {
+                    return 'Limite de swaps funcionando';
+                }
+                throw error;
+            }
+        }
+
+        function test5_SwapToFaintedCharacter() {
+            // Simular personagem desmaiado
+            battleMechanics.battleState.teams.player.characters[2].hp = 0;
+            
+            try {
+                battleMechanics.executeSwap(1, 2);
+                throw new Error('Deveria falhar ao trocar para personagem desmaiado');
+            } catch (error) {
+                if (error.message.includes('desmaiado')) {
+                    return 'Validação de personagem desmaiado funcionando';
+                }
+                throw error;
+            }
+        }
+
+        function testSwap(from, to) {
+            if (!battleMechanics) {
+                initializeTest();
+            }
+            
+            try {
+                const result = battleMechanics.executeSwap(from, to);
+                updateTeamDisplay();
+                console.log(`Swap ${from} → ${to}: ${result.details}`);
+            } catch (error) {
+                console.error(`Erro no swap ${from} → ${to}: ${error.message}`);
+            }
+        }
+
+        function updateTeamDisplay() {
+            if (!battleMechanics) return;
+            
+            const team = battleMechanics.battleState.teams.player;
+            const display = document.getElementById('team-display');
+            
+            display.innerHTML = team.characters.map((char, index) => {
+                const isActive = index === team.activeIndex;
+                const status = char.hp <= 0 ? ' (Desmaiado)' : '';
+                return `<div class="character ${isActive ? 'active' : 'reserve'}">
+                    [${index}] ${char.name}${status}<br>
+                    HP: ${char.hp}/${char.maxHp}<br>
+                    ${isActive ? 'ATIVO' : 'RESERVA'}
+                </div>`;
+            }).join('');
+        }
+
+        function initializeTest() {
+            battleMechanics = new BattleMechanics();
+            battleMechanics.initialize3v3Battle(testPlayerTeam, testEnemyTeam);
+            updateTeamDisplay();
+        }
+
+        function resetTest() {
+            initializeTest();
+            console.log('Teste resetado');
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '<h3>Resultados dos Testes:</h3>';
+            
+            testResults.forEach(test => {
+                const className = test.result === 'PASSOU' ? 'success' : 'error';
+                html += `<div class="${className}">
+                    <strong>${test.name}</strong>: ${test.result}<br>
+                    <em>${test.details}</em>
+                </div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Executar todos os testes automaticamente
+        window.onload = function() {
+            console.log('=== INICIANDO TESTES DO SISTEMA 3V3 SWAP ===');
+            
+            runTest('1. Inicialização 3v3', test1_Initialize3v3);
+            runTest('2. Troca Válida', test2_ValidSwap);
+            runTest('3. Troca Inválida (Mesmo Personagem)', test3_InvalidSwapSameCharacter);
+            runTest('4. Limite de Swaps por Turno', test4_SwapLimitPerTurn);
+            runTest('5. Troca para Personagem Desmaiado', test5_SwapToFaintedCharacter);
+            
+            displayResults();
+            initializeTest(); // Para demonstração visual
+            
+            console.log('=== TESTES CONCLUÍDOS ===');
+        };
+    </script>
+</body>
+</html>
