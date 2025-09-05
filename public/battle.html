@@ -241,11 +241,11 @@
                         
                         <div class="slot-content">
                             <div class="character-portrait">
-                                <img id="playerActiveBattleImage" src="" alt="Player Active">
+                                <img id="playerActiveBattleImage" src="" alt="Personagem Ativo">
                             </div>
                             
                             <div class="character-info">
-                                <div class="char-name" id="playerActiveBattleName">Herói Ativo</div>
+                                <div class="char-name" id="playerActiveBattleName">Carregando...</div>
                                 <div class="char-level">Nv. <span id="playerActiveBattleLevel">1</span></div>
                             </div>
                             
@@ -292,12 +292,12 @@
                             
                             <div class="slot-content">
                                 <div class="character-portrait">
-                                    <img id="playerImage0" src="" alt="Player 1">
+                                    <img id="playerImage0" src="" alt="Personagem">
                                     <div class="active-indicator">🟢</div>
                                 </div>
                                 
                                 <div class="character-info">
-                                    <div class="char-name" id="playerName0">Herói 1</div>
+                                    <div class="char-name" id="playerName0">Carregando...</div>
                                     <div class="char-level">Nv. <span id="playerLevel0">1</span></div>
                                 </div>
                                 
@@ -334,13 +334,13 @@
                             
                             <div class="slot-content">
                                 <div class="character-portrait">
-                                    <img id="playerImage1" src="" alt="Player 2">
+                                    <img id="playerImage1" src="" alt="Personagem">
                                     <div class="reserve-indicator">🔵</div>
                                     <div class="swap-hint">👆</div>
                                 </div>
                                 
                                 <div class="character-info">
-                                    <div class="char-name" id="playerName1">Herói 2</div>
+                                    <div class="char-name" id="playerName1">Carregando...</div>
                                     <div class="char-level">Nv. <span id="playerLevel1">1</span></div>
                                 </div>
                                 
@@ -377,13 +377,13 @@
                             
                             <div class="slot-content">
                                 <div class="character-portrait">
-                                    <img id="playerImage2" src="" alt="Player 3">
+                                    <img id="playerImage2" src="" alt="Personagem">
                                     <div class="reserve-indicator">🔵</div>
                                     <div class="swap-hint">👆</div>
                                 </div>
                                 
                                 <div class="character-info">
-                                    <div class="char-name" id="playerName2">Herói 3</div>
+                                    <div class="char-name" id="playerName2">Carregando...</div>
                                     <div class="char-level">Nv. <span id="playerLevel2">1</span></div>
                                 </div>
                                 
@@ -501,6 +501,7 @@
                         <div class="team-counter">
                             <span id="selectedCount">0</span>/3 personagens selecionados
                         </div>
+                        
                     </div>
                 </div>
                 
@@ -512,17 +513,6 @@
                     </div>
                 </div>
                 
-                <div class="modal-actions">
-                    <button class="modal-btn primary" id="startBattle" disabled>
-                        ⚔ Iniciar Duelo Ancestral 3v3
-                    </button>
-                    <button class="modal-btn secondary" id="clearTeam">
-                        🔄 Limpar Seleção
-                    </button>
-                    <button class="modal-btn tertiary" id="backToMenu">
-                        ↩ Voltar ao Menu
-                    </button>
-                </div>
             </div>
         </div>
         
@@ -608,8 +598,32 @@
         
     </div>
     
+    <!-- Floating Action Buttons -->
+    <div class="floating-buttons-container">
+        <!-- Clear Selection Button -->
+        <button id="floatingClearTeam" class="floating-btn clear-btn" aria-label="Limpar seleção">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6H21M8 6V4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4V6M19 6V20C19 21.1046 18.8954 22 18 22H6C4.89543 22 4 21.1046 4 20V6H19ZM10 11V17M14 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <!-- Start Battle Button -->
+        <button id="floatingStartBattle" class="floating-btn start-btn" aria-label="Iniciar duelo" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12L11 14L15 10M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <!-- Scroll to Top Button -->
+        <button id="scrollToTop" class="floating-btn scroll-btn" aria-label="Voltar ao topo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 19V5M5 12L12 5L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
+    
     <!-- Scripts -->
-    <script src="battlemechanics.js"></script>
-    <script src="battle.js?v=20250904f"></script>
+    <script src="secure-battle-client.js?v=20250905"></script>
+    <script src="battle.js?v=20250905"></script>
 </body>
 </html>

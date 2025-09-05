@@ -12,7 +12,7 @@
 
 **📖 Continua de:** [reworkbattle-part1.md](./reworkbattle-part1.md)
 
-## 🛠️ **SESSÃO 4 - Correção das Barras de HP/MP** (04 de setembro de 2025)
+## 🛠️ **SESSÃO 4 - Correção das Barras de HP/Ânima** (04 de setembro de 2025)
 
 ### 🐛 **Problema Identificado**
 **Usuário reportou:** *"O frontend do battle tem uma barra de hp mas não possui uma cor, está cinza"*
@@ -58,15 +58,15 @@ updateHealthBar(target, current, max) {
     }
 }
 
-// ✅ MELHORIA ADICIONAL - Garantir cor da barra de mana:
-updateManaBar(target, current, max) {
-    const manaBar = document.getElementById(`${target}ManaBar`);
-    if (manaBar) {
+// ✅ MELHORIA ADICIONAL - Garantir cor da barra de Ânima:
+updateÂnimaBar(target, current, max) {
+    const ÂnimaBar = document.getElementById(`${target}ÂnimaBar`);
+    if (ÂnimaBar) {
         const percentage = (current / max) * 100;
-        manaBar.style.width = `${percentage}%`;
+        ÂnimaBar.style.width = `${percentage}%`;
         
-        // ✅ Cor esmeralda consistente para ânima/mana
-        manaBar.style.background = 'linear-gradient(90deg, var(--emerald), var(--emerald-light))';
+        // ✅ Cor esmeralda consistente para ânima/Ânima
+        ÂnimaBar.style.background = 'linear-gradient(90deg, var(--emerald), var(--emerald-light))';
     }
 }
 ```
@@ -80,7 +80,7 @@ updateManaBar(target, current, max) {
 ├── 50-26%:  Gold gradient (#D4AF37 → #F7E98E) - Dourado aristocrático (aviso)
 └── 25-0%:   Dark burgundy (#8B2635 → #A53E4A) - Vermelho escuro (perigo)
 
-✦ BARRA DE ÂNIMA/MP (Mana Bar):
+✦ BARRA DE ÂNIMA/Ânima (Ânima Bar):
 └── Sempre: Emerald gradient (#355E3B → #50C878) - Verde esmeralda místico
 
 /* Variáveis CSS definidas em battle.css: */
@@ -96,8 +96,8 @@ updateManaBar(target, current, max) {
 ```bash
 📄 /home/horuzen/Meu RPG/rpgstack/public/battle.js
 ├── updateHealthBar() - Linhas 390-405 ✅ CORRIGIDO
-├── updateManaBar() - Linhas 407-416 ✅ MELHORADO
-└── Paleta Éclat Mystique aplicada ✅ IMPLEMENTADO
+├── updateÂnimaBar() - Linhas 407-416 ✅ MELHORADO
+└── Paleta Éclat Mystique aplicada ✅ IÂnimaLEMENTADO
 ```
 
 ---
@@ -319,7 +319,7 @@ import fs from 'fs/promises';
 // Algoritmos de I/O:
 // 1. Non-blocking I/O via event loop
 // 2. Thread pool delegation for file operations
-// 3. Buffer management for large files
+// 3. Buffer Ânimagement for large files
 // 4. Atomic write operations
 // 5. Error handling and rollback
 
@@ -508,11 +508,11 @@ class AnimationEngine {
 }
 ```
 
-#### **🧠 Memory Management**
+#### **🧠 Memory Ânimagement**
 ```javascript
 // Algoritmo: Garbage Collection Optimization
 // Implementação: Object pooling and cleanup
-class ResourceManager {
+class ResourceÂnimager {
   constructor() {
     this.particlePool = [];
     this.damageNumberPool = [];
@@ -541,7 +541,7 @@ class ResourceManager {
 ### 📈 **Complexity Analysis**
 
 ```
-ALGORITMO                    TIME COMPLEXITY    SPACE COMPLEXITY
+ALGORITMO                    TIME COÂnimaLEXITY    SPACE COÂnimaLEXITY
 ========================================================
 ID Generation               O(1) avg, O(n) worst  O(1)
 Damage Calculation          O(1)                   O(1)
@@ -565,7 +565,7 @@ Animation Frame             O(p) p=animations     O(p)
 ├── Debouncing: Rate limiting para ações de usuário
 ├── Caching: Resultados de cálculos repetitivos
 ├── Stream Processing: Upload de arquivos via streams
-└── Memory Management: Cleanup automático de recursos
+└── Memory Ânimagement: Cleanup automático de recursos
 
 ✅ SECURITY ALGORITHMS:
 ├── CSPRNG: Crypto-secure random para IDs
@@ -578,7 +578,7 @@ Animation Frame             O(p) p=animations     O(p)
 
 ### 🧪 **Resultado da Correção**
 - ✅ **Barras de HP**: Agora exibem gradiente burgundy com indicação visual de estado
-- ✅ **Barras de Mana**: Verde esmeralda consistente com design Art Nouveau  
+- ✅ **Barras de Ânima**: Verde esmeralda consistente com design Art Nouveau  
 - ✅ **Feedback Visual**: Cores mudam dinamicamente baseadas na porcentagem de vida
 - ✅ **Coerência Temática**: Integração completa com paleta Éclat Mystique
 - ✅ **Zero Regressões**: Funcionalidade mantida, apenas cores corrigidas
@@ -588,7 +588,7 @@ Animation Frame             O(p) p=animations     O(p)
 🌐 SERVIDOR ATIVO: http://localhost:3002
 🎮 BATTLE SYSTEM: http://localhost:3002/battle.html  
 🎭 DEMO ÉCLAT: http://localhost:3002/battle-demo.html
-🛠️ STATUS: ✅ Barras de HP/MP com cores Art Nouveau implementadas
+🛠️ STATUS: ✅ Barras de HP/Ânima com cores Art Nouveau implementadas
 📋 DOCUMENTAÇÃO: ✅ servidor.md criado com APIs completas
 ```
 
@@ -644,12 +644,12 @@ class MilosZeleznikovSkills {
     // - 25% chance de criar Arma Draconiana (+30% dano)
     // - Bônus de paciência eslava (+20% após defender)
 
-    // ⚒️ Martelo dos Ancestrais (30 mana, 70 dano)
+    // ⚒️ Martelo dos Ancestrais (30 Ânima, 70 dano)
     // - Invoca espíritos de ferreiros eslavos
     // - +15% dano por inimigo derrotado
     // - Aplica debuff "Armadura Amassada" (-15 defesa)
 
-    // 🛡️ Koljčuga Drakonova (45 mana, defesa)
+    // 🛡️ Koljčuga Drakonova (45 Ânima, defesa)
     // - Armadura de escamas de dragão (+30 defesa)
     // - +40% resistência mágica por 4 turnos
     // - Cura 15% HP por proteção ancestral
@@ -659,7 +659,7 @@ class MilosZeleznikovSkills {
 #### **🌊 Shi Wuxing (Cultura Chinesa Imperial)**
 ```javascript
 class ShiWuxingSkills {
-    // 🌊 Ciclo dos Cinco Elementos (35 mana, 75 dano)
+    // 🌊 Ciclo dos Cinco Elementos (35 Ânima, 75 dano)
     // - Rotaciona: Madeira→Fogo→Terra→Metal→Água
     // - Cada elemento tem efeito único:
     //   • Madeira: +20% cura
@@ -668,19 +668,19 @@ class ShiWuxingSkills {
     //   • Metal: Ignora 40% armadura  
     //   • Água: Debuff ataque -20
 
-    // ☯️ Harmonia do Yin Yang (25 mana, utilitário)
+    // ☯️ Harmonia do Yin Yang (25 Ânima, utilitário)
     // - Equaliza HP entre personagens (70% da diferença)
     // - Aplica "Harmonia" (-25% dano para ambos)
     // - Filosofia de equilíbrio em combate
 
-    // 🐉 Invocação do Dragão Imperial (60 mana, 110 dano)
+    // 🐉 Invocação do Dragão Imperial (60 Ânima, 110 dano)
     // - Poder aumenta com maestria elemental (+5% por ciclo)
     // - Marca do Dragão (+30 ataque, +10% crítico, 5 turnos)
     // - 60% chance de intimidar inimigo (-25 ataque)
 }
 ```
 
-#### **🔥 Aurelius Ignisvox (Cultura Romana Imperial)**
+#### **🔥 Aurelius Ignisvox (Cultura RoÂnima Imperial)**
 ```javascript
 class AureliusIgnisvoxSkills {
     // 🔥 Comando das Legiões Flamejantes (Sem custo, 85 dano)
@@ -688,13 +688,13 @@ class AureliusIgnisvoxSkills {
     // - Bônus veterano (+5% por uso consecutivo)
     // - 30%+ chance de invocar Centurião Espectral
 
-    // 🛡️ Formação Testudo Flamejante (40 mana, defesa)
-    // - Formação tartaruga romana (+40 defesa)
+    // 🛡️ Formação Testudo Flamejante (40 Ânima, defesa)
+    // - Formação tartaruga roÂnima (+40 defesa)
     // - Reflexão de 30% dano de fogo
     // - 50% chance de contra-ataque flamejante
 
-    // ⚔️ Gladius Incendium (30 mana, 90 dano)
-    // - Precisão romana (25% crítico base)
+    // ⚔️ Gladius Incendium (30 Ânima, 90 dano)
+    // - Precisão roÂnima (25% crítico base)
     // - Ignora 50% da armadura inimiga
     // - Marca da Legião (+20% dano subsequente)
 }
@@ -703,17 +703,17 @@ class AureliusIgnisvoxSkills {
 #### **🔮 Pythia Kassandra (Cultura Grega Clássica)**
 ```javascript
 class PythiaKassandraSkills {
-    // 🔮 Visão Oracular dos Três Destinos (35 mana, 70 dano)
+    // 🔮 Visão Oracular dos Três Destinos (35 Ânima, 70 dano)
     // - Gera 3 visões futuras aleatórias
     // - Escolhe automaticamente a mais favorável
     // - Efeitos: Perdição, Fortuna, Discernimento, Destino
 
-    // 🌪️ Tempestade Profética de Delfos (50 mana, 95 dano)
+    // 🌪️ Tempestade Profética de Delfos (50 Ânima, 95 dano)
     // - 3-5 rajadas com fragmentos proféticos
     // - Cada rajada pode ser crítica ou curativa
     // - 60% chance de "Aura Profética" (+30% poder)
 
-    // 👁️ Olho de Apolo (25 mana, utilitário)
+    // 👁️ Olho de Apolo (25 Ânima, utilitário)
     // - Revela todas as informações do inimigo
     // - "Visão Divina" (+30% crítico, nunca erra)
     // - "Completamente Analisado" (+40% dano no alvo)
@@ -765,7 +765,7 @@ CARREGAMENTO DE SKILLS:
 ├── Carregamento paralelo: 15 personagens em ~200ms
 └── Memory footprint: ~500KB para todas as skills
 
-COMPATIBILIDADE:
+COÂnimaATIBILIDADE:
 ├── Browser: Chrome 90+, Firefox 88+, Safari 14+
 ├── Node.js: v18+ (via module.exports)
 ├── Fallback: Skills genéricas se arquivo falhar
@@ -811,7 +811,7 @@ COMPATIBILIDADE:
 ├── /public/skills/skill-loader.js      (15KB) - Engine principal
 ├── /public/skills/milos_zeleznikov.js  (8KB)  - Skills eslavas
 ├── /public/skills/shi_wuxing.js        (10KB) - Skills chinesas  
-├── /public/skills/aurelius_ignisvox.js (9KB)  - Skills romanas
+├── /public/skills/aurelius_ignisvox.js (9KB)  - Skills roÂnimas
 ├── /public/skills/pythia_kassandra.js  (11KB) - Skills gregas
 ├── /public/skills.html                 (12KB) - Interface de skills
 └── battlemechanics.js                  (18KB) - Core logic (refatorado)
@@ -862,10 +862,10 @@ COMPATIBILIDADE:
 #### **☯️ Shi Wuxing (Chinesa Imperial)**
 - **Passiva:** "☯️ Ciclo Perpétuo dos Elementos"
 - **Trigger:** A cada 5 turnos
-- **Efeito:** Regenera 20+ MP, +10% maestria elemental por ciclo
+- **Efeito:** Regenera 20+ Ânima, +10% maestria elemental por ciclo
 
-#### **⚔️ Aurelius Ignisvox (Romana Imperial)**
-- **Passiva:** "⚔️ Disciplina Militar Romana"
+#### **⚔️ Aurelius Ignisvox (RoÂnima Imperial)**
+- **Passiva:** "⚔️ Disciplina Militar RoÂnima"
 - **Trigger:** Uso Consecutivo
 - **Efeito:** +5% veterano por uso, rank comando escala até 5
 
@@ -973,7 +973,7 @@ function renderPassivesGrid() {
 
 📈 MÉTRICAS:
 ├── Passivas implementadas: 7/15 personagens
-├── Culturas cobertas: Eslava, Chinesa, Romana, Grega, Asteca, Renascentista, Japonesa
+├── Culturas cobertas: Eslava, Chinesa, RoÂnima, Grega, Asteca, Renascentista, Japonesa
 ├── Triggers únicos: 6 tipos diferentes
 ├── Efeitos balanceados: Progressivos e condicionais
 └── Interface responsiva: Desktop, tablet, mobile
@@ -994,7 +994,7 @@ function renderPassivesGrid() {
 
 **Especificação:** Sistema de batalha com duas equipes de 3 personagens cada, implementando mecânicas similares ao Pokémon com filosofia estética Art Nouveau do projeto.
 
-### ✅ **IMPLEMENTAÇÃO COMPLETA REALIZADA**
+### ✅ **IÂnimaLEMENTAÇÃO COÂnimaLETA REALIZADA**
 
 **Status:** ✅ Interface Completa + Lógica de Seleção Funcional  
 **Arquivos Modificados:** `battle.html`, `battle.css`, `battle.js`  
@@ -1104,13 +1104,13 @@ Cada personagem possui um `character-slot` compacto com:
                 <div class="char-level">Nv. <span id="playerLevel0">1</span></div>
             </div>
             
-            <!-- Mini barras de HP/MP (4px altura) -->
+            <!-- Mini barras de HP/Ânima (4px altura) -->
             <div class="mini-bars">
                 <div class="mini-hp-bar">
                     <div class="mini-bar-fill" id="playerHPBar0"></div>
                 </div>
                 <div class="mini-mp-bar">
-                    <div class="mini-bar-fill" id="playerMPBar0"></div>
+                    <div class="mini-bar-fill" id="playerÂnimaBar0"></div>
                 </div>
             </div>
             
@@ -1120,7 +1120,7 @@ Cada personagem possui um `character-slot` compacto com:
                     <span id="playerHP0">100</span>/<span id="playerMaxHP0">100</span>
                 </div>
                 <div class="mini-mp">
-                    <span id="playerMP0">50</span>/<span id="playerMaxMP0">50</span>
+                    <span id="playerÂnima0">50</span>/<span id="playerMaxÂnima0">50</span>
                 </div>
             </div>
         </div>
@@ -1519,7 +1519,7 @@ class BattleInterface {
 ├── Personagem Reserva 2: 30% do dano
 └── Skills AoE disponíveis: ~20% das skills totais
 
-⏱️ GESTÃO DE TEMPO:
+⏱️ GESTÃO DE TEÂnimaO:
 ├── Tempo por turno: 20 segundos fixos
 ├── Aviso visual: 5 segundos restantes
 ├── Ação padrão: Ataque básico
@@ -1761,7 +1761,7 @@ function applyAreaDamage(skill, targetTeam, damage) {
 ### **📋 Checklist de Implementação**
 
 ```
-✅ IMPLEMENTAÇÃO COMPLETA:
+✅ IÂnimaLEMENTAÇÃO COÂnimaLETA:
 ├── ✅ Interface 3v3 completa com Arena Central
 ├── ✅ Sistema de seleção funcional de equipes
 ├── ✅ 6 character-slots com mini barras e indicadores
@@ -1787,7 +1787,7 @@ function applyAreaDamage(skill, targetTeam, damage) {
 
 ---
 
-*Esta documentação (Parte 2) registra as correções avançadas e sistemas modulares do RPGStack v4.4-4.5, incluindo: (4) **Correção das Barras de HP/MP** com paleta Art Nouveau, (5) **Sistema Modular de Skills Culturais** com carregamento dinâmico, (6) **Sistema de Habilidades Ancestrais (Passivas)** culturalmente autênticas, e (7) **Sistema de Batalha 3v3 Estilo Pokémon** com interface completa, arena central, sistema de seleção funcional e mecânicas avançadas implementadas.*
+*Esta documentação (Parte 2) registra as correções avançadas e sistemas modulares do RPGStack v4.4-4.5, incluindo: (4) **Correção das Barras de HP/Ânima** com paleta Art Nouveau, (5) **Sistema Modular de Skills Culturais** com carregamento dinâmico, (6) **Sistema de Habilidades Ancestrais (Passivas)** culturalmente autênticas, e (7) **Sistema de Batalha 3v3 Estilo Pokémon** com interface completa, arena central, sistema de seleção funcional e mecânicas avançadas implementadas.*
 
 **🎮 Desenvolvido por:** Claude Code (Anthropic)  
 **📅 Data:** 04 de setembro de 2025  

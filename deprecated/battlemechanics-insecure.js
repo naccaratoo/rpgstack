@@ -125,6 +125,353 @@ class BattleMechanics {
     }
 
     /**
+     * Valida a seleção de uma equipe para batalhas 3v3
+     * @param {Array} team - Array de personagens da equipe
+     * @param {string} teamType - Tipo da equipe ('jogador' ou 'inimigo')
+     * @throws {Error} Se a equipe não atender aos critérios de validação
+     */
+    validateTeamSelection(team, teamType = 'equipe') {
+        // Validação básica de estrutura
+        if (!Array.isArray(team)) {
+            throw new Error(`${teamType} deve ser um array de personagens`);
+        }
+        
+        if (team.length !== 3) {
+            throw new Error(`${teamType} deve ter exatamente 3 personagens (atual: ${team.length})`);
+        }
+        
+        // Validação de personagens individuais
+        team.forEach((char, index) => {
+            this.validateCharacterForTeam(char, index, teamType);
+        });
+        
+        // Validações específicas da equipe
+        this.validateTeamComposition(team, teamType);
+        this.validateTeamBalance(team, teamType);
+        
+        return true;
+    }
+
+    /**
+     * Valida um personagem individual para inclusão em equipe
+     * @param {Object} character - Dados do personagem
+     * @param {number} index - Posição na equipe (0-2)
+     * @param {string} teamType - Tipo da equipe
+     */
+    validateCharacterForTeam(character, index, teamType) {
+        if (!character || typeof character !== 'object') {
+            throw new Error(`${teamType} posição ${index + 1}: Personagem inválido`);
+        }
+        
+        // Campos obrigatórios
+        const requiredFields = ['name', 'hp', 'attack'];
+        requiredFields.forEach(field => {
+            if (character[field] === undefined || character[field] === null) {
+                throw new Error(`${teamType} posição ${index + 1}: Campo '${field}' é obrigatório`);
+            }
+        });
+        
+        // Validação de atributos numéricos
+        const numericFields = {
+            hp: { min: 1, max: 9999, name: 'HP' },
+            maxHp: { min: 1, max: 9999, name: 'HP Máximo' },
+            attack: { min: 1, max: 999, name: 'Ataque' },
+            defense: { min: 0, max: 999, name: 'Defesa' },
+            specialAttack: { min: 0, max: 999, name: 'Ataque Especial' },
+            spirit: { min: 0, max: 999, name: 'Espírito' },
+            anima: { min: 0, max: 999, name: 'Anima' },
+            mp: { min: 0, max: 999, name: 'MP' }
+        };
+        
+        Object.entries(numericFields).forEach(([field, limits]) => {
+            if (character[field] !== undefined) {
+                const value = Number(character[field]);
+                if (isNaN(value) || value < limits.min || value > limits.max) {
+                    throw new Error(
+                        `${teamType} posição ${index + 1}: ${limits.name} deve estar entre ${limits.min} e ${limits.max} (atual: ${character[field]})`
+                    );
+                }
+            }
+        });
+        
+        // Validação de nome
+        if (typeof character.name !== 'string' || character.name.trim().length < 2) {
+            throw new Error(`${teamType} posição ${index + 1}: Nome deve ter pelo menos 2 caracteres`);
+        }
+        
+        if (character.name.trim().length > 50) {
+            throw new Error(`${teamType} posição ${index + 1}: Nome não pode exceder 50 caracteres`);
+        }
+        
+        // Validação de HP atual vs HP máximo
+        const currentHp = character.hp || character.maxHp || 100;
+        const maxHp = character.maxHp || character.hp || 100;
+        if (currentHp > maxHp) {
+            throw new Error(`${teamType} posição ${index + 1}: HP atual (${currentHp}) não pode exceder HP máximo (${maxHp})`);
+        }
+        
+        // Personagens desmaiados só são válidos se explicitamente permitido
+        if (currentHp <= 0) {
+            console.warn(`⚠️ ${teamType} posição ${index + 1}: Personagem ${character.name} está desmaiado`);
+        }
+    }
+
+    /**
+     * Valida a composição geral da equipe
+     * @param {Array} team - Equipe a ser validada
+     * @param {string} teamType - Tipo da equipe
+     */
+    validateTeamComposition(team, teamType) {
+        // Validação de nomes únicos
+        const names = team.map(char => char.name.trim().toLowerCase());
+        const uniqueNames = new Set(names);
+        if (uniqueNames.size !== names.length) {
+            const duplicates = names.filter((name, index) => names.indexOf(name) !== index);
+            throw new Error(`${teamType}: Personagens com nomes duplicados não são permitidos: ${[...new Set(duplicates)].join(', ')}`);
+        }
+        
+        // Validação de IDs únicos (se presentes)
+        const ids = team.filter(char => char.id).map(char => char.id);
+        if (ids.length > 0) {
+            const uniqueIds = new Set(ids);
+            if (uniqueIds.size !== ids.length) {
+                throw new Error(`${teamType}: IDs de personagens duplicados detectados`);
+            }
+        }
+        
+        // Verificação de pelo menos um personagem ativo
+        const activeCharacters = team.filter(char => (char.hp || char.maxHp || 100) > 0);
+        if (activeCharacters.length === 0) {
+            throw new Error(`${teamType}: Pelo menos um personagem deve estar ativo (HP > 0)`);
+        }
+        
+        if (activeCharacters.length < 2) {
+            console.warn(`⚠️ ${teamType}: Apenas ${activeCharacters.length} personagem(ns) ativo(s). Batalha pode ser muito difícil.`);
+        }
+    }
+
+    /**
+     * Valida o balanceamento da equipe (opcional, apenas avisos)
+     * @param {Array} team - Equipe a ser validada
+     * @param {string} teamType - Tipo da equipe
+     */
+    validateTeamBalance(team, teamType) {
+        const totalAttack = team.reduce((sum, char) => sum + (char.attack || 0), 0);
+        const totalDefense = team.reduce((sum, char) => sum + (char.defense || 0), 0);
+        const totalHp = team.reduce((sum, char) => sum + (char.hp || char.maxHp || 100), 0);
+        
+        // Avisos de balanceamento (não bloqueiam a batalha)
+        if (totalAttack < 150) {
+            console.warn(`⚠️ ${teamType}: Ataque total baixo (${totalAttack}). Considere personagens mais ofensivos.`);
+        }
+        
+        if (totalDefense < 90) {
+            console.warn(`⚠️ ${teamType}: Defesa total baixa (${totalDefense}). Equipe pode ser frágil.`);
+        }
+        
+        if (totalHp < 300) {
+            console.warn(`⚠️ ${teamType}: HP total baixo (${totalHp}). Batalha pode ser muito rápida.`);
+        }
+        
+        // Verificar diversidade de classes (se disponível)
+        const classes = team.filter(char => char.classe || char.class).map(char => char.classe || char.class);
+        if (classes.length > 0) {
+            const uniqueClasses = new Set(classes);
+            if (uniqueClasses.size === 1) {
+                console.warn(`⚠️ ${teamType}: Todas as classes são iguais (${classes[0]}). Considere diversificar.`);
+            }
+        }
+        
+        return {
+            totalAttack,
+            totalDefense,
+            totalHp,
+            averageAttack: Math.round(totalAttack / 3),
+            averageDefense: Math.round(totalDefense / 3),
+            averageHp: Math.round(totalHp / 3)
+        };
+    }
+
+    /**
+     * Configura callbacks para eventos de timeout
+     * @param {Function} onTimeoutCallback - Função chamada quando o tempo esgotar
+     * @param {Function} onWarningCallback - Função chamada quando restarem poucos segundos
+     */
+    setTimeoutCallbacks(onTimeoutCallback, onWarningCallback = null) {
+        this.onTimeoutCallback = onTimeoutCallback;
+        this.onTimeoutWarningCallback = onWarningCallback;
+        
+        if (onWarningCallback && this.battleState.turnTimer) {
+            // Configurar aviso de timeout (5 segundos antes)
+            const warningTime = this.COMBAT_CONSTANTS.TURN_TIME_LIMIT - 5000;
+            setTimeout(() => {
+                if (this.onTimeoutWarningCallback && this.battleState.turnPhase === 'action_select') {
+                    this.onTimeoutWarningCallback({
+                        player: this.battleState.turn,
+                        timeRemaining: 5000
+                    });
+                }
+            }, warningTime);
+        }
+    }
+
+    /**
+     * Configura o comportamento de timeout para diferentes tipos de batalha
+     * @param {Object} config - Configurações de timeout
+     */
+    configureTimeout(config = {}) {
+        const defaultConfig = {
+            timeLimit: this.COMBAT_CONSTANTS.TURN_TIME_LIMIT,
+            autoAction: 'attack',
+            warningTime: 5000,
+            enableWarnings: true
+        };
+        
+        const settings = { ...defaultConfig, ...config };
+        
+        // Aplicar configurações
+        this.COMBAT_CONSTANTS.TURN_TIME_LIMIT = settings.timeLimit;
+        this.battleState.autoActionOnTimeout = settings.autoAction;
+        this.battleState.timeoutWarningTime = settings.warningTime;
+        this.battleState.timeoutWarningsEnabled = settings.enableWarnings;
+        
+        return settings;
+    }
+
+    /**
+     * Obtém estatísticas de timeout da batalha atual
+     * @returns {Object} Estatísticas de tempo
+     */
+    getTimeoutStats() {
+        return {
+            timeLimit: this.COMBAT_CONSTANTS.TURN_TIME_LIMIT,
+            currentTimeRemaining: this.battleState.timeRemaining || 0,
+            timeElapsed: this.COMBAT_CONSTANTS.TURN_TIME_LIMIT - (this.battleState.timeRemaining || 0),
+            currentPlayer: this.battleState.turn,
+            autoAction: this.battleState.autoActionOnTimeout || 'attack',
+            timeoutCount: this.battleState.timeoutCount || 0,
+            averageTurnTime: this.calculateAverageTurnTime()
+        };
+    }
+
+    /**
+     * Calcula o tempo médio de turno
+     * @returns {number} Tempo médio em milissegundos
+     */
+    calculateAverageTurnTime() {
+        if (!this.battleState.turnTimes || this.battleState.turnTimes.length === 0) {
+            return 0;
+        }
+        
+        const total = this.battleState.turnTimes.reduce((sum, time) => sum + time, 0);
+        return Math.round(total / this.battleState.turnTimes.length);
+    }
+
+    /**
+     * Valida se uma equipe pode ser usada para swaps durante a batalha
+     * @param {Array} team - Equipe atual
+     * @returns {Object} Status de validação e personagens disponíveis
+     */
+    validateTeamForSwap(team) {
+        if (!team || !Array.isArray(team.characters)) {
+            return { valid: false, error: 'Estrutura de equipe inválida' };
+        }
+        
+        const aliveCharacters = team.characters.filter(char => char.hp > 0);
+        const activeChar = team.characters[team.activeIndex];
+        
+        if (aliveCharacters.length <= 1) {
+            return { 
+                valid: false, 
+                error: 'Apenas 1 personagem vivo. Swaps não disponíveis.',
+                aliveCount: aliveCharacters.length 
+            };
+        }
+        
+        return {
+            valid: true,
+            aliveCount: aliveCharacters.length,
+            activeCharacter: activeChar,
+            availableForSwap: team.characters.filter((char, index) => 
+                char.hp > 0 && index !== team.activeIndex
+            )
+        };
+    }
+
+    /**
+     * Inicializa uma batalha 3v3 com equipes completas
+     * @param {Array} playerTeam - Array com 3 personagens do jogador
+     * @param {Array} enemyTeam - Array com 3 personagens inimigos
+     * @returns {Object} Estado inicial da batalha 3v3
+     */
+    initialize3v3Battle(playerTeam, enemyTeam) {
+        // Validar equipes usando sistema robusto de validação
+        this.validateTeamSelection(playerTeam, 'jogador');
+        this.validateTeamSelection(enemyTeam, 'inimigo');
+        
+        // Processar e normalizar personagens
+        const normalizeCharacter = (char, index) => ({
+            ...char,
+            index: index,
+            currentHP: char.hp || char.maxHP || 100,
+            currentMP: char.anima || char.mp || 50,
+            isDefending: false,
+            statusEffects: []
+        });
+        
+        // Inicializar estado base
+        this.battleState = {
+            // Equipes 3v3
+            teams: {
+                player: {
+                    characters: playerTeam.map(normalizeCharacter),
+                    activeIndex: 0, // Primeiro personagem ativo
+                    reserves: [1, 2] // Índices dos personagens na reserva
+                },
+                enemy: {
+                    characters: enemyTeam.map(normalizeCharacter),
+                    activeIndex: 0,
+                    reserves: [1, 2]
+                }
+            },
+            
+            // Compatibilidade com sistema antigo (personagens ativos)
+            player: {
+                ...normalizeCharacter(playerTeam[0], 0),
+                swapsUsed: 0
+            },
+            enemy: {
+                ...normalizeCharacter(enemyTeam[0], 0),
+                swapsUsed: 0,
+                aiType: enemyTeam[0].aiType || 'aggressive'
+            },
+            
+            // Estado da batalha
+            turn: 'player',
+            round: 1,
+            isActive: true,
+            battleId: this.generateBattleId(),
+            log: [],
+            winner: null,
+            mode: '3v3',
+            
+            // Sistema de Turnos
+            turnTimer: null,
+            turnTimeLimit: 20000,
+            turnStartTime: null,
+            turnPhase: 'action_select',
+            actionDeclared: null,
+            autoActionOnTimeout: 'attack'
+        };
+
+        this.addToLog('system', 
+            `🎮 Batalha 3v3 iniciada! ${this.battleState.teams.player.characters[0].name} vs ${this.battleState.teams.enemy.characters[0].name}`
+        );
+        
+        return this.battleState;
+    }
+
+    /**
      * Processa uma ação de ataque
      * @param {string} attacker - 'player' ou 'enemy'
      * @param {string} target - 'player' ou 'enemy'
@@ -228,6 +575,230 @@ class BattleMechanics {
             multiplier: isCritical ? (attacker.critico || 2.0) : 1.0,
             chance: criticalChance
         };
+    }
+
+    /**
+     * Processa ataque em área (AoE) que pode afetar personagens da reserva
+     * @param {string} attacker - Atacante ('player' ou 'enemy')
+     * @param {Object} aoeOptions - Configurações do ataque em área
+     * @returns {Object} Resultado do ataque em área
+     */
+    processAreaAttack(attacker, aoeOptions = {}) {
+        if (!this.battleState.isActive) {
+            throw new Error('Batalha não está ativa');
+        }
+
+        // Configurações padrão para área
+        const defaultOptions = {
+            type: 'area_fixa',        // area_fixa, area_com_foco, area_decrescente
+            primaryTarget: 'active',  // Alvo principal
+            includeReserves: true,    // Incluir personagens da reserva
+            reducer: 0.6,            // Redutor padrão para área fixa
+            skillMultiplier: 2.0,     // Multiplicador da skill
+            baseDamage: 25,          // Dano base da skill
+            isSpecialAttack: false    // Se é ataque especial (mágico)
+        };
+
+        const options = { ...defaultOptions, ...aoeOptions };
+        const targetTeam = attacker === 'player' ? 'enemy' : 'player';
+        const results = [];
+
+        // Sistema 3v3 - atacar toda a equipe adversária
+        if (this.battleState.mode === '3v3' && this.battleState.teams) {
+            const team = this.battleState.teams[targetTeam];
+            const attackerData = this.battleState.teams[attacker].characters[this.battleState.teams[attacker].activeIndex];
+
+            team.characters.forEach((character, index) => {
+                if (character.hp <= 0) return; // Pular personagens desmaiados
+
+                const isActive = index === team.activeIndex;
+                const damageResult = this.calculateAreaDamage(
+                    attackerData, 
+                    character, 
+                    options, 
+                    isActive
+                );
+
+                // Aplicar dano
+                character.hp = Math.max(0, character.hp - damageResult.damage);
+                character.currentHP = character.hp; // Sincronizar
+
+                results.push({
+                    target: character.name,
+                    targetIndex: index,
+                    isActive: isActive,
+                    damage: damageResult.damage,
+                    isCritical: damageResult.isCritical,
+                    reducer: damageResult.reducer,
+                    defeated: character.hp <= 0
+                });
+
+                // Log do dano
+                const positionText = isActive ? '(Ativo)' : '(Reserva)';
+                const criticalText = damageResult.isCritical ? ' CRÍTICO!' : '';
+                this.addToLog('damage', 
+                    `${character.name} ${positionText} recebe ${damageResult.damage} de dano${criticalText}`
+                );
+            });
+
+        } else {
+            // Sistema simples - apenas o personagem ativo
+            const targetData = this.battleState[targetTeam];
+            const attackerData = this.battleState[attacker];
+
+            const damageResult = this.calculateAreaDamage(attackerData, targetData, options, true);
+            
+            targetData.currentHP = Math.max(0, targetData.currentHP - damageResult.damage);
+
+            results.push({
+                target: targetData.name,
+                targetIndex: 0,
+                isActive: true,
+                damage: damageResult.damage,
+                isCritical: damageResult.isCritical,
+                reducer: 1.0,
+                defeated: targetData.currentHP <= 0
+            });
+
+            this.addToLog('damage', 
+                `${targetData.name} recebe ${damageResult.damage} de dano de área${damageResult.isCritical ? ' CRÍTICO!' : ''}`
+            );
+        }
+
+        // Verificar se algum personagem foi derrotado
+        const totalDefeated = results.filter(r => r.defeated).length;
+        const totalDamage = results.reduce((sum, r) => sum + r.damage, 0);
+
+        this.addToLog('action', 
+            `💥 Ataque em área: ${totalDamage} dano total, ${results.length} alvos atingidos, ${totalDefeated} derrotados`
+        );
+
+        return {
+            totalTargets: results.length,
+            totalDamage: totalDamage,
+            defeated: totalDefeated,
+            results: results,
+            battleState: this.battleState
+        };
+    }
+
+    /**
+     * Calcula dano em área baseado nas fórmulas do documento RPG
+     * @param {Object} attacker - Dados do atacante
+     * @param {Object} target - Dados do alvo
+     * @param {Object} options - Opções do ataque em área
+     * @param {boolean} isActive - Se é o personagem ativo
+     * @returns {Object} Resultado do cálculo
+     */
+    calculateAreaDamage(attacker, target, options, isActive = true) {
+        // Calcular dano base usando a fórmula do documento
+        let baseDamage;
+        
+        if (options.isSpecialAttack) {
+            // Dano Mágico: (Ataque_Especial × Multiplicador + Dano_Base) × (100 ÷ (100 + Espírito))
+            const specialAttack = attacker.specialAttack || attacker.attack;
+            const spirit = target.spirit || target.defense || 0;
+            baseDamage = (specialAttack * options.skillMultiplier + options.baseDamage) * (100 / (100 + spirit));
+        } else {
+            // Dano Físico: (Ataque × Multiplicador + Dano_Base) × (100 ÷ (100 + Defesa))
+            const defense = target.defense || 0;
+            baseDamage = (attacker.attack * options.skillMultiplier + options.baseDamage) * (100 / (100 + defense));
+        }
+
+        // Aplicar redutor de área baseado no tipo
+        let areaReducer;
+        switch (options.type) {
+            case 'area_com_foco':
+                // Alvo Principal: 1.0x, Secundários: 0.4x
+                areaReducer = isActive ? 1.0 : 0.4;
+                break;
+            case 'area_decrescente':
+                // Centro: 1.0x, Adjacentes: 0.7x, Bordas: 0.4x
+                areaReducer = isActive ? 1.0 : (Math.random() > 0.5 ? 0.7 : 0.4);
+                break;
+            case 'area_fixa':
+            default:
+                // Todos os alvos: 0.6x
+                areaReducer = options.reducer;
+                break;
+        }
+
+        baseDamage = Math.floor(baseDamage * areaReducer);
+
+        // Aplicar variação aleatória
+        const variance = this.COMBAT_CONSTANTS.DAMAGE_VARIANCE;
+        const randomMultiplier = (1 - variance/2) + (Math.random() * variance);
+        baseDamage = Math.floor(baseDamage * randomMultiplier);
+
+        // Verificar crítico
+        const criticalResult = this.calculateCritical(attacker);
+        if (criticalResult.isCritical) {
+            baseDamage = Math.floor(baseDamage * criticalResult.multiplier);
+        }
+
+        // Aplicar modificadores de defesa especiais para reserva
+        if (!isActive && options.includeReserves) {
+            // Personagens na reserva recebem 20% menos dano (proteção parcial)
+            baseDamage = Math.floor(baseDamage * 0.8);
+        }
+
+        // Garantir dano mínimo
+        const finalDamage = Math.max(1, baseDamage);
+
+        return {
+            damage: finalDamage,
+            isCritical: criticalResult.isCritical,
+            reducer: areaReducer,
+            baseDamage: baseDamage,
+            appliedModifiers: {
+                areaReducer,
+                reserveProtection: !isActive && options.includeReserves ? 0.8 : 1.0,
+                randomVariance: randomMultiplier,
+                critical: criticalResult.multiplier
+            }
+        };
+    }
+
+    /**
+     * Cria um ataque em área pré-configurado
+     * @param {string} skillType - Tipo de skill ('tempestade_gelo', 'explosao_fogo', etc.)
+     * @returns {Object} Configurações do ataque em área
+     */
+    getAreaSkillConfig(skillType) {
+        const configs = {
+            'tempestade_gelo': {
+                type: 'area_fixa',
+                reducer: 0.6,
+                skillMultiplier: 2.2,
+                baseDamage: 45,
+                isSpecialAttack: true,
+                includeReserves: true
+            },
+            'explosao_fogo': {
+                type: 'area_com_foco',
+                skillMultiplier: 2.5,
+                baseDamage: 50,
+                isSpecialAttack: true,
+                includeReserves: true
+            },
+            'onda_choque': {
+                type: 'area_decrescente',
+                skillMultiplier: 2.0,
+                baseDamage: 35,
+                isSpecialAttack: false,
+                includeReserves: true
+            },
+            'chuva_flechas': {
+                type: 'area_fixa',
+                reducer: 0.7,
+                skillMultiplier: 1.8,
+                baseDamage: 30,
+                isSpecialAttack: false,
+                includeReserves: true
+            }
+        };
+
+        return configs[skillType] || configs['explosao_fogo'];
     }
 
     /**
@@ -1382,6 +1953,11 @@ class BattleMechanics {
         this.battleState.actionDeclared = null;
         this.battleState.timeRemaining = 0;
         
+        // Estatísticas de timeout
+        this.battleState.turnTimes = [];
+        this.battleState.timeoutCount = 0;
+        this.battleState.totalTurns = 0;
+        
         // Resetar contadores de troca
         if (this.battleState.player) {
             this.battleState.player.swapsUsed = 0;
@@ -1453,14 +2029,35 @@ class BattleMechanics {
 
     onTurnTimeout() {
         this.clearTurnTimer();
-        this.addToLog('timeout', '⏰ Tempo esgotado! Executando ataque básico...');
         
-        if (this.onTimeoutCallback) {
-            this.onTimeoutCallback();
+        const currentPlayer = this.battleState.turn;
+        const playerData = this.battleState[currentPlayer];
+        
+        // Log específico para 3v3
+        if (this.battleState.mode === '3v3' && this.battleState.teams) {
+            const activeChar = this.battleState.teams[currentPlayer].characters[this.battleState.teams[currentPlayer].activeIndex];
+            this.addToLog('timeout', `⏰ Tempo esgotado! ${activeChar.name} executa ação padrão (Ataque Básico)...`);
+        } else {
+            this.addToLog('timeout', `⏰ Tempo esgotado! ${playerData?.name || currentPlayer} executa ação padrão...`);
         }
         
-        // Executar ação padrão
-        this.declareAction('attack');
+        // Callback para UI
+        if (this.onTimeoutCallback) {
+            this.onTimeoutCallback({
+                player: currentPlayer,
+                action: this.battleState.autoActionOnTimeout || 'attack',
+                timeElapsed: this.COMBAT_CONSTANTS.TURN_TIME_LIMIT
+            });
+        }
+        
+        // Contar timeout e registrar estatísticas
+        this.battleState.timeoutCount++;
+        this.battleState.turnTimes.push(this.COMBAT_CONSTANTS.TURN_TIME_LIMIT);
+        this.battleState.totalTurns++;
+        
+        // Executar ação padrão baseada no tipo de batalha
+        const defaultAction = this.battleState.autoActionOnTimeout || 'attack';
+        this.declareAction(defaultAction);
     }
 
     declareAction(actionType, actionData = {}) {
@@ -1478,13 +2075,19 @@ class BattleMechanics {
         };
 
         const timeTaken = Date.now() - this.battleState.turnStartTime;
+        
+        // Rastrear estatísticas de tempo
+        this.battleState.turnTimes.push(timeTaken);
+        this.battleState.totalTurns++;
+        
         this.addToLog('action', `⚔️ Ação declarada: ${actionType} (${Math.floor(timeTaken/1000)}s)`);
         
         return {
             success: true,
             actionType: actionType,
             timeTaken: timeTaken,
-            actionData: actionData
+            actionData: actionData,
+            turnNumber: this.battleState.totalTurns
         };
     }
 
@@ -1541,7 +2144,7 @@ class BattleMechanics {
         this.addToLog('system', `🔄 Turno finalizado, próximo: ${this.battleState.turn}`);
     }
 
-    executeSwap(fromCharacter, toCharacter) {
+    executeSwap(fromCharacterIndex, toCharacterIndex) {
         const currentPlayer = this.battleState.turn;
         const playerData = this.battleState[currentPlayer];
         
@@ -1549,16 +2152,59 @@ class BattleMechanics {
             throw new Error('Máximo de trocas por turno atingido');
         }
         
+        // Validar se o sistema de equipes está disponível
+        if (!this.battleState.teams || !this.battleState.teams[currentPlayer]) {
+            // Fallback para sistema simples
+            playerData.swapsUsed++;
+            this.addToLog('swap', `🔄 Troca executada (${playerData.swapsUsed}/${this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN})`);
+            
+            return {
+                success: true,
+                fromCharacter: `character_${fromCharacterIndex}`,
+                toCharacter: `character_${toCharacterIndex}`,
+                swapsUsed: playerData.swapsUsed,
+                swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN - playerData.swapsUsed
+            };
+        }
+        
+        // Sistema 3v3 completo
+        const team = this.battleState.teams[currentPlayer];
+        const fromChar = team.characters[fromCharacterIndex];
+        const toChar = team.characters[toCharacterIndex];
+        
+        // Validações
+        if (!fromChar || !toChar) {
+            throw new Error('Personagens inválidos para troca');
+        }
+        
+        if (toChar.hp <= 0) {
+            throw new Error('Não é possível trocar para personagem desmaiado');
+        }
+        
+        if (team.activeIndex === toCharacterIndex) {
+            throw new Error('Personagem já está ativo');
+        }
+        
+        // Executar troca
+        const previousActive = team.activeIndex;
+        team.activeIndex = toCharacterIndex;
+        
+        // Atualizar contadores
         playerData.swapsUsed++;
         
-        this.addToLog('swap', `🔄 Troca executada (${playerData.swapsUsed}/${this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN})`);
+        this.addToLog('swap', 
+            `🔄 ${fromChar.name} sai de campo, ${toChar.name} entra! (${playerData.swapsUsed}/${this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN})`
+        );
         
         return {
             success: true,
-            fromCharacter: fromCharacter,
-            toCharacter: toCharacter,
+            fromCharacter: fromChar,
+            toCharacter: toChar,
+            previousActiveIndex: previousActive,
+            newActiveIndex: toCharacterIndex,
             swapsUsed: playerData.swapsUsed,
-            swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN - playerData.swapsUsed
+            swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN - playerData.swapsUsed,
+            team: currentPlayer
         };
     }
 

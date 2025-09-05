@@ -13,6 +13,7 @@
       "borderColor": 2962964,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 10,
       "description": "Mestre ferreiro eslavo que forja armas lendárias usando técnicas ancestrais transmitidas por gerações de artesãos da resistência.",
       "skills": [
         {
@@ -46,6 +47,7 @@
       "borderColor": 2962964,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 10,
       "description": "Guerreiro-filósofo que domina as artes marciais através da harmonia com os cinco elementos fundamentais da cosmologia chinesa.",
       "skills": [
         {
@@ -79,6 +81,7 @@
       "borderColor": 5592405,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 8,
       "description": "Ex-senador romano que se tornou mago após descobrir pergaminhos arcanos nas bibliotecas de Alexandria, combinando liderança política com poder místico.",
       "skills": [
         {
@@ -112,6 +115,7 @@
       "borderColor": 6966323,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 5,
       "description": "Oráculo de Delphi - Sempre prevê desgraças, mas ninguém acredita",
       "skills": [
         {
@@ -145,6 +149,7 @@
       "borderColor": 5592405,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 4,
       "description": "Nahualli Asteca - Transforma-se em jaguar durante rituais de sangue",
       "skills": [
         {
@@ -178,6 +183,7 @@
       "borderColor": 13421568,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 3,
       "description": "Artífice Renascentista - Cria autômatos movidos por engrenagens celestiais",
       "skills": [
         {
@@ -211,6 +217,7 @@
       "borderColor": 13369548,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Mestre Karakuri - Especialista em bonecas que imitam vida humana",
       "skills": [
         {
@@ -244,6 +251,7 @@
       "borderColor": 6966323,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Guardião Lakota - Comunica-se com espíritos dos bisões das Grandes Planícies",
       "skills": [
         {
@@ -277,6 +285,7 @@
       "borderColor": 2763306,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Berserker Viking - Canaliza o espírito do lobo Fenrir",
       "skills": [
         {
@@ -310,6 +319,7 @@
       "borderColor": 13421568,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Mercador Abássida - Carrega bolsa infinita com tesouros de todo mundo conhecido",
       "skills": [
         {
@@ -343,6 +353,7 @@
       "borderColor": 13369548,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 3,
       "description": "Dama Vitoriana - Manipula alta sociedade através de chás ritualizados e fofocas codificadas",
       "skills": [
         {
@@ -376,6 +387,7 @@
       "borderColor": 5592405,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Babalawo Iorubá - Lê destinos através de 256 configurações de búzios sagrados",
       "skills": [
         {
@@ -409,6 +421,7 @@
       "borderColor": 2763306,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Médico-alquimista Russo - Obcecado com elixir da vida eterna",
       "skills": [
         {
@@ -442,6 +455,7 @@
       "borderColor": 32768,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Lutadora-Artífice Chinesa - Forja suas próprias armas de jade durante o combate usando qi",
       "skills": [
         {
@@ -476,6 +490,7 @@
       "borderColor": 13421568,
       "size": 12,
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Guerreiro-Sacerdote Ashanti - Lê futuro em padrões dos tecidos Kente",
       "skills": [
         {

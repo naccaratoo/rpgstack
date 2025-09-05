@@ -41,6 +41,9 @@ export class SkillController {
     this.createSkillsBatch = this.createSkillsBatch.bind(this);
     this.getSkillStatistics = this.getSkillStatistics.bind(this);
     this.generateSkillId = this.generateSkillId.bind(this);
+    this.validateSkillCategory = this.validateSkillCategory.bind(this);
+    this.getValidSkillCategories = this.getValidSkillCategories.bind(this);
+    this.getSkillsByCategory = this.getSkillsByCategory.bind(this);
   }
 
   /**
@@ -591,6 +594,108 @@ export class SkillController {
 
     } catch (error) {
       return this._handleError(error, res, 'removeSprite');
+    }
+  }
+
+  /**
+   * POST /api/skills/validate/category
+   * Validate skill category
+   */
+  async validateSkillCategory(req, res) {
+    try {
+      const { category } = req.body;
+
+      if (!category) {
+        return res.status(400).json({
+          success: false,
+          error: 'Category is required',
+          code: 'MISSING_CATEGORY',
+        });
+      }
+
+      const { Skill } = await import('../../domain/entities/Skill.js');
+      const isValid = Skill.VALID_SKILL_CATEGORIES.includes(category);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          category: category,
+          valid: isValid,
+          validCategories: Skill.VALID_SKILL_CATEGORIES,
+        },
+        message: isValid 
+          ? `Category '${category}' is valid` 
+          : `Category '${category}' is invalid. Must be one of: ${Skill.VALID_SKILL_CATEGORIES.join(', ')}`,
+      });
+    } catch (error) {
+      this._handleError(res, error, 'validateSkillCategory');
+    }
+  }
+
+  /**
+   * GET /api/skills/categories
+   * Get all valid skill categories
+   */
+  async getValidSkillCategories(req, res) {
+    try {
+      const { Skill } = await import('../../domain/entities/Skill.js');
+
+      res.status(200).json({
+        success: true,
+        data: {
+          categories: Skill.VALID_SKILL_CATEGORIES,
+          descriptions: {
+            'Damage': 'Skills focadas em causar dano aos inimigos',
+            'Utility': 'Skills de suporte, cura, buffs e utilidades',
+            'Damage&Utility': 'Skills híbridas que combinam dano com efeitos utilitários'
+          }
+        },
+        message: 'Valid skill categories retrieved successfully',
+      });
+    } catch (error) {
+      this._handleError(res, error, 'getValidSkillCategories');
+    }
+  }
+
+  /**
+   * GET /api/skills/category/:category
+   * Get skills by category
+   */
+  async getSkillsByCategory(req, res) {
+    try {
+      const { category } = req.params;
+
+      if (!category) {
+        return res.status(400).json({
+          success: false,
+          error: 'Skill category is required',
+          code: 'MISSING_SKILL_CATEGORY',
+        });
+      }
+
+      const { Skill } = await import('../../domain/entities/Skill.js');
+      
+      if (!Skill.VALID_SKILL_CATEGORIES.includes(category)) {
+        return res.status(400).json({
+          success: false,
+          error: `Invalid skill category: ${category}. Must be one of: ${Skill.VALID_SKILL_CATEGORIES.join(', ')}`,
+          code: 'INVALID_SKILL_CATEGORY',
+        });
+      }
+
+      const result = await this.skillService.getSkillsByCategory(category);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          skills: result.skills.map(skill => skill.toJSON()),
+          category: category,
+          resultCount: result.skills.length,
+        },
+        metadata: result.metadata,
+      });
+    } catch (error) {
+      this._handleError(res, error, 'getSkillsByCategory');
     }
   }
 }

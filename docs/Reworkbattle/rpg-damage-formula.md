@@ -165,9 +165,9 @@ Dano diminui com a distância do epicentro:
 
 ## Custos e Limitações
 
-### Custos de MP (Mana Points)
+### Custos de Ânima
 
-| Tipo de Skill | Custo MP | Cooldown |
+| Tipo de Skill | Custo Ânima | Cooldown |
 |---------------|----------|----------|
 | Ataque Básico | 0 | 0 turnos |
 | Skill Single | 10-20 | 0-2 turnos |

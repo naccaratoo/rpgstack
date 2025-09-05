@@ -1131,6 +1131,10 @@
                             <label for="attack">Ataque</label>
                             <input type="number" id="attack" name="attack" min="1" value="10" required>
                         </div>
+                        <div class="form-group">
+                            <label for="ataque_especial">Ataque Especial</label>
+                            <input type="number" id="ataque_especial" name="ataque_especial" min="1" value="10" required>
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -1144,23 +1148,6 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="experience">Experiência</label>
-                            <input type="number" id="experience" name="experience" min="1" value="25" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="goldMin">Gold Mínimo</label>
-                            <input type="number" id="goldMin" name="goldMin" min="0" value="5" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="goldMax">Gold Máximo</label>
-                            <input type="number" id="goldMax" name="goldMax" min="0" value="15" required>
-                        </div>
-                    </div>
 
                     <div class="form-group">
                         <label for="classe">Classe</label>
@@ -1194,10 +1181,6 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="spawnWeight">Peso de Spawn</label>
-                        <input type="number" id="spawnWeight" name="spawnWeight" min="1" max="20" value="10">
-                    </div>
 
                     <div class="form-group">
                         <label for="description">Descrição</label>
@@ -1275,20 +1258,19 @@
                                 <th>Level</th>
                                 <th>HP</th>
                                 <th>ATK</th>
+                                <th>ATK ESP</th>
                                 <th>DEF</th>
                                 <th>DEF ESP</th>
                                 <th>Classe</th>
                                 <th>Ânima</th>
                                 <th>Crítico</th>
-                                <th>EXP</th>
-                                <th>Gold</th>
                                 <th>IA</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="charactersTableBody">
                             <tr>
-                                <td colspan="14" style="text-align: center; padding: 20px; color: #6c757d;">
+                                <td colspan="13" style="text-align: center; padding: 20px; color: #6c757d;">
                                     Carregando personagens...
                                 </td>
                             </tr>
@@ -1363,6 +1345,10 @@
                         <label for="editAttack">Ataque</label>
                         <input type="number" id="editAttack" name="attack" min="1" required>
                     </div>
+                    <div class="form-group">
+                        <label for="editAtaqueEspecial">Ataque Especial</label>
+                        <input type="number" id="editAtaqueEspecial" name="ataque_especial" min="1" required>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -1376,23 +1362,6 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editExperience">Experiência</label>
-                        <input type="number" id="editExperience" name="experience" min="1" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editGoldMin">Gold Mínimo</label>
-                        <input type="number" id="editGoldMin" name="goldMin" min="0" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editGoldMax">Gold Máximo</label>
-                        <input type="number" id="editGoldMax" name="goldMax" min="0" required>
-                    </div>
-                </div>
 
                 <div class="form-row">
                     <div class="form-group">
@@ -1427,12 +1396,6 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="editSpawnWeight">Peso de Spawn</label>
-                        <input type="number" id="editSpawnWeight" name="spawnWeight" min="1" max="20" required>
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <label for="editDescription">Descrição (Opcional)</label>
@@ -2316,11 +2279,7 @@
                 formData.append('classe', classe);
                 formData.append('anima', document.getElementById('anima').value);
                 formData.append('critico', document.getElementById('critico').value);
-                formData.append('experience', document.getElementById('experience').value);
-                formData.append('goldMin', document.getElementById('goldMin').value);
-                formData.append('goldMax', document.getElementById('goldMax').value);
                 formData.append('aiType', document.getElementById('aiType').value);
-                formData.append('spawnWeight', document.getElementById('spawnWeight').value);
                 formData.append('description', document.getElementById('description').value);
                 formData.append('spriteFilename', document.getElementById('spriteFilename').value);
 
@@ -2560,6 +2519,10 @@
                             <div class="stat-value">${char.attack}</div>
                         </div>
                         <div class="stat-item">
+                            <div class="stat-label">ATK ESP</div>
+                            <div class="stat-value">${char.ataque_especial || char.attack || 'N/A'}</div>
+                        </div>
+                        <div class="stat-item">
                             <div class="stat-label">DEF</div>
                             <div class="stat-value">${char.defense}</div>
                         </div>
@@ -2578,14 +2541,6 @@
                         <div class="stat-item">
                             <div class="stat-label">Crítico</div>
                             <div class="stat-value">${char.critico || 1.0}</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">EXP</div>
-                            <div class="stat-value">${char.experience || 'N/A'}</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Gold</div>
-                            <div class="stat-value">${char.goldRange ? `${char.goldRange[0]}-${char.goldRange[1]}` : 'N/A'}</div>
                         </div>
                     </div>
                     
@@ -2611,7 +2566,7 @@
             if (!characters || Object.keys(characters).length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="14" style="text-align: center; padding: 20px; color: #6c757d;">
+                        <td colspan="13" style="text-align: center; padding: 20px; color: #6c757d;">
                             Nenhum personagem cadastrado ainda.
                         </td>
                     </tr>
@@ -2682,13 +2637,12 @@
                     <td><span class="level-badge ${levelClass}">${char.level}</span></td>
                     <td>${char.hp}</td>
                     <td>${char.attack}</td>
+                    <td>${char.ataque_especial || char.attack || 'N/A'}</td>
                     <td>${char.defense}</td>
                     <td>${char.defesa_especial || 'N/A'}</td>
                     <td><span class="class-badge">${char.classe || 'Lutador'}</span></td>
                     <td>${char.anima || 100}</td>
                     <td>${char.critico || 1.0}</td>
-                    <td>${char.experience || 'N/A'}</td>
-                    <td>${char.goldRange ? `${char.goldRange[0]}-${char.goldRange[1]}` : 'N/A'}</td>
                     <td><span class="ai-type ai-${char.ai_type}">${char.ai_type || 'N/A'}</span></td>
                     <td>
                         <button class="btn btn-primary btn-small" onclick="editCharacter('${char.id}')" style="margin-right: 5px;">✏️ Editar</button>
@@ -2972,16 +2926,13 @@
                 document.getElementById('editLevel').value = character.level;
                 document.getElementById('editHp').value = character.hp;
                 document.getElementById('editAttack').value = character.attack;
+                document.getElementById('editAtaqueEspecial').value = character.ataque_especial || character.attack || 10;
                 document.getElementById('editDefense').value = character.defense;
                 document.getElementById('editDefesaEspecial').value = character.defesa_especial || 10;
                 document.getElementById('editClasse').value = character.classe || '';
                 document.getElementById('editAnima').value = character.anima || 100;
                 document.getElementById('editCritico').value = character.critico || 1.0;
-                document.getElementById('editExperience').value = character.experience;
-                document.getElementById('editGoldMin').value = character.goldRange[0];
-                document.getElementById('editGoldMax').value = character.goldRange[1];
                 document.getElementById('editAiType').value = character.ai_type;
-                document.getElementById('editSpawnWeight').value = character.spawn_weight;
                 document.getElementById('editDescription').value = character.description || '';
 
                 // Carregar skills existentes do personagem

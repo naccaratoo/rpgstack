@@ -54,7 +54,7 @@ O RPGStack Battle System agora possui um sistema modular de skins que permite tr
 ├── battle-demo.css (24KB) - Sistema de design vintage completo  
 └── battle-demo.js (24KB) - Interface JavaScript adaptada para vintage
 
-✅ FUNCIONALIDADES IMPLEMENTADAS:
+✅ FUNCIONALIDADES IÂnimaLEMENTADAS:
 - Sistema completo de batalha por turnos
 - Seleção de personagem (3 opções temáticas)
 - 4 ações principais: Atacar, Defender, Meditar, Habilidades
@@ -86,7 +86,7 @@ O sistema está preparado para expansão com skins adicionais:
 
 ### 🎛️ Gerenciador de Skins - Sistema de Gestão Completo
 
-**IMPLEMENTADO:** Interface administrativa completa para gerenciar o ecosistema de skins.
+**IÂnimaLEMENTADO:** Interface administrativa completa para gerenciar o ecosistema de skins.
 
 #### 📋 Especificações Técnicas:
 
@@ -96,13 +96,13 @@ O sistema está preparado para expansão com skins adicionais:
 // Tecnologias: Vanilla JS, CSS Grid, Flexbox
 // Compatibilidade: Chrome 90+, Firefox 88+, Safari 14+
 
-const SkinManagerFeatures = {
+const SkinÂnimagerFeatures = {
   dashboard: {
     stats: ['total_skins', 'active_skins', 'locked_skins', 'total_size'],
     layout: 'responsive_grid',
     theme: 'dark_modern'
   },
-  skinManagement: {
+  skinÂnimagement: {
     currentSkin: 'eclat-mystique',
     plannedSkins: ['cyber-nexus', 'forest-sanctuary', 'royal-court'],
     actions: ['test', 'edit', 'export', 'develop']
@@ -112,7 +112,7 @@ const SkinManagerFeatures = {
     categories: ['fantasy', 'sci-fi', 'medieval', 'modern', 'vintage'],
     colorPicker: 'real_time_preview'
   },
-  dataManagement: {
+  dataÂnimagement: {
     export: 'individual_or_bulk',
     import: 'json_or_zip_support',
     backup: 'automatic_metadata'
@@ -394,7 +394,7 @@ DEPOIS: battle-demo.html (Elegância Ornamental)
 - **Atalhos de Teclado**: 1, 2, 3, 4
 - **Centro Informativo**: Indica a ação selecionada
 
-### 4. Health/Mana Bars Segmentadas
+### 4. Health/Ânima Bars Segmentadas
 
 #### **Sistema de Segmentação**
 ```javascript
@@ -445,7 +445,7 @@ createBarSegments(elementId, count) {
   <div class="carousel-track">
     <div class="skill-card" data-skill-id="ARSENAL_ADAPTATIVO">
       <div class="skill-name">Arsenal Adaptativo</div>
-      <div class="skill-cost">0 MP</div>
+      <div class="skill-cost">0 Ânima</div>
       <div class="skill-description">Adapta suas armas ao combate</div>
     </div>
     <!-- Mais skill cards... -->
@@ -477,7 +477,7 @@ showSkillTooltip(skill, element) {
     <div class="tooltip-description">${skill.description}</div>
     <div class="tooltip-stats">
       ${skill.skillDamage > 0 ? `Dano: ${skill.skillDamage}` : ''}
-      ${skill.skillMana > 0 ? `Custo: ${skill.skillMana} MP` : ''}
+      ${skill.skillÂnima > 0 ? `Custo: ${skill.skillÂnima} Ânima` : ''}
     </div>
   `;
   // Posicionamento dinâmico e animações...

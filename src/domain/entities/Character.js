@@ -179,7 +179,7 @@ export class Character {
     }
     
     // Classe validation
-    const validClasses = ['Lutador', 'Armamentista', 'Arcano'];
+    const validClasses = ['Lutador', 'Armamentista', 'Arcano', 'Oráculo', 'Artífice', 'Guardião da Natureza', 'Mercador-Diplomata', 'Curandeiro Ritualista'];
     if (!validClasses.includes(this._classe)) {
       throw new Error(`Invalid classe: "${this._classe}". Valid classes: ${validClasses.join(', ')}`);
     }

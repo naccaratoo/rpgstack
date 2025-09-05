@@ -18,7 +18,7 @@
 ```
 Cultural UI Framework:
 ├── Universal Core Layer
-│   ├── HP/MP mechanics
+│   ├── HP/Ânima mechanics
 │   ├── Skill activation
 │   ├── Status effects
 │   └── Combat feedback
@@ -37,7 +37,7 @@ Cultural UI Framework:
 ```
 
 #### 2.2 Elementos Adaptativos por Personagem
-**HP/MP Bars:**
+**HP/Ânima Bars:**
 - Formato e design baseado em elementos arquitetônicos/artísticos da cultura
 - Animações que refletem filosofias locais (fluxo vs. estrutura)
 - Cores autênticas de períodos históricos específicos

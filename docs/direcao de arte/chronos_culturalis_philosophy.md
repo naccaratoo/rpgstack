@@ -1,4 +1,4 @@
-# CHRONOS CULTURALIS
+# CULTURALIS <- Nome do jogo
 ## Filosofia de Design - Manifesto Cultural
 
 ### 1. FILOSOFIA CENTRAL: "DIGNITAS CULTURAE"

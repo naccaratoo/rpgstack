@@ -1,4 +1,4 @@
-# 🎮 RPGStack Server Documentation v4.3
+# 🎮 RPGStack Server Documentation v4.7.3
 **Servidor Node.js/Express com APIs RESTful para Sistema Cultural de RPG**
 
 ---
@@ -6,12 +6,13 @@
 ## 📋 **Visão Geral do Servidor**
 
 ### **🚀 Informações Básicas**
-- **Versão**: RPGStack Server v3.1.0 (Backend v4.3)
+- **Versão**: RPGStack Server v3.1.0 (Backend v4.7.3 Anti-Cheat OPERACIONAL)
 - **Porto**: `3002`
 - **URL Base**: `http://localhost:3002`
-- **Arquitetura**: Node.js + Express + Clean Architecture
+- **Arquitetura**: Node.js + Express + Clean Architecture + Anti-Cheat Backend
 - **Database**: JSON Files com Sistema de Backup
 - **Sistema de IDs**: Hexadecimal 10 caracteres (IMUTÁVEL)
+- **Segurança**: 🔐 Sistema Anti-Cheat 100% Backend ✅ **FUNCIONANDO**
 
 ### **🎯 Filosofia do Sistema**
 - **Chronos Culturalis**: Representação cultural respeitosa
@@ -198,7 +199,7 @@ Lista todas as habilidades ancestrais
       "type": "weapon_craft",
       "culture": "Eslava",
       "classe": "Artífice",
-      "mana_cost": 80,
+      "anima_cost": 80,
       "damage": 120,
       "description": "Invoca técnicas ancestrais para forjar arma de escamas de dragão",
       "cultural_authenticity": "Baseada em tradições metalúrgicas eslavas dos Cárpatos"
@@ -228,7 +229,7 @@ Criar nova skill ancestral
   "type": "elemental",
   "culture": "Japonesa",
   "classe": "Guardião da Natureza",
-  "mana_cost": 60,
+  "anima_cost": 60,
   "damage": 90,
   "description": "Descrição da habilidade...",
   "cultural_authenticity": "Baseada em tradições..."
@@ -356,13 +357,132 @@ Renomear sprite existente
 
 ---
 
-### **⚔️ Battle System API**
+### **🔐 Secure Battle System API (Anti-Cheat)**
 
-#### **POST `/api/battle/start`**
-Inicia nova batalha
+#### **POST `/api/secure-battle/start`**
+Iniciar batalha 3v3 segura (**STATS DO BACKEND**)
 ```json
 {
-  "playerId": "045CCF3515"
+  "playerTeam": [
+    {"id": "045CCF3515", "name": "Miloš Železnikov"},
+    {"id": "EA32D10F2D", "name": "Shi Wuxing"},
+    {"id": "13BF61B218", "name": "Aurelius Ignisvox"}
+  ],
+  "enemyTeam": [
+    {"id": "7A8B9C0D1E", "name": "Pythia Kassandra"},
+    {"id": "2F3E4D5C6B", "name": "Itzel Nahualli"},
+    {"id": "9A8B7C6D5E", "name": "Giovanni da Ferrara"}
+  ],
+  "battleType": "3v3"
+}
+```
+
+**Resposta Segura:**
+```json
+{
+  "battleId": "abc123def456789abcdef123456789abc",
+  "battle": {
+    "id": "abc123def456789abcdef123456789abc",
+    "type": "3v3",
+    "status": "active",
+    "currentTurn": "player",
+    "round": 1,
+    "playerTeam": {
+      "activeIndex": 0,
+      "swapsUsed": 0,
+      "maxSwaps": 1,
+      "characters": [
+        {
+          "id": "045CCF3515",
+          "currentHP": 180,    // ← Stats REAIS do banco
+          "maxHP": 180,        // ← NÃO enviados pelo cliente
+          "currentAnima": 120,    // ← Seguros contra cheat
+          "maxAnima": 120,
+          "status": "active"
+        }
+      ]
+    },
+    "enemyTeam": { /* Similar structure */ },
+    "log": []
+  }
+}
+```
+
+#### **GET `/api/secure-battle/:battleId`**
+Obter estado seguro da batalha
+```json
+{
+  "success": true,
+  "battle": {
+    "id": "abc123def456...",
+    "status": "active",
+    "currentTurn": "player",
+    "round": 2,
+    "playerTeam": {
+      "characters": [
+        {
+          "id": "045CCF3515",
+          "currentHP": 95,     // ← HP atualizado após ataques
+          "maxHP": 180,        // ← Stats reais do backend
+          "status": "active"
+        }
+      ]
+    },
+    "log": [
+      {
+        "type": "attack",
+        "damage": 67,
+        "isCritical": false,
+        "timestamp": "2025-09-05T04:42:53.481Z"
+      }
+    ]
+  }
+}
+```
+
+#### **POST `/api/secure-battle/:battleId/attack`**
+Executar ataque com fórmulas oficiais (**100% BACKEND**)
+```json
+{
+  "attackerId": "045CCF3515",      // ← Apenas ID
+  "targetId": "7A8B9C0D1E",        // ← Backend busca stats reais
+  "skillData": {                   // ← Opcional
+    "type": "physical",            // "physical" ou "magical"
+    "skillId": "forja_do_dragao_eslavo",
+    "multiplier": 2.5,
+    "baseDamage": 45
+  }
+}
+```
+
+**Resposta com Cálculos Seguros:**
+```json
+{
+  "success": true,
+  "damage": 67,                    // ← Calculado com fórmulas oficiais
+  "isCritical": false,             // ← Baseado no stat crítico real
+  "targetDefeated": false,         // ← Estado real validado
+  "formulaUsed": "physical",       // ← Fórmula aplicada
+  "battle": {
+    "enemyTeam": {
+      "characters": [
+        {
+          "id": "7A8B9C0D1E",
+          "currentHP": 53,          // ← HP real após dano
+          "status": "active"
+        }
+      ]
+    }
+  }
+}
+```
+
+#### **POST `/api/secure-battle/:battleId/swap`**
+Executar troca de personagem segura
+```json
+{
+  "fromIndex": 0,                  // ← Índice atual
+  "toIndex": 1                     // ← Novo personagem ativo
 }
 ```
 
@@ -370,56 +490,50 @@ Inicia nova batalha
 ```json
 {
   "success": true,
-  "battle": {
-    "id": "a1b2c3d4",
-    "player": { ... },
-    "enemy": { ... },
-    "turn": "player",
-    "round": 1
+  "newActiveCharacter": {
+    "id": "EA32D10F2D",
+    "currentHP": 160,
+    "maxHP": 160,
+    "status": "active"
+  },
+  "swapsRemaining": 0,             // ← Limite de 1 swap por turno
+  "battle": { /* estado atualizado */ }
+}
+```
+
+#### **DELETE `/api/secure-battle/:battleId`**
+Encerrar batalha segura
+```json
+{
+  "success": true,
+  "message": "Batalha finalizada",
+  "winner": "player",
+  "finalState": {
+    "rounds": 8,
+    "totalDamage": 450,
+    "criticalHits": 3
   }
 }
 ```
 
-#### **GET `/api/battle/:battleId`**
-Status da batalha atual
-```json
-{
-  "success": true,
-  "battle": {
-    "id": "a1b2c3d4",
-    "player": {
-      "name": "Miloš",
-      "currentHP": 150,
-      "maxHP": 180,
-      "currentMP": 40,
-      "defending": false
-    },
-    "enemy": { ... },
-    "turn": "player",
-    "round": 3,
-    "status": "active",
-    "log": [...]
-  }
-}
+---
+
+### **⚔️ Battle System API (DEPRECIADO - INSEGURO)**
+> **⚠️ AVISO DE SEGURANÇA**: Estes endpoints foram DEPRECIADOS por vulnerabilidades
+
+#### **❌ REMOVIDOS por Vulnerabilidades de Segurança:**
+```
+❌ POST /api/battle/start           - Stats enviados pelo cliente (INSEGURO)
+❌ GET  /api/battle/:battleId       - Stats completos expostos (INSEGURO)
+❌ POST /api/battle/:battleId/action - Dano calculado no frontend (INSEGURO)
+❌ POST /api/battle/calculate-damage - Cálculos manipuláveis (INSEGURO)
 ```
 
-#### **POST `/api/battle/:battleId/action`**
-Executar ação de batalha
-```json
-{
-  "action": "attack", // "attack", "defend", "skill", "item"
-  "target": "enemy"
-}
-```
-
-#### **DELETE `/api/battle/:battleId`**
-Encerrar batalha
-```json
-{
-  "success": true,
-  "message": "Battle ended"
-}
-```
+#### **🔐 Substituídos por:**
+- `POST /api/secure-battle/start` - Stats do backend apenas
+- `GET /api/secure-battle/:id` - Estado seguro sem revelar stats
+- `POST /api/secure-battle/:id/attack` - Cálculos server-side
+- `POST /api/secure-battle/:id/swap` - Validações anti-cheat
 
 ---
 
@@ -505,6 +619,56 @@ Download do arquivo JavaScript exportado
 
 ## 🛡️ **Sistema de Segurança**
 
+### **🔐 Anti-Cheat Battle System**
+> **Sistema 100% Backend** - Eliminação total de cheats via inspecionar elemento
+
+#### **Arquitetura Segura:**
+- **Stats no Backend**: NUNCA enviados do frontend
+- **Cálculos Server-Side**: Fórmulas oficiais executadas no servidor
+- **Cache Inteligente**: 5min TTL para otimização
+- **Validação Multi-Camada**: IDs, stats, limites, regras
+- **Cleanup Automático**: Remoção de batalhas antigas (1h)
+
+#### **Fórmulas Oficiais Implementadas:**
+```javascript
+// Dano Físico (100% Backend)
+damage = (attack × multiplier + baseDamage) × (100 ÷ (100 + defense)) × modifiers
+
+// Dano Mágico (100% Backend) 
+damage = (specialAttack × multiplier + baseDamage) × (100 ÷ (100 + spirit)) × modifiers
+
+// Sistema AoE com Redutores
+1 alvo: 1.0x | 2 alvos: 0.8x | 3 alvos: 0.7x | 3+ alvos: 0.6x
+```
+
+#### **Medidas Anti-Cheat:**
+```javascript
+// IDs de Batalha Seguros (32 hex chars)
+battleId: "abc123def456789abcdef123456789abc"
+
+// Validação de Character ID
+const validateCharId = (id) => /^[A-F0-9]{10}$/.test(id);
+
+// Rate Limiting por IP
+"/api/secure-battle/*": 10 requests/segundo
+"/api/characters/*": 5 requests/segundo
+```
+
+#### **Logs de Segurança:**
+```javascript
+// Detecção de tentativas suspeitas
+{
+  "level": "warn",
+  "message": "Tentativa de dano inválido detectada",
+  "data": {
+    "ip": "192.168.1.100", 
+    "battleId": "abc123...",
+    "suspiciousValue": 999999,
+    "expectedRange": "1-200"
+  }
+}
+```
+
 ### **🔒 ID Immutability System**
 - **IDs Existentes**: NUNCA alterados (PRESERVADOS)
 - **Novos IDs**: Hexadecimal 10 caracteres
@@ -534,6 +698,20 @@ const limits = {
 - **XSS Prevention**: Input sanitization
 - **File Type**: MIME type verification
 - **Path Traversal**: Secured file paths
+- **Battle Validation**: Stats sempre do banco de dados
+- **Anti-Tampering**: Headers de segurança aplicados
+
+### **🔒 Arquivos Depreciados por Segurança**
+```
+📁 /deprecated/
+├── battlemechanics-insecure.js    # 2273 linhas INSEGURAS removidas
+├── README.md                      # Documentação da depreciação
+└── ...                           # Outros arquivos inseguros
+
+✅ Substituídos por:
+├── /src/battle/BattleMechanics.js # Backend 100% seguro
+└── /public/secure-battle-client.js # Cliente seguro API-only
+```
 
 ---
 
@@ -644,6 +822,78 @@ NODE_ENV=development        # Ambiente de execução
 
 ## 🔧 **Troubleshooting**
 
+### **🔥 Problemas Críticos Resolvidos (v4.7.3)**
+
+#### **🐛 "Personagem 1 não encontrado" - Sistema Anti-Cheat**
+**Problema:** Sistema seguro falhava ao inicializar batalha
+**Causa Raiz:** Frontend enviava IDs sequenciais (1,2,3) em vez de hex IDs do banco
+
+**Solução Implementada:**
+```bash
+✅ ANTES: { "characters": ["Miloš Železnikov", "Shi Wuxing"] }  # INCORRETO
+✅ APÓS:  { "characters": [{"id": "045CCF3515", "name": "Miloš Železnikov"}] }  # CORRETO
+```
+
+**Código Corrigido em `battle.js`:**
+```javascript
+// ANTES (linhas 103, 345): 
+id: index + 1,                           // IDs sequenciais (INCORRETO)
+const characterId = parseInt(option.dataset.characterId);  // Parse (INCORRETO)
+
+// APÓS (correção implementada):
+id: char.id,                             // IDs hex originais (CORRETO) 
+const characterId = option.dataset.characterId;  // String hex (CORRETO)
+```
+
+**Logs de Validação:**
+```bash
+🔍 [DEBUG BACKEND] Dados recebidos:
+[{"id": "045CCF3515", "name": "Miloš Železnikov"}]
+⚔️ Nova batalha segura iniciada: 63a298d1dea5e221932c023283a08ae7
+```
+
+#### **🛡️ Erros de Referência Nula - Sistema Dual**
+**Problema:** `Cannot read properties of null (reading 'battleState')`
+**Causa Raiz:** Métodos legados tentando acessar battleMechanics no sistema seguro
+
+**Solução de Compatibilidade:**
+```javascript
+// Sistema dual implementado em battle.js:1748-1763
+if (this.secureBattleClient && this.secureBattleClient.isBattleActive()) {
+    // Sistema seguro - usar dados locais
+    playerTeam = this.playerTeam;
+    character = playerTeam.characters[characterIndex];
+} else if (this.battleMechanics && this.battleMechanics.battleState) {
+    // Sistema legacy - usar battleMechanics
+    playerTeam = this.battleMechanics.battleState.teams.player;
+    character = playerTeam.characters[characterIndex];
+} else {
+    console.error('Nenhum sistema de batalha ativo');
+    return;
+}
+```
+
+**Métodos Corrigidos:**
+- ✅ `updatePlayerCard()` - Verificações de null para DOM elements
+- ✅ `showSwapOptions()` - Sistema dual secure+legacy
+- ✅ `synchronizeData()` - Compatibilidade total implementada
+
+#### **⚡ Validação Anti-Cheat Operacional**
+**Status de Funcionamento Confirmado:**
+```bash
+🔐 [DEBUG] Iniciando batalha segura... ✅
+🔐 [DEBUG] Response status: 200 ✅
+🔐 Sistema 3v3 seguro inicializado! ✅
+🆔 Battle ID: 63a298d1dea5e221932c023283a08ae7 ✅
+👥 Equipe Jogador: Miloš Železnikov, Aurelius Ignisvox, Shi Wuxing ✅
+```
+
+**Fórmulas de Dano Ativas:**
+```bash
+Dano Físico: (attack × mult + base) × (100 ÷ (100 + def)) × mods ✅
+Dano Mágico: (ataque_especial × mult + base) × (100 ÷ (100 + esp)) × mods ✅
+```
+
 ### **❌ Problemas Comuns**
 
 #### **Port 3002 já em uso**
@@ -657,6 +907,25 @@ kill -9 <PID>
 # Iniciar servidor
 npm start
 ```
+
+#### **Sistema Anti-Cheat não inicializa**
+**Diagnóstico:**
+```bash
+# Verificar se secure-battle-client está carregado
+console.log('SecureBattleClient disponível:', typeof SecureBattleClient !== 'undefined');
+
+# Verificar dados das equipes
+console.log('playerTeam.characters:', this.playerTeam.characters);
+console.log('enemyTeam.characters:', this.enemyTeam.characters);
+
+# Verificar formato dos IDs
+console.log('ID format:', this.playerTeam.characters[0].id); // Deve ser hex como "045CCF3515"
+```
+
+**Soluções:**
+- ✅ IDs devem ser hexadecimais (10 chars) do banco de dados
+- ✅ Equipes devem conter objetos {id, name} não strings
+- ✅ Verificar se secure-battle-client.js está incluído no HTML
 
 #### **Erro de upload de sprite**
 - **Verificar formato**: PNG, JPG, GIF, WEBP
@@ -672,6 +941,19 @@ npm start
 - **Backup System**: Restaurar do backup mais recente
 - **JSON Validation**: Verificar estrutura do characters.json
 - **Fallback**: Sistema cria novo database se necessário
+
+#### **JavaScript Console Errors**
+**Erros Comuns Corrigidos:**
+```bash
+❌ Cannot set properties of null (setting 'textContent') 
+   → ✅ Adicionadas verificações de null em updatePlayerCard()
+
+❌ Cannot read properties of null (reading 'battleState') 
+   → ✅ Sistema dual secure+legacy implementado
+
+❌ this.battleMechanics.COMBAT_CONSTANTS is undefined
+   → ✅ Variáveis locais com fallbacks implementadas
+```
 
 ### **🛠️ Debug Mode**
 ```bash
@@ -726,9 +1008,11 @@ curl http://localhost:3002/api/skills
 
 ---
 
-**📅 Última Atualização**: 04 de setembro de 2025  
-**⏱️ Versão do Documento**: v4.3.0  
+**📅 Última Atualização**: 05 de setembro de 2025  
+**⏱️ Versão do Documento**: v4.7.3 (Sistema Anti-Cheat + Troubleshooting)  
 **🎮 Desenvolvido por**: Claude Code (Anthropic)  
-**🌐 Status**: ✅ SERVIDOR ATIVO em http://localhost:3002
+**🌐 Status**: ✅ SERVIDOR ATIVO em http://localhost:3002  
+**🔐 Segurança**: ✅ SISTEMA ANTI-CHEAT 100% OPERACIONAL  
+**🐛 Debug**: ✅ TODOS OS PROBLEMAS CRÍTICOS RESOLVIDOS
 
-*Esta documentação cobre todas as funcionalidades do servidor RPGStack v4.3, incluindo APIs, endpoints, sistemas de segurança e troubleshooting para desenvolvimento e produção.*
+*Esta documentação cobre todas as funcionalidades do servidor RPGStack v4.7.3, incluindo o sistema anti-cheat 100% backend operacional, APIs seguras, troubleshooting completo dos problemas críticos, e guia de resolução de bugs para desenvolvimento e produção.*

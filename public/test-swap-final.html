@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Final - Troca de Personagens</title>
+    <link rel="stylesheet" href="battle.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #2c1810;
+            border-radius: 15px;
+            color: #e8d5a3;
+        }
+        .character-test-slot {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            border: 2px solid #4a7c59;
+            border-radius: 10px;
+            background: #1a4731;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+        .character-test-slot.active {
+            border-color: #d4af37;
+            background: #2d5a3d;
+        }
+        .character-test-slot.reserve:hover {
+            background: #4a7c59;
+        }
+        .test-status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #4a2c2a;
+        }
+        .success { background: #1a4731; }
+        .error { background: #731a1a; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔄 Teste Final - Troca de Personagens</h1>
+        <p>Clique em um personagem da reserva para testar a troca:</p>
+        
+        <div id="character-slots">
+            <div class="character-test-slot active" id="slot-0" onclick="showSwapOptions(0)">
+                <h3>Miloš (Ativo)</h3>
+                <p>HP: 100/100</p>
+            </div>
+            <div class="character-test-slot reserve" id="slot-1" onclick="showSwapOptions(1)">
+                <h3>Shi Wuxing</h3>
+                <p>HP: 85/100</p>
+            </div>
+            <div class="character-test-slot reserve" id="slot-2" onclick="showSwapOptions(2)">
+                <h3>Aurelius</h3>
+                <p>HP: 90/100</p>
+            </div>
+        </div>
+        
+        <div id="battle-log" class="test-status">
+            <strong>Log de Batalha:</strong><br>
+            Sistema 3v3 inicializado ✅<br>
+            Clique em um personagem da reserva para testar
+        </div>
+        
+        <button onclick="resetTest()" style="margin-top: 20px; padding: 10px 20px; background: #4a7c59; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🔄 Resetar Teste
+        </button>
+    </div>
+
+    <script src="battlemechanics.js"></script>
+    <script src="battle.js"></script>
+    <script>
+        // Inicializar sistema de teste
+        let testBattle;
+        
+        function initializeTest() {
+            testBattle = new Battle();
+            testBattle.battleState = '3v3-battle';
+            
+            // Inicializar BattleMechanics com dados de teste
+            testBattle.battleMechanics = new BattleMechanics();
+            testBattle.battleMechanics.battleState = {
+                turn: 'player',
+                player: { swapsUsed: 0 },
+                teams: {
+                    player: {
+                        activeIndex: 0,
+                        characters: [
+                            { name: 'Miloš', hp: 100, maxHp: 100, anima: 50, maxAnima: 50 },
+                            { name: 'Shi Wuxing', hp: 85, maxHp: 100, anima: 45, maxAnima: 50 },
+                            { name: 'Aurelius', hp: 90, maxHp: 100, anima: 40, maxAnima: 50 }
+                        ]
+                    }
+                }
+            };
+            
+            updateLog('Sistema de teste inicializado ✅');
+            console.log('Test battle initialized:', testBattle);
+        }
+        
+        function showSwapOptions(characterIndex) {
+            if (!testBattle) {
+                updateLog('❌ Sistema não inicializado!', 'error');
+                return;
+            }
+            
+            updateLog(`🔄 Tentando trocar para slot ${characterIndex}...`);
+            testBattle.showSwapOptions(characterIndex);
+        }
+        
+        function updateLog(message, type = 'info') {
+            const log = document.getElementById('battle-log');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `<br>[${timestamp}] ${message}`;
+            log.className = `test-status ${type}`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function resetTest() {
+            // Resetar slots visuais
+            document.querySelectorAll('.character-test-slot').forEach((slot, index) => {
+                slot.className = index === 0 ? 'character-test-slot active' : 'character-test-slot reserve';
+            });
+            
+            // Limpar log
+            document.getElementById('battle-log').innerHTML = '<strong>Log de Batalha:</strong><br>Sistema resetado 🔄<br>';
+            
+            // Reinicializar
+            initializeTest();
+        }
+        
+        // Override da função addBattleLogEntry para capturar logs
+        if (typeof Battle !== 'undefined') {
+            const originalAddBattleLogEntry = Battle.prototype.addBattleLogEntry;
+            Battle.prototype.addBattleLogEntry = function(type, message) {
+                updateLog(`[${type.toUpperCase()}] ${message}`, type);
+                if (originalAddBattleLogEntry) {
+                    originalAddBattleLogEntry.call(this, type, message);
+                }
+            };
+        }
+        
+        // Inicializar quando a página carrega
+        window.addEventListener('load', initializeTest);
+    </script>
+</body>
+</html>

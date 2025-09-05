@@ -12,8 +12,15 @@
       "color": 4873507,
       "borderColor": 2962964,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        1,
+        3
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 10,
       "description": "Mestre ferreiro eslavo que forja armas lendárias usando técnicas ancestrais transmitidas por gerações de artesãos da resistência.",
+      "drops": [],
       "skills": [
         {
           "skillName": "🔨 Forja do Dragão Eslavo",
@@ -45,8 +52,15 @@
       "color": 4873507,
       "borderColor": 2962964,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        1,
+        5
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 10,
       "description": "Guerreiro-filósofo que domina as artes marciais através da harmonia com os cinco elementos fundamentais da cosmologia chinesa.",
+      "drops": [],
       "skills": [
         {
           "skillName": "🌊 Ciclo dos Cinco Elementos",
@@ -78,8 +92,15 @@
       "color": 8388736,
       "borderColor": 5592405,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        2,
+        6
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 8,
       "description": "Ex-senador romano que se tornou mago após descobrir pergaminhos arcanos nas bibliotecas de Alexandria, combinando liderança política com poder místico.",
+      "drops": [],
       "skills": [
         {
           "skillName": "🏛️ Decreto Senatorial Arcano",
@@ -111,8 +132,15 @@
       "color": 9109504,
       "borderColor": 6966323,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        10,
+        25
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 5,
       "description": "Oráculo de Delphi - Sempre prevê desgraças, mas ninguém acredita",
+      "drops": [],
       "skills": [
         {
           "skillName": "🔮 Visão Oracular Délfica",
@@ -144,8 +172,15 @@
       "color": 8388736,
       "borderColor": 5592405,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        15,
+        30
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 4,
       "description": "Nahualli Asteca - Transforma-se em jaguar durante rituais de sangue",
+      "drops": [],
       "skills": [
         {
           "skillName": "🐆 Transformação Jaguar",
@@ -177,8 +212,15 @@
       "color": 16776960,
       "borderColor": 13421568,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        20,
+        40
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 3,
       "description": "Artífice Renascentista - Cria autômatos movidos por engrenagens celestiais",
+      "drops": [],
       "skills": [
         {
           "skillName": "⚙️ Autômato Celestial",
@@ -210,8 +252,15 @@
       "color": 16711935,
       "borderColor": 13369548,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        25,
+        45
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Mestre Karakuri - Especialista em bonecas que imitam vida humana",
+      "drops": [],
       "skills": [
         {
           "skillName": "🎭 Boneca Viva",
@@ -243,8 +292,15 @@
       "color": 9109504,
       "borderColor": 6966323,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        30,
+        60
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Guardião Lakota - Comunica-se com espíritos dos bisões das Grandes Planícies",
+      "drops": [],
       "skills": [
         {
           "skillName": "🌪️ Chamado dos Quatro Ventos",
@@ -276,8 +332,15 @@
       "color": 4210752,
       "borderColor": 2763306,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        40,
+        80
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Berserker Viking - Canaliza o espírito do lobo Fenrir",
+      "drops": [],
       "skills": [
         {
           "skillName": "🐺 Fúria do Fenrir",
@@ -309,8 +372,15 @@
       "color": 16776960,
       "borderColor": 13421568,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        50,
+        100
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Mercador Abássida - Carrega bolsa infinita com tesouros de todo mundo conhecido",
+      "drops": [],
       "skills": [
         {
           "skillName": "✨ Tapete das Mil e Uma Noites",
@@ -342,8 +412,15 @@
       "color": 16711935,
       "borderColor": 13369548,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        35,
+        70
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 3,
       "description": "Dama Vitoriana - Manipula alta sociedade através de chás ritualizados e fofocas codificadas",
+      "drops": [],
       "skills": [
         {
           "skillName": "🍵 Chá da Revelação",
@@ -375,8 +452,15 @@
       "color": 8388736,
       "borderColor": 5592405,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        45,
+        90
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Babalawo Iorubá - Lê destinos através de 256 configurações de búzios sagrados",
+      "drops": [],
       "skills": [
         {
           "skillName": "🪙 Leitura dos 256 Odús",
@@ -408,8 +492,15 @@
       "color": 4210752,
       "borderColor": 2763306,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        50,
+        100
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Médico-alquimista Russo - Obcecado com elixir da vida eterna",
+      "drops": [],
       "skills": [
         {
           "skillName": "🧪 Elixir da Imortalidade Russa",
@@ -441,8 +532,15 @@
       "color": 65280,
       "borderColor": 32768,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        40,
+        80
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 2,
       "description": "Lutadora-Artífice Chinesa - Forja suas próprias armas de jade durante o combate usando qi",
+      "drops": [],
       "skills": [
         {
           "skillName": "💎 Forja de Jade Imperial",
@@ -475,8 +573,15 @@
       "color": 16776960,
       "borderColor": 13421568,
       "size": 12,
+      "experience": 1,
+      "goldRange": [
+        45,
+        85
+      ],
       "ai_type": "aggressive",
+      "spawn_weight": 1,
       "description": "Guerreiro-Sacerdote Ashanti - Lê futuro em padrões dos tecidos Kente",
+      "drops": [],
       "skills": [
         {
           "skillName": "🥁 Tambores Ancestrais",

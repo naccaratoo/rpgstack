@@ -8,6 +8,7 @@ import chokidar from 'chokidar';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { SkillController } from './src/presentation/controllers/SkillController.js';
+import { PassiveAbilityController } from './src/presentation/controllers/PassiveAbilityController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -533,9 +534,9 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
     const data = await loadDatabase();
     
     const {
-      name, level, hp, attack, defense, defesa_especial, experience,
-      goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename, classe, anima, critico,
+      name, level, hp, attack, defense, defesa_especial, ataque_especial,
+      aiType, description,
+      skills, spriteFilename, classe, anima, critico,
     } = req.body;
     
     console.log('📊 Campos extraídos - classe:', classe, 'anima:', anima, 'critico:', critico);
@@ -564,16 +565,13 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
       attack: parseInt(attack),
       defense: parseInt(defense),
       defesa_especial: parseInt(defesa_especial) || 10,
+      ataque_especial: parseInt(ataque_especial) || parseInt(attack),
       sprite: spritePath,
       color: 0x4a5d23,
       borderColor: 0x2d3614,
       size: 12,
-      experience: parseInt(experience),
-      goldRange: [parseInt(goldMin), parseInt(goldMax)],
       ai_type: aiType,
-      spawn_weight: parseInt(spawnWeight),
       description,
-      drops: JSON.parse(drops || '[]'),
       skills: JSON.parse(skills || '[]'),
       classe: classe || 'Lutador', // Campo classe adicionado
       anima: parseInt(anima) || 100, // Campo anima adicionado
@@ -753,9 +751,9 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
     console.log(`🔄 Atualizando personagem: ${existingCharacter.name} (ID: ${id})`);
     
     const {
-      name, level, hp, attack, defense, defesa_especial, experience,
-      goldMin, goldMax, aiType, spawnWeight, description,
-      drops, skills, spriteFilename, classe, anima, critico,
+      name, level, hp, attack, defense, defesa_especial, ataque_especial,
+      aiType, description,
+      skills, spriteFilename, classe, anima, critico,
     } = req.body;
 
     // Processar sprite se fornecida
@@ -788,13 +786,10 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       attack: attack ? parseInt(attack) : existingCharacter.attack,
       defense: defense ? parseInt(defense) : existingCharacter.defense,
       defesa_especial: defesa_especial ? parseInt(defesa_especial) : (existingCharacter.defesa_especial || 10),
+      ataque_especial: ataque_especial ? parseInt(ataque_especial) : (existingCharacter.ataque_especial || existingCharacter.attack),
       sprite: spritePath,
-      experience: experience ? parseInt(experience) : existingCharacter.experience,
-      goldRange: goldMin && goldMax ? [parseInt(goldMin), parseInt(goldMax)] : existingCharacter.goldRange,
       ai_type: aiType || existingCharacter.ai_type,
-      spawn_weight: spawnWeight ? parseInt(spawnWeight) : existingCharacter.spawn_weight,
       description: description !== undefined ? description : existingCharacter.description,
-      drops: drops ? JSON.parse(drops) : existingCharacter.drops,
       skills: skills ? JSON.parse(skills) : existingCharacter.skills,
       classe: classe || existingCharacter.classe,
       anima: anima ? parseInt(anima) : existingCharacter.anima,
@@ -1080,16 +1075,13 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
           attack: parseInt(character.attack) || 1,
           defense: parseInt(character.defense) || 1,
           defesa_especial: parseInt(character.defesa_especial) || 10,
+          ataque_especial: parseInt(character.ataque_especial) || parseInt(character.attack) || 1,
           sprite: character.sprite || null,
           color: character.color || 0x4a5d23,
           borderColor: character.borderColor || 0x2d3614,
           size: character.size || 12,
-          experience: parseInt(character.experience) || 1,
-          goldRange: Array.isArray(character.goldRange) ? character.goldRange : [1, 3],
           ai_type: character.ai_type || 'aggressive',
-          spawn_weight: parseInt(character.spawn_weight) || 10,
           description: character.description || '',
-          drops: Array.isArray(character.drops) ? character.drops : [],
           skills: Array.isArray(character.skills) ? character.skills : [],
           created_at: character.created_at || new Date().toISOString(),
           imported_at: new Date().toISOString(),
@@ -1317,6 +1309,7 @@ import { MapProgressService } from './src/application/maps/services/MapProgressS
 import { MapController } from './src/infrastructure/maps/web/controllers/MapController.js';
 import { createMapRoutes } from './src/infrastructure/maps/web/routes/mapRoutes.js';
 import { JsonCharacterRepository } from './src/infrastructure/repositories/JsonCharacterRepository.js';
+import { SecureBattleMechanics } from './src/battle/BattleMechanics.js';
 
 // Maps system instances
 let mapRepository;
@@ -1368,19 +1361,25 @@ console.log('🎯 Inicializando Skills System...');
 // Initialize Skills Controller
 const skillController = new SkillController();
 
-// Skills API Routes
-app.get('/api/skills', skillController.getAllSkills);
+// Initialize PassiveAbility Controller  
+const passiveAbilityController = new PassiveAbilityController();
+
+// Skills API Routes (specific routes first, then parameterized routes)
 app.get('/api/skills/search', skillController.searchSkills);
 app.get('/api/skills/basic', skillController.getBasicSkills);
 app.get('/api/skills/combat', skillController.getCombatSkills);
 app.get('/api/skills/statistics', skillController.getSkillStatistics);
 app.get('/api/skills/generate-id', skillController.generateSkillId);
+app.get('/api/skills/categories', skillController.getValidSkillCategories);
 app.get('/api/skills/type/:type', skillController.getSkillsByType);
 app.get('/api/skills/classe/:classe', skillController.getSkillsByClasse);
+app.get('/api/skills/category/:category', skillController.getSkillsByCategory);
 app.get('/api/skills/:id', skillController.getSkill);
+app.get('/api/skills', skillController.getAllSkills);
 
 app.post('/api/skills', skillController.createSkill);
 app.post('/api/skills/batch', skillController.createSkillsBatch);
+app.post('/api/skills/validate/category', skillController.validateSkillCategory);
 
 app.put('/api/skills/:id', skillController.updateSkill);
 
@@ -1406,88 +1405,162 @@ app.delete('/api/skills/:id/sprite', skillController.removeSkillSprite);
 console.log('✅ Skills System inicializado com sucesso');
 console.log('🎯 Skills API disponível em /api/skills');
 
-// ⚔️ **BATTLE SYSTEM** - Boss-Character Integration
-let battles = new Map(); // Store active battles in memory
+// PassiveAbility API Routes
+app.get('/api/passive-abilities/search', passiveAbilityController.searchPassiveAbilities);
+app.get('/api/passive-abilities/always-active', passiveAbilityController.getAlwaysActivePassiveAbilities);
+app.get('/api/passive-abilities/battle-triggered', passiveAbilityController.getBattleTriggeredPassiveAbilities);
+app.get('/api/passive-abilities/statistics', passiveAbilityController.getPassiveAbilityStatistics);
+app.get('/api/passive-abilities/generate-id', passiveAbilityController.generatePassiveAbilityId);
+app.get('/api/passive-abilities/valid-cultures', passiveAbilityController.getValidCultures);
+app.get('/api/passive-abilities/valid-triggers', passiveAbilityController.getValidTriggers);
+app.get('/api/passive-abilities/valid-effect-types', passiveAbilityController.getValidEffectTypes);
+app.get('/api/passive-abilities/culture/:culture', passiveAbilityController.getPassiveAbilitiesByCulture);
+app.get('/api/passive-abilities/trigger/:trigger', passiveAbilityController.getPassiveAbilitiesByTrigger);
+app.get('/api/passive-abilities/:id', passiveAbilityController.getPassiveAbility);
+app.get('/api/passive-abilities', passiveAbilityController.getAllPassiveAbilities);
 
-// Battle System Routes
-app.post('/api/battle/start', async (req, res) => {
+app.post('/api/passive-abilities', passiveAbilityController.createPassiveAbility);
+app.post('/api/passive-abilities/batch', passiveAbilityController.createPassiveAbilitiesBatch);
+
+app.put('/api/passive-abilities/:id', passiveAbilityController.updatePassiveAbility);
+app.delete('/api/passive-abilities/:id', passiveAbilityController.deletePassiveAbility);
+
+console.log('✅ PassiveAbilities System inicializado com sucesso');
+console.log('🎭 PassiveAbilities API disponível em /api/passive-abilities');
+
+// ⚔️ **SECURE BATTLE SYSTEM** - Anti-Cheat Backend
+const secureBattleMechanics = new SecureBattleMechanics();
+
+// Cleanup old battles every 5 minutes
+setInterval(() => {
+  secureBattleMechanics.cleanupOldBattles();
+}, 5 * 60 * 1000);
+
+// ⚔️ **SECURE BATTLE ROUTES** - Anti-Cheat System
+
+// Iniciar batalha 3v3 segura
+app.post('/api/secure-battle/start', async (req, res) => {
   try {
-    const { playerId } = req.body;
+    const { playerTeam, enemyTeam, battleType } = req.body;
     
-    if (!playerId) {
-      return res.status(400).json({ error: 'Player ID is required' });
+    if (!playerTeam || !Array.isArray(playerTeam) || playerTeam.length !== 3) {
+      return res.status(400).json({ error: 'Equipe do jogador deve ter exatamente 3 personagens' });
     }
 
-    // Load player character
+    if (!enemyTeam || !Array.isArray(enemyTeam) || enemyTeam.length !== 3) {
+      return res.status(400).json({ error: 'Equipe inimiga deve ter exatamente 3 personagens' });
+    }
+
+    // Validar que todos os personagens existem no banco
     const data = await loadDatabase();
-    const playerCharacter = data.characters[playerId];
     
-    if (!playerCharacter) {
-      return res.status(404).json({ error: 'Player character not found' });
+    for (const char of [...playerTeam, ...enemyTeam]) {
+      if (!data.characters[char.id]) {
+        return res.status(404).json({ error: `Personagem ${char.id} não encontrado` });
+      }
     }
 
-    // Select boss enemy
-    const characters = Object.values(data.characters);
-    const bossCharacters = characters.filter(char => 
-      char.id !== playerId && char.level >= playerCharacter.level
-    );
+    const result = await secureBattleMechanics.createSecureBattle(playerTeam, enemyTeam, battleType || '3v3');
     
-    let enemyCharacter;
-    if (bossCharacters.length > 0) {
-      enemyCharacter = bossCharacters[Math.floor(Math.random() * bossCharacters.length)];
-    } else {
-      const otherCharacters = characters.filter(char => char.id !== playerId);
-      enemyCharacter = otherCharacters[Math.floor(Math.random() * otherCharacters.length)];
-    }
-
-    // Create boss enhancement
-    const bossEnemy = {
-      ...enemyCharacter,
-      hp: Math.floor(enemyCharacter.hp * 1.2),
-      maxHP: Math.floor(enemyCharacter.hp * 1.2),
-      attack: Math.floor(enemyCharacter.attack * 1.1),
-      defense: Math.floor(enemyCharacter.defense * 1.1)
-    };
-
-    // Create battle instance
-    const battleId = crypto.randomBytes(4).toString('hex');
-    const battle = {
-      id: battleId,
-      player: {
-        ...playerCharacter,
-        currentHP: playerCharacter.hp,
-        currentMP: playerCharacter.mp || 50,
-        defending: false
-      },
-      enemy: {
-        ...bossEnemy,
-        currentHP: bossEnemy.hp,
-        defending: false
-      },
-      turn: 'player',
-      round: 1,
-      status: 'active',
-      log: [],
-      createdAt: new Date().toISOString()
-    };
-
-    battles.set(battleId, battle);
-    
-    console.log(`⚔️ Nova batalha iniciada: ${battle.player.name} vs ${battle.enemy.name}`);
+    console.log(`⚔️ Nova batalha segura iniciada: ${result.battleId}`);
     
     res.json({
       success: true,
-      battle: {
-        id: battleId,
-        player: battle.player,
-        enemy: battle.enemy,
-        turn: battle.turn,
-        round: battle.round
-      }
+      battleId: result.battleId,
+      battle: result.battle
     });
 
   } catch (error) {
-    console.error('❌ Erro ao iniciar batalha:', error);
+    console.error('❌ Erro ao iniciar batalha segura:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Obter estado atual da batalha
+app.get('/api/secure-battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const battle = secureBattleMechanics.getBattle(battleId);
+    
+    if (!battle) {
+      return res.status(404).json({ error: 'Batalha não encontrada' });
+    }
+
+    res.json({
+      success: true,
+      battle: battle
+    });
+
+  } catch (error) {
+    console.error('❌ Erro ao buscar batalha:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Executar ataque seguro
+app.post('/api/secure-battle/:battleId/attack', async (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const { attackerId, targetId, skillData } = req.body;
+
+    if (!attackerId || !targetId) {
+      return res.status(400).json({ error: 'Atacante e alvo são obrigatórios' });
+    }
+
+    const result = await secureBattleMechanics.executeAttack(battleId, attackerId, targetId, skillData);
+    
+    console.log(`⚔️ Ataque executado na batalha ${battleId}: ${result.damage} de dano`);
+    
+    res.json(result);
+
+  } catch (error) {
+    console.error('❌ Erro ao executar ataque:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Executar troca segura
+app.post('/api/secure-battle/:battleId/swap', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    const { fromIndex, toIndex, newActiveIndex } = req.body;
+
+    console.log(`🔄 [DEBUG] Swap request - battleId: ${battleId}, fromIndex: ${fromIndex}, toIndex: ${toIndex}, newActiveIndex: ${newActiveIndex}`);
+
+    // Aceitar tanto o formato antigo (newActiveIndex) quanto o novo (toIndex)
+    const targetIndex = newActiveIndex !== undefined ? newActiveIndex : toIndex;
+
+    if (targetIndex === undefined || targetIndex === null) {
+      return res.status(400).json({ error: 'Índice do personagem de destino é obrigatório (toIndex ou newActiveIndex)' });
+    }
+
+    const result = secureBattleMechanics.executeSwap(battleId, targetIndex);
+    
+    console.log(`⚔️ Troca executada na batalha ${battleId}: ${result.swapsRemaining} trocas restantes`);
+    
+    res.json(result);
+
+  } catch (error) {
+    console.error('❌ Erro ao executar troca:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Encerrar batalha
+app.delete('/api/secure-battle/:battleId', (req, res) => {
+  try {
+    const { battleId } = req.params;
+    
+    if (secureBattleMechanics.activeBattles.has(battleId)) {
+      secureBattleMechanics.activeBattles.delete(battleId);
+      console.log(`⚔️ Batalha encerrada: ${battleId}`);
+      res.json({ success: true, message: 'Batalha encerrada com sucesso' });
+    } else {
+      res.status(404).json({ error: 'Batalha não encontrada' });
+    }
+
+  } catch (error) {
+    console.error('❌ Erro ao encerrar batalha:', error);
     res.status(500).json({ error: error.message });
   }
 });

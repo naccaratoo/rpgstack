@@ -28,10 +28,23 @@ export class Skill {
     'debuff'
   ];
 
-  static VALID_CLASSES = [
+  // Character Classes (for personagem)
+  static VALID_CHARACTER_CLASSES = [
     'Lutador',
     'Armamentista',
-    'Arcano'
+    'Arcano',
+    'Oráculo',
+    'Artífice',
+    'Guardião da Natureza',
+    'Mercador-Diplomata',
+    'Curandeiro Ritualista'
+  ];
+
+  // Skill Categories (for skill classification)
+  static VALID_SKILL_CATEGORIES = [
+    'Damage',
+    'Utility', 
+    'Damage&Utility'
   ];
 
   static MIN_NAME_LENGTH = 3;
@@ -47,6 +60,7 @@ export class Skill {
     description = '',
     type,
     classe = 'Lutador',
+    skill_category = 'Damage',
     level = 1,
     damage = 0,
     sprite = null,
@@ -61,7 +75,7 @@ export class Skill {
   }) {
     // Validate required parameters
     this.validateConstructorInput({
-      id, name, type, classe, level, damage,
+      id, name, type, classe, skill_category, level, damage,
       anima_cost, cooldown, duration
     });
 
@@ -70,6 +84,7 @@ export class Skill {
     this._description = description;
     this._type = type;
     this._classe = classe;
+    this._skill_category = skill_category;
     this._level = level;
     this._damage = damage;
     this._sprite = sprite;
@@ -89,10 +104,11 @@ export class Skill {
     Object.freeze(this);
   }
 
-  validateConstructorInput({ id, name, type, classe, level, damage, anima_cost, cooldown, duration }) {
+  validateConstructorInput({ id, name, type, classe, skill_category, level, damage, anima_cost, cooldown, duration }) {
     if (!id) throw new Error('Skill ID is required');
     if (!name) throw new Error('Skill name is required');
     if (!type) throw new Error('Skill type is required');
+    if (!skill_category) throw new Error('Skill category is required');
     if (level === undefined || level === null) throw new Error('Skill level is required');
     if (damage === undefined || damage === null) throw new Error('Damage is required');
     if (anima_cost === undefined || anima_cost === null) throw new Error('Custo de Ânima is required');
@@ -104,6 +120,7 @@ export class Skill {
     this.validateName();
     this.validateType();
     this.validateClasse();
+    this.validateSkillCategory();
     this.validateLevel();
     this.validateDamage();
     this.validateManaCost();
@@ -128,8 +145,14 @@ export class Skill {
   }
 
   validateClasse() {
-    if (!Skill.VALID_CLASSES.includes(this._classe)) {
-      throw new Error(`Invalid skill class: ${this._classe}. Must be one of: ${Skill.VALID_CLASSES.join(', ')}`);
+    if (!Skill.VALID_CHARACTER_CLASSES.includes(this._classe)) {
+      throw new Error(`Invalid character class: ${this._classe}. Must be one of: ${Skill.VALID_CHARACTER_CLASSES.join(', ')}`);
+    }
+  }
+
+  validateSkillCategory() {
+    if (!Skill.VALID_SKILL_CATEGORIES.includes(this._skill_category)) {
+      throw new Error(`Invalid skill category: ${this._skill_category}. Must be one of: ${Skill.VALID_SKILL_CATEGORIES.join(', ')}`);
     }
   }
 
@@ -169,6 +192,7 @@ export class Skill {
   get description() { return this._description; }
   get type() { return this._type; }
   get classe() { return this._classe; }
+  get skill_category() { return this._skill_category; }
   get level() { return this._level; }
   get damage() { return this._damage; }
   get sprite() { return this._sprite; }
@@ -194,6 +218,23 @@ export class Skill {
     return this._type === 'utility';
   }
 
+  // Skill Category methods
+  isDamageSkill() {
+    return this._skill_category === 'Damage';
+  }
+
+  isUtilityCategory() {
+    return this._skill_category === 'Utility';
+  }
+
+  isDamageAndUtility() {
+    return this._skill_category === 'Damage&Utility';
+  }
+
+  getSkillCategory() {
+    return this._skill_category;
+  }
+
   hasPrerequisites() {
     return this._prerequisites.length > 0;
   }
@@ -212,6 +253,7 @@ export class Skill {
     description,
     type,
     classe = 'Lutador',
+    skill_category = 'Damage',
     level = 1,
     damage = 0,
     sprite = null,
@@ -228,6 +270,7 @@ export class Skill {
       description,
       type,
       classe,
+      skill_category,
       level,
       damage,
       sprite,
@@ -293,6 +336,7 @@ export class Skill {
       description: this._description,
       type: this._type,
       classe: this._classe,
+      skill_category: this._skill_category,
       level: this._level,
       damage: this._damage,
       sprite: this._sprite,
