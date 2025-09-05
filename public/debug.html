@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug API Test</title>
+</head>
+<body>
+    <h1>Debug API Test</h1>
+    <div id="output"></div>
+    
+    <script>
+        console.log('🚀 Iniciando teste da API...');
+        
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/characters?t=' + Date.now());
+                console.log('📡 Response status:', response.status, response.statusText);
+                console.log('📡 Response URL:', response.url);
+                
+                if (response.ok) {
+                    console.log('✅ Response OK, parsing JSON...');
+                    const data = await response.json();
+                    console.log('📊 Raw data structure:', Object.keys(data));
+                    console.log('📊 Total characters:', Object.keys(data.characters).length);
+                    
+                    // Filtrar personagens válidos
+                    const validClasses = ['Lutador', 'Armamentista', 'Arcano'];
+                    const rawCharacters = Object.values(data.characters);
+                    const filteredCharacters = rawCharacters.filter(char => 
+                        validClasses.includes(char.classe)
+                    );
+                    
+                    console.log('🔍 Characters after filter:', filteredCharacters.length);
+                    console.log('📋 Valid characters:', filteredCharacters.map(c => `${c.name} (${c.classe})`));
+                    
+                    document.getElementById('output').innerHTML = `
+                        <h2>✅ API Test Success!</h2>
+                        <p>Total characters: ${Object.keys(data.characters).length}</p>
+                        <p>Valid characters: ${filteredCharacters.length}</p>
+                        <h3>Characters found:</h3>
+                        <ul>
+                            ${filteredCharacters.map(c => `<li>${c.name} (${c.classe})</li>`).join('')}
+                        </ul>
+                    `;
+                    
+                } else {
+                    throw new Error(`API failed - Status: ${response.status} ${response.statusText}`);
+                }
+                
+            } catch (error) {
+                console.error('❌ API Test Error:', error);
+                document.getElementById('output').innerHTML = `
+                    <h2>❌ API Test Failed!</h2>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Run test on load
+        testAPI();
+    </script>
+</body>
+</html>

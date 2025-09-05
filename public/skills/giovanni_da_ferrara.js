@@ -60,17 +60,17 @@ class GiovannaDaFerraraSkills {
         const skillData = {
             name: "⚙️ Balista da Precisão Florentina",
             description: "Dispara projétil de precisão usando engenharia avançada",
-            manaCost: 25,
+            animaCost: 25,
             baseDamage: 100,
             type: "mechanical_weapon",
             element: "engineering"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia de criação insuficiente');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Inicializar sistema renascentista
         if (!caster.renaissanceState) {
@@ -143,7 +143,7 @@ class GiovannaDaFerraraSkills {
 
         return {
             damage: totalDamage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'ballista_shot',
                 mechanicalGears: true,
@@ -165,16 +165,16 @@ class GiovannaDaFerraraSkills {
         const skillData = {
             name: "🛠️ Oficina Portátil Renascentista",
             description: "Monta uma oficina temporária para criar dispositivos em batalha",
-            manaCost: 50,
+            animaCost: 50,
             type: "setup_ability",
             element: "creative_engineering"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Inspiração insuficiente para montar oficina');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Sistema renascentista
         caster.renaissanceState = caster.renaissanceState || { 
@@ -270,7 +270,7 @@ class GiovannaDaFerraraSkills {
         return {
             damage: 0,
             healing: inspirationHeal,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'workshop_assembly',
                 gearSteam: true,
@@ -292,17 +292,17 @@ class GiovannaDaFerraraSkills {
         const skillData = {
             name: "🎨 Máquina Voadora de Leonardo",
             description: "Voa temporariamente usando protótipo baseado nos estudos de da Vinci",
-            manaCost: 60,
+            animaCost: 60,
             baseDamage: 90,
             type: "aerial_invention",
             element: "renaissance_flight"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Inspiração insuficiente para voar');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Sistema renascentista
         caster.renaissanceState = caster.renaissanceState || { 
@@ -378,7 +378,7 @@ class GiovannaDaFerraraSkills {
 
         return {
             damage: damage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'leonardo_flight',
                 wingSpread: true,
@@ -463,7 +463,7 @@ class GiovannaDaFerraraSkills {
                 {
                     id: 'balista_da_precisao_florentina',
                     name: '⚙️ Balista da Precisão Florentina',
-                    manaCost: 25,
+                    animaCost: 25,
                     damage: 100,
                     type: 'mechanical_weapon',
                     cooldown: 1,
@@ -472,7 +472,7 @@ class GiovannaDaFerraraSkills {
                 {
                     id: 'oficina_portatil_renascentista',
                     name: '🛠️ Oficina Portátil Renascentista',
-                    manaCost: 50,
+                    animaCost: 50,
                     damage: 0,
                     type: 'setup_ability',
                     cooldown: 3,
@@ -481,7 +481,7 @@ class GiovannaDaFerraraSkills {
                 {
                     id: 'maquina_voadora_de_leonardo',
                     name: '🎨 Máquina Voadora de Leonardo',
-                    manaCost: 60,
+                    animaCost: 60,
                     damage: 90,
                     type: 'aerial_invention',
                     cooldown: 2,

@@ -1,6 +1,6 @@
-# 🎭 RPGStack v4.4 - Habilidades Ancestrais: Sistema de Passivas Culturais
+# 🎭 RPGStack v4.5 - Sistema de Turnos Refatorado: Arquitetura Modular
 
-**Framework completo para jogos RPG com 15 personagens culturais, skills ativas e suas habilidades ancestrais passivas únicas**
+**Framework completo para jogos RPG com sistema de batalha 3v3, arquitetura modular e sistema de turnos com timer funcional**
 
 ---
 
@@ -8,13 +8,17 @@
 
 O RPGStack é um sistema de RPG web moderno que combina mecânicas clássicas de batalha por turnos com uma identidade visual sofisticada inspirada no Art Nouveau. O projeto apresenta o sistema **Éclat Mystique Universal**, uma implementação elegante que unifica TODAS as interfaces sob uma mesma filosofia visual Art Nouveau, transformando a experiência de jogo em uma jornada aristocrática mística coerente.
 
-### ✨ **Principais Características**
+### ✨ **Principais Características v4.5**
+- 🏗️ **Arquitetura Modular Refatorada** - Separação correta entre lógica (BattleMechanics) e UI (Battle)
+- ⏰ **Sistema de Turnos com Timer** - Timer de 20 segundos funcional com callbacks para UI
+- 🔄 **Sistema de Trocas Inteligente** - Limitado a 1 troca por turno, não consome ação principal
+- 🎯 **Validação de Ações Completa** - Verificações antes de executar qualquer ação
+- 🧪 **Suite de Testes Integrados** - Arquivos dedicados para validação do sistema
+- 🎮 **Sistema de Batalha 3v3** com interface Art Nouveau elegante
 - 📜 **Habilidades Ancestrais (Passivas)** - Sistema completo de passivas culturais únicas
-- 🎨 **Frontend Redesign Completo** - Todas as páginas unificadas com Éclat Mystique
 - ⚔️ **15 Skills Culturais Ativas** - Cada personagem com habilidade ancestral autêntica
 - 🎭 **Sistema Cultural CHRONOS** - 15 personagens de 15 culturas diferentes
 - 🌟 **Defesa Especial (Espírito)** - Mecânica de resistência mágica balanceada
-- 🎮 **Sistema de Batalha 4v4** com mecânicas Pokémon-style
 - 🎨 **Design Art Nouveau Unificado** - Todas as páginas com ornamentações ⟨ ❦ ⟩ e ◊
 - ⚡ **Performance Otimizada** - 35KB single-file, zero dependências
 - 📱 **Totalmente Responsivo** - Desktop, tablet e mobile
@@ -24,6 +28,16 @@ O RPGStack é um sistema de RPG web moderno que combina mecânicas clássicas de
 ---
 
 ## 🎯 **Funcionalidades Principais**
+
+### **🏗️ Sistema de Turnos Refatorado (v4.5)**
+- **Arquitetura Modular**: Separação clara entre `battlemechanics.js` (lógica) e `battle.js` (UI)
+- **Timer Funcional**: Sistema de 20 segundos por turno com avisos visuais aos 5 segundos
+- **Sistema de Callbacks**: Comunicação elegante entre camada lógica e interface
+- **Validação Robusta**: Verificações completas antes de executar qualquer ação
+- **Sistema de Trocas**: Limitado a 1 troca por turno, não consome ação principal
+- **Timeout Automático**: Executa ataque básico quando tempo esgota
+- **Testes Integrados**: Suite completa de testes para validação do sistema
+- **Compatibilidade Total**: Mantém compatibilidade com sistema 3v3 existente
 
 ### **📜 Sistema de Habilidades Ancestrais (Passivas)**
 - **7 Passivas Culturais Implementadas** - Habilidades que definem a essência cultural

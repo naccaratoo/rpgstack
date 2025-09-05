@@ -55,17 +55,17 @@ class ItzelNahualliSkills {
         const skillData = {
             name: "🐆 Metamorfose do Ocelotl",
             description: "Transforma-se na forma sagrada do jaguar das sombras",
-            manaCost: 35,
+            animaCost: 35,
             baseDamage: 80,
             type: "transformation",
             element: "shadow_spirit"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia espiritual insuficiente para a metamorfose');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Inicializar sistema de transformação
         if (!caster.nahualliState) {
@@ -121,7 +121,7 @@ class ItzelNahualliSkills {
 
         return {
             damage: damage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'jaguar_transformation',
                 shadowMist: true,
@@ -141,17 +141,17 @@ class ItzelNahualliSkills {
         const skillData = {
             name: "🦅 Voo da Águia Dourada",
             description: "Transforma-se em águia e ataca do céu com precisão divina",
-            manaCost: 40,
+            animaCost: 40,
             baseDamage: 75,
             type: "aerial_transformation",
             element: "wind_spirit"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia espiritual insuficiente para voar');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Sistema nahualli
         caster.nahualliState = caster.nahualliState || { 
@@ -211,7 +211,7 @@ class ItzelNahualliSkills {
 
         return {
             damage: damage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'eagle_dive',
                 windTrails: true,
@@ -232,17 +232,17 @@ class ItzelNahualliSkills {
         const skillData = {
             name: "🐍 Serpente Emplumada",
             description: "Canaliza o poder de Quetzalcoatl através de transformação serpentina",
-            manaCost: 45,
+            animaCost: 45,
             baseDamage: 60,
             type: "divine_transformation",
             element: "feathered_serpent"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia divina insuficiente');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Sistema nahualli
         caster.nahualliState = caster.nahualliState || { 
@@ -264,7 +264,7 @@ class ItzelNahualliSkills {
             name: 'Sabedoria do Coatl',
             duration: 5,
             wisdomBonus: 35,
-            manaRegeneration: 15,
+            animaRegeneration: 15,
             divineProtection: 0.3,
             description: 'Sabedoria da serpente emplumada - +35 sabedoria, regenera 15 MP/turno, 30% resistência mágica'
         });
@@ -309,7 +309,7 @@ class ItzelNahualliSkills {
         return {
             damage: damage,
             healing: healingDone,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'serpent_coil',
                 featheredGlow: true,
@@ -398,7 +398,7 @@ class ItzelNahualliSkills {
                 {
                     id: 'metamorfose_do_ocelotl',
                     name: '🐆 Metamorfose do Ocelotl',
-                    manaCost: 35,
+                    animaCost: 35,
                     damage: 80,
                     type: 'transformation',
                     cooldown: 1,
@@ -407,7 +407,7 @@ class ItzelNahualliSkills {
                 {
                     id: 'voo_da_aguia_dourada',
                     name: '🦅 Voo da Águia Dourada',
-                    manaCost: 40,
+                    animaCost: 40,
                     damage: 75,
                     type: 'aerial_transformation',
                     cooldown: 2,
@@ -416,7 +416,7 @@ class ItzelNahualliSkills {
                 {
                     id: 'serpente_eplumada',
                     name: '🐍 Serpente Emplumada',
-                    manaCost: 45,
+                    animaCost: 45,
                     damage: 60,
                     type: 'divine_transformation',
                     cooldown: 2,

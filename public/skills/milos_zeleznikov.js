@@ -20,7 +20,7 @@ class MilosZeleznikovSkills {
         const skillData = {
             name: "🔨 Forja do Dragão Eslavo",
             description: "Invoca técnicas ancestrais para forjar arma de escamas de dragão",
-            manaCost: 0,
+            animaCost: 0,
             baseDamage: 95,
             type: "weapon_craft",
             element: "fire_metal",
@@ -86,19 +86,19 @@ class MilosZeleznikovSkills {
         const skillData = {
             name: "⚒️ Martelo dos Ancestrais",
             description: "Invoca espíritos de ferreiros eslavos para guiar o ataque",
-            manaCost: 30,
+            animaCost: 30,
             baseDamage: 70,
             type: "ancestral_summon",
             element: "spirit_metal"
         };
 
         // Verificar se tem mana suficiente
-        if (caster.currentMP < skillData.manaCost) {
-            throw new Error('Mana insuficiente para invocar os ancestrais');
+        if (caster.currentAnima < skillData.animaCost) {
+            throw new Error('Ânima insuficiente para invocar os ancestrais');
         }
 
         // Consumir mana
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         let damage = skillData.baseDamage;
 
@@ -129,7 +129,7 @@ class MilosZeleznikovSkills {
         return {
             damage: damage,
             isCritical: isCritical,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'ancestral_hammer',
                 ghostSpirits: true,
@@ -148,16 +148,16 @@ class MilosZeleznikovSkills {
         const skillData = {
             name: "🛡️ Koljčuga Drakonova", 
             description: "Forja armadura temporária de escamas de dragão",
-            manaCost: 45,
+            animaCost: 45,
             type: "defensive_craft",
             element: "dragon_metal"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
-            throw new Error('Mana insuficiente para forjar Koljčuga');
+        if (caster.currentAnima < skillData.animaCost) {
+            throw new Error('Ânima insuficiente para forjar Koljčuga');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Aplicar buff de armadura draconiana
         caster.statusEffects = caster.statusEffects || [];
@@ -177,7 +177,7 @@ class MilosZeleznikovSkills {
         return {
             damage: 0,
             healing: healAmount,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'armor_forge',
                 dragonGlow: true,
@@ -269,7 +269,7 @@ class MilosZeleznikovSkills {
                 {
                     id: 'forja_do_dragao_eslavo',
                     name: '🔨 Forja do Dragão Eslavo',
-                    manaCost: 0,
+                    animaCost: 0,
                     damage: 95,
                     type: 'weapon_craft',
                     cooldown: 0,
@@ -278,7 +278,7 @@ class MilosZeleznikovSkills {
                 {
                     id: 'martelo_dos_ancestrais',
                     name: '⚒️ Martelo dos Ancestrais',
-                    manaCost: 30,
+                    animaCost: 30,
                     damage: 70,
                     type: 'ancestral_summon',
                     cooldown: 1,
@@ -287,7 +287,7 @@ class MilosZeleznikovSkills {
                 {
                     id: 'koljcuga_drakonova',
                     name: '🛡️ Koljčuga Drakonova',
-                    manaCost: 45,
+                    animaCost: 45,
                     damage: 0,
                     type: 'defensive_craft',
                     cooldown: 2,

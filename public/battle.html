@@ -30,49 +30,138 @@
             </div>
         </header>
         
-        <!-- Main Battle Area -->
-        <main class="duel-arena">
+        <!-- Main Battle Area - 3v3 System -->
+        <main class="duel-arena-3v3">
             
-            <!-- Enemy Card -->
-            <div class="combatant-card enemy-card">
-                <div class="card-frame">
-                    <div class="frame-corners">
-                        <span class="corner tl">◊</span>
-                        <span class="corner tr">◊</span>
-                        <span class="corner bl">◊</span>
-                        <span class="corner br">◊</span>
-                    </div>
-                    
-                    <div class="card-content">
-                        <div class="nameplate">
-                            <h3 id="enemyName">Adversário Sombrio</h3>
-                            <div class="level-badge">Nv. <span id="enemyLevel">??</span></div>
-                        </div>
-                        
-                        <div class="portrait-area">
-                            <div class="portrait-frame">
-                                <img id="enemyImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjNzIyRjM3IiByeD0iOCIvPgo8dGV4dCB4PSI1MCIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGREY1RTYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJzZXJpZiI+RU5FTVk8L3RleHQ+Cjwvc3ZnPgo=" alt="Enemy">
-                            </div>
-                        </div>
-                        
-                        <div class="status-bars">
-                            <div class="health-bar">
-                                <div class="bar-label">❤ Vida</div>
-                                <div class="bar-track">
-                                    <div class="bar-fill" id="enemyHealthBar"></div>
-                                </div>
-                                <div class="bar-text">
-                                    <span id="enemyHP">100</span>/<span id="enemyMaxHP">100</span>
-                                </div>
+            <!-- Enemy Team -->
+            <div class="team-section enemy-team">
+                <div class="team-header">
+                    <h3 class="team-title">⚔ Equipe Adversária</h3>
+                    <div class="team-ornament">◊ ❦ ◊</div>
+                </div>
+                
+                <div class="team-roster">
+                    <!-- Enemy Character 1 (Active) -->
+                    <div class="character-slot active" id="enemy-slot-0">
+                        <div class="slot-frame">
+                            <div class="frame-corners">
+                                <span class="corner tl">◊</span>
+                                <span class="corner tr">◊</span>
+                                <span class="corner bl">◊</span>
+                                <span class="corner br">◊</span>
                             </div>
                             
-                            <div class="mana-bar">
-                                <div class="bar-label">✦ Ânima</div>
-                                <div class="bar-track">
-                                    <div class="bar-fill" id="enemyManaBar"></div>
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img id="enemyImage0" src="" alt="Enemy 1">
+                                    <div class="active-indicator">🟢</div>
                                 </div>
-                                <div class="bar-text">
-                                    <span id="enemyMP">50</span>/<span id="enemyMaxMP">50</span>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="enemyName0">Inimigo 1</div>
+                                    <div class="char-level">Nv. <span id="enemyLevel0">??</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="enemyHPBar0"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="enemyMPBar0"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="enemyHP0">100</span>/<span id="enemyMaxHP0">100</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="enemyMP0">50</span>/<span id="enemyMaxMP0">50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enemy Character 2 (Reserve) -->
+                    <div class="character-slot reserve" id="enemy-slot-1">
+                        <div class="slot-frame">
+                            <div class="frame-corners">
+                                <span class="corner tl">◊</span>
+                                <span class="corner tr">◊</span>
+                                <span class="corner bl">◊</span>
+                                <span class="corner br">◊</span>
+                            </div>
+                            
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img id="enemyImage1" src="" alt="Enemy 2">
+                                    <div class="reserve-indicator">🔵</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="enemyName1">Inimigo 2</div>
+                                    <div class="char-level">Nv. <span id="enemyLevel1">??</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="enemyHPBar1"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="enemyMPBar1"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="enemyHP1">100</span>/<span id="enemyMaxHP1">100</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="enemyMP1">50</span>/<span id="enemyMaxMP1">50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enemy Character 3 (Reserve) -->
+                    <div class="character-slot reserve" id="enemy-slot-2">
+                        <div class="slot-frame">
+                            <div class="frame-corners">
+                                <span class="corner tl">◊</span>
+                                <span class="corner tr">◊</span>
+                                <span class="corner bl">◊</span>
+                                <span class="corner br">◊</span>
+                            </div>
+                            
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img id="enemyImage2" src="" alt="Enemy 3">
+                                    <div class="reserve-indicator">🔵</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="enemyName2">Inimigo 3</div>
+                                    <div class="char-level">Nv. <span id="enemyLevel2">??</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="enemyHPBar2"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="enemyMPBar2"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="enemyHP2">100</span>/<span id="enemyMaxHP2">100</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="enemyMP2">50</span>/<span id="enemyMaxMP2">50</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -80,53 +169,240 @@
                 </div>
             </div>
             
-            <!-- VS Ornament -->
-            <div class="versus-ornament">
-                <div class="vs-circle">
-                    <span class="vs-text">VS</span>
-                </div>
-            </div>
-            
-            <!-- Player Card -->
-            <div class="combatant-card player-card">
-                <div class="card-frame">
-                    <div class="frame-corners">
-                        <span class="corner tl">◊</span>
-                        <span class="corner tr">◊</span>
-                        <span class="corner bl">◊</span>
-                        <span class="corner br">◊</span>
-                    </div>
-                    
-                    <div class="card-content">
-                        <div class="nameplate">
-                            <h3 id="playerName">Seu Herói</h3>
-                            <div class="level-badge">Nv. <span id="playerLevel">1</span></div>
+            <!-- Battle Field - Arena Central -->
+            <div class="battle-field">
+                
+                <!-- Enemy Active Character in Battle Field -->
+                <div class="active-battle-slot enemy-active" id="enemy-battle-slot">
+                    <div class="slot-frame">
+                        <div class="frame-corners">
+                            <span class="corner tl">◊</span>
+                            <span class="corner tr">◊</span>
+                            <span class="corner bl">◊</span>
+                            <span class="corner br">◊</span>
                         </div>
                         
-                        <div class="portrait-area">
-                            <div class="portrait-frame">
-                                <img id="playerImage" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRDRBRjM3IiByeD0iOCIvPgo8dGV4dCB4PSI1MCIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMzNjQ1NEYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtZmFtaWx5PSJzZXJpZiI+SEVST0U8L3RleHQ+Cjwvc3ZnPgo=" alt="Player">
+                        <div class="slot-content">
+                            <div class="character-portrait">
+                                <img id="enemyActiveBattleImage" src="" alt="Enemy Active">
                             </div>
-                        </div>
-                        
-                        <div class="status-bars">
-                            <div class="health-bar">
-                                <div class="bar-label">❤ Vida</div>
-                                <div class="bar-track">
-                                    <div class="bar-fill" id="playerHealthBar"></div>
+                            
+                            <div class="character-info">
+                                <div class="char-name" id="enemyActiveBattleName">Inimigo Ativo</div>
+                                <div class="char-level">Nv. <span id="enemyActiveBattleLevel">??</span></div>
+                            </div>
+                            
+                            <div class="mini-bars">
+                                <div class="mini-hp-bar">
+                                    <div class="mini-bar-fill" id="enemyActiveBattleHPBar"></div>
                                 </div>
-                                <div class="bar-text">
-                                    <span id="playerHP">100</span>/<span id="playerMaxHP">100</span>
+                                <div class="mini-mp-bar">
+                                    <div class="mini-bar-fill" id="enemyActiveBattleMPBar"></div>
                                 </div>
                             </div>
                             
-                            <div class="mana-bar">
-                                <div class="bar-label">✦ Ânima</div>
-                                <div class="bar-track">
-                                    <div class="bar-fill" id="playerManaBar"></div>
+                            <div class="mini-stats">
+                                <div class="mini-hp">
+                                    <span id="enemyActiveBattleHP">100</span>/<span id="enemyActiveBattleMaxHP">100</span>
                                 </div>
-                                <div class="bar-text">
-                                    <span id="playerMP">50</span>/<span id="playerMaxMP">50</span>
+                                <div class="mini-mp">
+                                    <span id="enemyActiveBattleMP">50</span>/<span id="enemyActiveBattleMaxMP">50</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enemy Battle Indicator -->
+                <div class="battle-indicator enemy-indicator">⚔️</div>
+                
+                <!-- VS Ornament Central -->
+                <div class="versus-ornament-3v3">
+                    <div class="vs-circle">
+                        <span class="vs-text">VS</span>
+                    </div>
+                    <div class="battle-count">
+                        <div class="count-label">3v3</div>
+                    </div>
+                </div>
+                
+                <!-- Player Battle Indicator -->
+                <div class="battle-indicator player-indicator">⚔️</div>
+                
+                <!-- Player Active Character in Battle Field -->
+                <div class="active-battle-slot player-active" id="player-battle-slot">
+                    <div class="slot-frame">
+                        <div class="frame-corners">
+                            <span class="corner tl">◊</span>
+                            <span class="corner tr">◊</span>
+                            <span class="corner bl">◊</span>
+                            <span class="corner br">◊</span>
+                        </div>
+                        
+                        <div class="slot-content">
+                            <div class="character-portrait">
+                                <img id="playerActiveBattleImage" src="" alt="Player Active">
+                            </div>
+                            
+                            <div class="character-info">
+                                <div class="char-name" id="playerActiveBattleName">Herói Ativo</div>
+                                <div class="char-level">Nv. <span id="playerActiveBattleLevel">1</span></div>
+                            </div>
+                            
+                            <div class="mini-bars">
+                                <div class="mini-hp-bar">
+                                    <div class="mini-bar-fill" id="playerActiveBattleHPBar"></div>
+                                </div>
+                                <div class="mini-mp-bar">
+                                    <div class="mini-bar-fill" id="playerActiveBattleMPBar"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mini-stats">
+                                <div class="mini-hp">
+                                    <span id="playerActiveBattleHP">100</span>/<span id="playerActiveBattleMaxHP">100</span>
+                                </div>
+                                <div class="mini-mp">
+                                    <span id="playerActiveBattleMP">50</span>/<span id="playerActiveBattleMaxMP">50</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Player Team -->
+            <div class="team-section player-team">
+                <div class="team-header">
+                    <h3 class="team-title">🛡 Sua Equipe</h3>
+                    <div class="team-ornament">◊ ❦ ◊</div>
+                </div>
+                
+                <div class="team-roster">
+                    <!-- Player Character 1 (Active) -->
+                    <div class="character-slot active" id="player-slot-0">
+                        <div class="slot-frame">
+                            <div class="frame-corners">
+                                <span class="corner tl">◊</span>
+                                <span class="corner tr">◊</span>
+                                <span class="corner bl">◊</span>
+                                <span class="corner br">◊</span>
+                            </div>
+                            
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img id="playerImage0" src="" alt="Player 1">
+                                    <div class="active-indicator">🟢</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="playerName0">Herói 1</div>
+                                    <div class="char-level">Nv. <span id="playerLevel0">1</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="playerHPBar0"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="playerMPBar0"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="playerHP0">100</span>/<span id="playerMaxHP0">100</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="playerMP0">50</span>/<span id="playerMaxMP0">50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Player Character 2 (Reserve) -->
+                    <div class="character-slot reserve selectable" id="player-slot-1" onclick="showSwapOptions(1)">
+                        <div class="slot-frame">
+                            <div class="frame-corners">
+                                <span class="corner tl">◊</span>
+                                <span class="corner tr">◊</span>
+                                <span class="corner bl">◊</span>
+                                <span class="corner br">◊</span>
+                            </div>
+                            
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img id="playerImage1" src="" alt="Player 2">
+                                    <div class="reserve-indicator">🔵</div>
+                                    <div class="swap-hint">👆</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="playerName1">Herói 2</div>
+                                    <div class="char-level">Nv. <span id="playerLevel1">1</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="playerHPBar1"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="playerMPBar1"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="playerHP1">100</span>/<span id="playerMaxHP1">100</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="playerMP1">50</span>/<span id="playerMaxMP1">50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Player Character 3 (Reserve) -->
+                    <div class="character-slot reserve selectable" id="player-slot-2" onclick="showSwapOptions(2)">
+                        <div class="slot-frame">
+                            <div class="frame-corners">
+                                <span class="corner tl">◊</span>
+                                <span class="corner tr">◊</span>
+                                <span class="corner bl">◊</span>
+                                <span class="corner br">◊</span>
+                            </div>
+                            
+                            <div class="slot-content">
+                                <div class="character-portrait">
+                                    <img id="playerImage2" src="" alt="Player 3">
+                                    <div class="reserve-indicator">🔵</div>
+                                    <div class="swap-hint">👆</div>
+                                </div>
+                                
+                                <div class="character-info">
+                                    <div class="char-name" id="playerName2">Herói 3</div>
+                                    <div class="char-level">Nv. <span id="playerLevel2">1</span></div>
+                                </div>
+                                
+                                <div class="mini-bars">
+                                    <div class="mini-hp-bar">
+                                        <div class="mini-bar-fill" id="playerHPBar2"></div>
+                                    </div>
+                                    <div class="mini-mp-bar">
+                                        <div class="mini-bar-fill" id="playerMPBar2"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-stats">
+                                    <div class="mini-hp">
+                                        <span id="playerHP2">100</span>/<span id="playerMaxHP2">100</span>
+                                    </div>
+                                    <div class="mini-mp">
+                                        <span id="playerMP2">50</span>/<span id="playerMaxMP2">50</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -192,24 +468,96 @@
         <!-- Damage Numbers -->
         <div class="damage-overlay" id="damageOverlay"></div>
         
-        <!-- Character Select Modal -->
+        <!-- Character Select Modal - 3v3 Team Selection -->
         <div class="modal-overlay" id="characterModal">
-            <div class="modal-content">
+            <div class="modal-content team-selection">
                 <div class="modal-header">
-                    <h2>Escolha seu Campeão</h2>
+                    <h2>Monte sua Equipe 3v3</h2>
                     <div class="header-divider">❦ ◊ ❦</div>
+                    <p class="selection-instruction">Selecione 3 personagens para formar sua equipe ancestral</p>
                 </div>
                 
-                <div class="character-grid" id="characterGrid">
-                    <!-- Characters will be populated here -->
+                <!-- Team Building Area -->
+                <div class="team-builder">
+                    <div class="selected-team">
+                        <h3>🛡 Sua Equipe</h3>
+                        <div class="team-slots">
+                            <div class="team-slot empty" id="teamSlot0">
+                                <div class="slot-number">1</div>
+                                <div class="slot-label">Líder</div>
+                                <div class="empty-indicator">+</div>
+                            </div>
+                            <div class="team-slot empty" id="teamSlot1">
+                                <div class="slot-number">2</div>
+                                <div class="slot-label">Reserva</div>
+                                <div class="empty-indicator">+</div>
+                            </div>
+                            <div class="team-slot empty" id="teamSlot2">
+                                <div class="slot-number">3</div>
+                                <div class="slot-label">Reserva</div>
+                                <div class="empty-indicator">+</div>
+                            </div>
+                        </div>
+                        <div class="team-counter">
+                            <span id="selectedCount">0</span>/3 personagens selecionados
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Character Selection Grid -->
+                <div class="character-selection-area">
+                    <h3>📚 Personagens Disponíveis</h3>
+                    <div class="character-grid" id="characterGrid">
+                        <!-- Characters will be populated here -->
+                    </div>
                 </div>
                 
                 <div class="modal-actions">
                     <button class="modal-btn primary" id="startBattle" disabled>
-                        Começar Duelo
+                        ⚔ Iniciar Duelo Ancestral 3v3
                     </button>
-                    <button class="modal-btn secondary" id="backToMenu">
-                        Voltar
+                    <button class="modal-btn secondary" id="clearTeam">
+                        🔄 Limpar Seleção
+                    </button>
+                    <button class="modal-btn tertiary" id="backToMenu">
+                        ↩ Voltar ao Menu
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Swap Character Modal -->
+        <div class="modal-overlay" id="swapModal" style="display: none;">
+            <div class="modal-content swap-selection">
+                <div class="modal-header">
+                    <h2>🔄 Trocar Personagem</h2>
+                    <div class="header-divider">❦ ◊ ❦</div>
+                    <p class="swap-instruction">Clique no personagem para trazê-lo ao campo de batalha</p>
+                </div>
+                
+                <div class="swap-options">
+                    <div class="current-active">
+                        <h4>🟢 Atualmente Ativo</h4>
+                        <div class="active-character-display" id="currentActiveDisplay">
+                            <!-- Current active character info -->
+                        </div>
+                    </div>
+                    
+                    <div class="swap-arrows">
+                        <div class="swap-icon">🔄</div>
+                    </div>
+                    
+                    <div class="reserve-options">
+                        <h4>🔵 Personagens na Reserva</h4>
+                        <div class="reserve-characters" id="reserveCharactersDisplay">
+                            <!-- Reserve characters -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" id="cancelSwap">
+                        ❌ Cancelar
                     </button>
                 </div>
             </div>
@@ -261,6 +609,7 @@
     </div>
     
     <!-- Scripts -->
-    <script src="battle.js"></script>
+    <script src="battlemechanics.js"></script>
+    <script src="battle.js?v=20250904f"></script>
 </body>
 </html>

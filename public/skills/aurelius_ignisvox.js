@@ -27,7 +27,7 @@ class AureliusIgnisvoxSkills {
         const skillData = {
             name: "🔥 Comando das Legiões Flamejantes",
             description: "Invoca legiões espectrais romanas imbuídas com fogo militar",
-            manaCost: 0,
+            animaCost: 0,
             baseDamage: 85,
             type: "command_magic",
             element: "military_fire"
@@ -110,16 +110,16 @@ class AureliusIgnisvoxSkills {
         const skillData = {
             name: "🛡️ Formação Testudo Flamejante",
             description: "Adota formação defensiva romana com escudos em chamas",
-            manaCost: 40,
+            animaCost: 40,
             type: "defensive_formation",
             element: "military_fire"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Stamina insuficiente para formar Testudo');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Aplicar formação Testudo
         caster.legionCommand = caster.legionCommand || { activeFormation: null, commandRank: 1, veteranBonus: 0 };
@@ -157,7 +157,7 @@ class AureliusIgnisvoxSkills {
         return {
             damage: 0,
             healing: moralHeal,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'testudo_formation',
                 shieldWall: true,
@@ -177,17 +177,17 @@ class AureliusIgnisvoxSkills {
         const skillData = {
             name: "⚔️ Gladius Incendium",
             description: "Ataque preciso com gladius envolvido em chamas sagradas",
-            manaCost: 30,
+            animaCost: 30,
             baseDamage: 90,
             type: "weapon_mastery",
             element: "sacred_fire"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Stamina insuficiente para acender Gladius');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         let damage = skillData.baseDamage;
 
@@ -232,7 +232,7 @@ class AureliusIgnisvoxSkills {
         return {
             damage: damage,
             isCritical: isCritical,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'gladius_thrust',
                 flameTrail: true,
@@ -324,7 +324,7 @@ class AureliusIgnisvoxSkills {
                 {
                     id: 'comando_das_legioes_flamejantes',
                     name: '🔥 Comando das Legiões Flamejantes',
-                    manaCost: 0,
+                    animaCost: 0,
                     damage: 85,
                     type: 'command_magic',
                     cooldown: 0,
@@ -333,7 +333,7 @@ class AureliusIgnisvoxSkills {
                 {
                     id: 'formacao_testudo_flamejante',
                     name: '🛡️ Formação Testudo Flamejante',
-                    manaCost: 40,
+                    animaCost: 40,
                     damage: 0,
                     type: 'defensive_formation',
                     cooldown: 2,
@@ -342,7 +342,7 @@ class AureliusIgnisvoxSkills {
                 {
                     id: 'gladius_incendium',
                     name: '⚔️ Gladius Incendium',
-                    manaCost: 30,
+                    animaCost: 30,
                     damage: 90,
                     type: 'weapon_mastery',
                     cooldown: 1,

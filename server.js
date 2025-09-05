@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import cors from 'cors';
 import crypto from 'crypto';
+import chokidar from 'chokidar';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { SkillController } from './src/presentation/controllers/SkillController.js';
@@ -1687,6 +1688,29 @@ async function startServer() {
     
     // Inicializar Maps System
     await initializeMapsSystem();
+    
+    // Configurar auto-reload do banco de dados
+    console.log('🔄 Configurando auto-reload do banco de dados...');
+    let reloadTimeout;
+    chokidar.watch(DB_PATH, { ignoreInitial: true })
+      .on('change', () => {
+        // Debounce: aguardar 500ms sem mudanças antes de recarregar
+        clearTimeout(reloadTimeout);
+        reloadTimeout = setTimeout(async () => {
+          console.log('🔄 Banco de dados modificado, recarregando...');
+          try {
+            // A API já recarrega automaticamente via loadDatabase()
+            console.log('✅ Sistema atualizado com mudanças do banco!');
+          } catch (error) {
+            console.error('❌ Erro ao recarregar banco:', error);
+          }
+        }, 500);
+      })
+      .on('error', (error) => {
+        console.error('❌ Erro no watcher do banco:', error);
+      });
+    
+    console.log('✅ Auto-reload configurado para:', DB_PATH);
     
     app.listen(PORT, () => {
       console.log(`

@@ -1,4 +1,5 @@
 # 🎭 RPGStack Battle System - Art Nouveau Rework Documentation
+**ARQUIVO PRINCIPAL COM REFERÊNCIAS - DIVIDIDO EM DUAS PARTES**
 
 **Projeto:** RPGStack Battle System Vintage Redesign  
 **Versão:** v2.0.0 (Art Nouveau Edition)  
@@ -6,6 +7,56 @@
 **Autor:** Claude Code (Anthropic)  
 **Status:** ✅ CONCLUÍDO - Demo "Éclat Mystique" Implementada  
 **Skin Atual:** 🎭 Éclat Mystique (Art Nouveau Vintage Edition)
+
+---
+
+## 📚 **DOCUMENTAÇÃO DIVIDIDA**
+
+**⚠️ ATENÇÃO:** Este documento foi dividido em duas partes para melhor organização:
+
+### 📖 **PARTE 1: Design, Implementação e Arquitetura**
+**Arquivo:** [reworkbattle-part1.md](./reworkbattle-part1.md)
+
+**📋 Conteúdo:**
+- 📜 Resumo Executivo
+- 🎨 Sistema de Skins Implementado
+- 🏗️ Estado Anterior do Sistema
+- 🔍 Pesquisa e Inspirações
+- 🎨 Nova Implementação Art Nouveau
+- 📱 Responsividade e Acessibilidade
+- 🔧 Arquitetura Técnica
+- 🎮 Guia de Uso da Demo
+- 🛣️ Roadmap de Implementações Futuras
+- 🔄 Integração com Sistema Principal
+- 📊 Métricas e Performance
+- 🎨 Design System Documentation
+- 🛠️ Ferramentas e Recursos
+- 📚 Referências e Inspirações
+- 💡 Lições Aprendidas
+- 🔮 Visão de Longo Prazo
+- 📄 Conclusões
+
+### 📖 **PARTE 2: Correções, Sistema Modular e Implementações Avançadas**  
+**Arquivo:** [reworkbattle-part2.md](./reworkbattle-part2.md)
+
+**📋 Conteúdo:**
+- 🛠️ SESSÃO 4 - Correção das Barras de HP/MP
+- 📦 DEPENDÊNCIAS E ALGORITMOS (RPGStack v4.3)
+- 🎭 SESSÃO 5 - Sistema Modular de Skills Culturais
+- 📜 SESSÃO 6 - Sistema de Habilidades Ancestrais (Passivas)
+- 🎯 SESSÃO 7 - Sistema de Batalha 3v3 Estilo Pokémon
+
+---
+
+## 🎯 **NAVEGAÇÃO RÁPIDA**
+
+### **📖 Para Design e Implementação Inicial:**
+👉 **[Abrir Parte 1](./reworkbattle-part1.md)**
+
+### **📖 Para Correções e Sistemas Avançados:**
+👉 **[Abrir Parte 2](./reworkbattle-part2.md)**
+
+---
 
 ---
 
@@ -2293,4 +2344,385 @@ function renderPassivesGrid() {
 
 ---
 
-*Esta documentação registra o desenvolvimento completo do sistema de batalha RPGStack v4.3, incluindo: (1) Skin "Éclat Mystique" Art Nouveau, (2) Sistema modular de skills culturais com carregamento dinâmico, (3) Documentação completa do servidor, (4) Arquitetura separada entre lógica (BattleMechanics) e interface (VintageBattleUI), (5) Sistema de skills individuais por personagem com autenticidade cultural baseada na filosofia Chronos Culturalis, e (6) Sistema de Habilidades Ancestrais (Passivas) culturalmente autênticas.*
+---
+
+## 🎯 **SESSÃO 7 - Sistema de Batalha 3v3 Estilo Pokémon** (04 de setembro de 2025)
+
+### 🚀 **Nova Arquitetura de Batalha**
+
+**Especificação:** Sistema de batalha com duas equipes de 3 personagens cada, implementando mecânicas similares ao Pokémon com filosofia estética Art Nouveau do projeto.
+
+### 🏗️ **Especificações Técnicas do Sistema 3v3**
+
+#### **⚔️ Composição das Equipes**
+```javascript
+// Estrutura de Equipe
+const TeamStructure = {
+    activeCharacter: {         // Personagem ativo em campo
+        id: "CHARACTER_ID",
+        position: "active",
+        hp: 100,
+        mp: 50,
+        status: "fighting"
+    },
+    reserve: [                 // 2 personagens na reserva
+        {
+            id: "CHARACTER_ID_2",
+            position: "reserve_1", 
+            hp: 85,
+            mp: 30,
+            status: "reserve"
+        },
+        {
+            id: "CHARACTER_ID_3",
+            position: "reserve_2",
+            hp: 100,
+            mp: 45,
+            status: "reserve"
+        }
+    ]
+};
+```
+
+#### **🔄 Mecânicas de Turno**
+```
+📋 FLUXO DO TURNO:
+1. Início do turno do jogador
+2. Jogador pode escolher:
+   ├── Trocar personagem ativo (sem consumir ação)
+   ├── Selecionar ação para personagem atual
+   └── Aguardar até timeout (20 segundos)
+3. Ação é executada ou timeout é aplicado
+4. Turno passa para o oponente
+5. Sistema processa efeitos de área/passivas
+```
+
+#### **⏱️ Sistema de Timeout**
+```javascript
+// Sistema de Timeout de 20 segundos
+class TurnTimer {
+    constructor() {
+        this.timeLimit = 20000;     // 20 segundos
+        this.currentTimer = null;
+        this.warningTime = 5000;    // Aviso aos 5s restantes
+    }
+    
+    startTurn(playerId) {
+        this.currentTimer = setTimeout(() => {
+            this.forceDefaultAction(playerId);
+        }, this.timeLimit);
+        
+        // Aviso visual aos 15 segundos (5s restantes)
+        setTimeout(() => {
+            this.showTimeWarning();
+        }, this.timeLimit - this.warningTime);
+    }
+    
+    forceDefaultAction(playerId) {
+        // Ação padrão: Atacar com personagem ativo
+        const defaultAction = {
+            type: "attack",
+            source: this.getActiveCharacter(playerId),
+            target: this.getOpponentActiveCharacter()
+        };
+        this.executeBattleAction(defaultAction);
+        this.endTurn();
+    }
+}
+```
+
+#### **🎯 Sistema de Troca de Personagens**
+```javascript
+// Mecânica de Troca durante o Turno
+class CharacterSwap {
+    canSwapCharacter(playerId, characterId) {
+        const team = this.getPlayerTeam(playerId);
+        const targetChar = this.findCharacterInReserve(team, characterId);
+        
+        return {
+            valid: targetChar && targetChar.hp > 0,
+            character: targetChar,
+            reason: targetChar ? null : "Personagem não disponível para troca"
+        };
+    }
+    
+    executeSwap(playerId, newActiveId) {
+        const team = this.getPlayerTeam(playerId);
+        const currentActive = team.activeCharacter;
+        const newActive = this.removeFromReserve(team, newActiveId);
+        
+        // Troca posições
+        team.activeCharacter = newActive;
+        team.activeCharacter.position = "active";
+        team.activeCharacter.status = "fighting";
+        
+        // Move personagem atual para reserva
+        currentActive.position = "reserve";
+        currentActive.status = "reserve";
+        team.reserve.push(currentActive);
+        
+        this.logBattleEvent(`${newActive.name} entra em campo!`);
+        this.updateBattleUI();
+    }
+}
+```
+
+#### **💥 Sistema de Dano em Área**
+```javascript
+// Dano em Área afeta Personagens na Reserva
+class AreaDamageSystem {
+    calculateAreaDamage(skill, caster, targetTeam) {
+        if (!skill.areaOfEffect) return null;
+        
+        const areaDamage = {
+            activeTarget: {
+                character: targetTeam.activeCharacter,
+                damage: skill.baseDamage,
+                multiplier: 1.0    // Dano completo no alvo ativo
+            },
+            reserveTargets: targetTeam.reserve.map(char => ({
+                character: char,
+                damage: Math.floor(skill.baseDamage * 0.3), // 30% dano na reserva
+                multiplier: 0.3,
+                reason: "Dano colateral em área"
+            }))
+        };
+        
+        return areaDamage;
+    }
+    
+    applyAreaDamage(areaDamageData) {
+        // Aplica dano completo no alvo ativo
+        this.dealDamage(
+            areaDamageData.activeTarget.character,
+            areaDamageData.activeTarget.damage
+        );
+        
+        // Aplica dano reduzido nos personagens da reserva
+        areaDamageData.reserveTargets.forEach(reserveTarget => {
+            if (reserveTarget.character.hp > 0) {
+                this.dealDamage(
+                    reserveTarget.character,
+                    reserveTarget.damage
+                );
+                this.logBattleEvent(
+                    `${reserveTarget.character.name} sofre ${reserveTarget.damage} de dano colateral!`
+                );
+            }
+        });
+    }
+}
+```
+
+### 🎮 **Interface Visual para Sistema 3v3**
+
+#### **📱 Layout da Batalha**
+```
+╔══════════════════════════════════════════╗
+║           🎭 Duelo Ancestral 3v3         ║
+╠══════════════════════════════════════════╣
+║  [🔴●●] INIMIGO      [●●🔴] JOGADOR     ║
+║   ├─ Ativo          ├─ Ativo   │        ║
+║   └─ Reserva (2)    └─ Reserva (2)      ║
+║                                          ║
+║         [AÇÕES]    [TROCAR]             ║
+║      ⚔️ Atacar    📋 Lista 3v3         ║
+║      🛡️ Defender   ⏱️ 00:15            ║
+║      🧘 Meditar                         ║
+║      ⚡ Skills                          ║
+╚══════════════════════════════════════════╝
+```
+
+#### **🔄 Painel de Troca de Personagens**
+```html
+<!-- Modal de Troca Rápida -->
+<div class="swap-panel">
+    <h3>🔄 Trocar Personagem</h3>
+    <div class="team-roster">
+        <div class="character-slot active">
+            <img src="active_char.png" alt="Ativo">
+            <span class="name">Miloš</span>
+            <div class="hp-bar">
+                <div class="hp-fill" style="width: 75%"></div>
+            </div>
+            <span class="status">🟢 ATIVO</span>
+        </div>
+        
+        <div class="character-slot reserve" onclick="swapCharacter('CHAR_2')">
+            <img src="reserve_1.png" alt="Reserva 1">
+            <span class="name">Shi Wuxing</span>
+            <div class="hp-bar">
+                <div class="hp-fill" style="width: 100%"></div>
+            </div>
+            <span class="status">🔵 RESERVA</span>
+        </div>
+        
+        <div class="character-slot reserve" onclick="swapCharacter('CHAR_3')">
+            <img src="reserve_2.png" alt="Reserva 2">
+            <span class="name">Pythia</span>
+            <div class="hp-bar">
+                <div class="hp-fill" style="width: 60%"></div>
+            </div>
+            <span class="status">🔵 RESERVA</span>
+        </div>
+    </div>
+</div>
+```
+
+### 🏗️ **Separação de Arquiteturas**
+
+#### **📄 battlemechanics.js - Lógica Pura**
+```javascript
+// Responsabilidades: Mecânicas de batalha apenas
+class BattleMechanics {
+    // ⚔️ Sistema de combate 3v3
+    initiate3v3Battle(playerTeam, enemyTeam) { }
+    
+    // 🔄 Gerenciamento de turnos e trocas
+    processTurn(playerId, action) { }
+    swapActiveCharacter(playerId, characterId) { }
+    
+    // 💥 Cálculos de dano e efeitos
+    calculateDamage(attacker, defender, skill) { }
+    applyAreaOfEffect(skill, targets) { }
+    
+    // ⏱️ Sistema de timeout
+    enforceTimeout(playerId) { }
+    
+    // 🎯 Condições de vitória
+    checkBattleEnd() { }
+    
+    // 🧠 IA para equipe inimiga
+    calculateAIAction(enemyTeam, playerTeam) { }
+}
+```
+
+#### **🎨 battle.js - Interface e Visual**
+```javascript
+// Responsabilidades: UI, animações, feedback visual
+class BattleInterface {
+    // 🎭 Renderização da interface 3v3
+    renderTeamDisplay(team, position) { }
+    updateCharacterCards() { }
+    
+    // ⏱️ UI do timer
+    displayTurnTimer(remainingTime) { }
+    showTimeWarning() { }
+    
+    // 🔄 Painel de troca
+    showSwapPanel() { }
+    hideSwapPanel() { }
+    
+    // 💥 Efeitos visuais
+    animateDamageNumbers(target, damage) { }
+    showAreaOfEffectAnimation(targets) { }
+    
+    // 📢 Sistema de log
+    updateBattleLog(message) { }
+    
+    // 🎵 Áudio e feedback
+    playSwapSound() { }
+    playTimeoutWarning() { }
+}
+```
+
+### 📊 **Especificações de Balanceamento**
+
+#### **⚖️ Regras de Balanceamento**
+```
+🎯 DANO EM ÁREA:
+├── Personagem Ativo: 100% do dano
+├── Personagem Reserva 1: 30% do dano  
+├── Personagem Reserva 2: 30% do dano
+└── Skills AoE disponíveis: ~20% das skills totais
+
+⏱️ GESTÃO DE TEMPO:
+├── Tempo por turno: 20 segundos fixos
+├── Aviso visual: 5 segundos restantes
+├── Ação padrão: Ataque básico
+└── Penalidade: Nenhuma adicional
+
+🔄 TROCA DE PERSONAGENS:
+├── Custo: Gratuito (não consome ação)
+├── Limitação: Apenas personagens vivos
+├── Timing: Início do turno apenas
+└── Efeito: Instantâneo (sem animação longa)
+
+🏆 CONDIÇÕES DE VITÓRIA:
+├── Derrota: Todos os 3 personagens com 0 HP
+├── Vitória: Pelo menos 1 personagem vivo
+└── Empate: Impossível (AI sempre tem ação válida)
+```
+
+### 🎨 **Integração com Éclat Mystique**
+
+#### **🎭 Design Art Nouveau para 3v3**
+```css
+/* Painel de Equipe 3v3 */
+.team-3v3-display {
+    background: linear-gradient(135deg, 
+        rgba(114, 47, 55, 0.2), 
+        rgba(53, 94, 59, 0.2));
+    border: 2px solid var(--gold-primary);
+    border-radius: var(--curve-ornate);
+    backdrop-filter: blur(20px);
+}
+
+/* Cards de Personagens na Reserva */
+.reserve-character-card {
+    opacity: 0.7;
+    transform: scale(0.85);
+    filter: grayscale(0.3);
+    transition: all 0.3s ease;
+}
+
+.reserve-character-card:hover {
+    opacity: 1;
+    transform: scale(1);
+    filter: grayscale(0);
+}
+
+/* Timer Visual Art Nouveau */
+.turn-timer {
+    background: radial-gradient(circle, 
+        var(--gold-primary), 
+        var(--gold-dark));
+    border: 3px solid var(--burgundy);
+    border-radius: 50%;
+    position: relative;
+}
+
+.timer-warning {
+    animation: timerPulse 0.5s infinite;
+    border-color: var(--secondary);
+}
+
+@keyframes timerPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+```
+
+### 📋 **Checklist de Implementação**
+
+```
+✅ DOCUMENTAÇÃO COMPLETA:
+├── ✅ Especificações técnicas do sistema 3v3
+├── ✅ Mecânicas de troca de personagem
+├── ✅ Sistema de timeout de 20 segundos
+├── ✅ Dano em área para personagens na reserva
+├── ✅ Separação battlemechanics.js vs battle.js
+└── ✅ Integração com filosofia Art Nouveau
+
+🔄 PRÓXIMOS PASSOS:
+├── [ ] Implementar classes BattleMechanics e BattleInterface
+├── [ ] Criar interface visual para seleção de equipes 3v3
+├── [ ] Desenvolver sistema de IA para gestão de equipe inimiga
+├── [ ] Integrar skills com dano em área
+├── [ ] Testes de balanceamento de combate
+└── [ ] Otimização de performance para 6 personagens simultâneos
+```
+
+---
+
+*Esta documentação registra o desenvolvimento completo do sistema de batalha RPGStack v4.4, incluindo: (1) Skin "Éclat Mystique" Art Nouveau, (2) Sistema modular de skills culturais com carregamento dinâmico, (3) Documentação completa do servidor, (4) Arquitetura separada entre lógica (BattleMechanics) e interface (VintageBattleUI), (5) Sistema de skills individuais por personagem com autenticidade cultural baseada na filosofia Chronos Culturalis, (6) Sistema de Habilidades Ancestrais (Passivas) culturalmente autênticas, e (7) **Sistema de Batalha 3v3 Estilo Pokémon** com mecânicas de troca, timeout e dano em área.*

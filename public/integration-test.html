@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Integração - Sistema de Turnos Refatorado</title>
+    <link rel="stylesheet" href="battle.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #2d1b69, #16213e);
+            min-height: 100vh;
+            font-family: var(--font-primary);
+            color: var(--cream);
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(54, 69, 79, 0.95);
+            border-radius: var(--radius-vintage);
+            border: 2px solid var(--gold-primary);
+            padding: var(--space-xl);
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-section {
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md);
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--radius-vintage);
+            border: 1px solid var(--gold-primary);
+        }
+        
+        .test-log {
+            background: rgba(0,0,0,0.3);
+            padding: var(--space-md);
+            border-radius: var(--radius-vintage);
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .log-entry.system { color: #87CEEB; }
+        .log-entry.success { color: #90EE90; }
+        .log-entry.error { color: #FF6B6B; }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste de Integração - Sistema Refatorado</h1>
+        <p>Testando a integração entre battle.js e battlemechanics.js</p>
+        
+        <div class="test-section">
+            <h3>🎮 Controles de Teste</h3>
+            <div class="action-grid">
+                <button class="action-btn primary" onclick="initTest()">
+                    Inicializar Sistema
+                </button>
+                <button class="action-btn" onclick="testStartTurn()">
+                    Iniciar Turno
+                </button>
+                <button class="action-btn" onclick="testDeclareAction()">
+                    Declarar Ataque
+                </button>
+                <button class="action-btn" onclick="testSwap()">
+                    Testar Troca
+                </button>
+                <button class="action-btn secondary" onclick="clearTestLog()">
+                    Limpar Log
+                </button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Status do Sistema</h3>
+            <div id="systemStatus" style="font-family: 'Courier New', monospace;">
+                Sistema não inicializado
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 Log de Teste</h3>
+            <div class="test-log" id="testLog">
+                <div class="log-entry system">Aguardando inicialização do teste...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts necessários -->
+    <script src="battlemechanics.js"></script>
+    <script>
+        let battleMechanics = null;
+        
+        function log(message, type = 'system') {
+            const logContainer = document.getElementById('testLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function updateStatus(status) {
+            document.getElementById('systemStatus').textContent = status;
+        }
+        
+        function initTest() {
+            try {
+                if (typeof BattleMechanics === 'undefined') {
+                    throw new Error('BattleMechanics não encontrado');
+                }
+                
+                battleMechanics = new BattleMechanics();
+                log('✅ BattleMechanics instanciado', 'success');
+                
+                // Personagens de teste
+                const player = {
+                    id: "test_player",
+                    name: "Herói Teste",
+                    hp: 100, maxHP: 100,
+                    anima: 50, maxAnima: 50,
+                    velocidade: 80,
+                    swapsUsed: 0
+                };
+                
+                const enemy = {
+                    id: "test_enemy",
+                    name: "Inimigo Teste",
+                    hp: 80, maxHP: 80,
+                    anima: 30, maxAnima: 30,
+                    velocidade: 60,
+                    swapsUsed: 0
+                };
+                
+                battleMechanics.initializeBattle(player, enemy);
+                log('⚔️ Batalha inicializada com personagens de teste', 'success');
+                
+                battleMechanics.initializeTurnSystem();
+                log('🎯 Sistema de turnos inicializado', 'success');
+                
+                updateStatus('Sistema inicializado - Pronto para testes');
+                
+            } catch (error) {
+                log(`❌ Erro na inicialização: ${error.message}`, 'error');
+                updateStatus(`Erro: ${error.message}`);
+            }
+        }
+        
+        function testStartTurn() {
+            if (!battleMechanics) {
+                log('❌ Sistema não inicializado', 'error');
+                return;
+            }
+            
+            try {
+                const turnInfo = battleMechanics.startPlayerTurn();
+                log(`🎮 Turno iniciado - Jogador: ${turnInfo.currentPlayer}, Limite: ${turnInfo.timeLimit/1000}s`, 'success');
+                
+                const status = battleMechanics.getTurnStatus();
+                updateStatus(`Turno: ${status.currentPlayer} | Fase: ${status.currentPhase} | Trocas: ${status.swapsUsed}`);
+                
+            } catch (error) {
+                log(`❌ Erro ao iniciar turno: ${error.message}`, 'error');
+            }
+        }
+        
+        function testDeclareAction() {
+            if (!battleMechanics) {
+                log('❌ Sistema não inicializado', 'error');
+                return;
+            }
+            
+            try {
+                const result = battleMechanics.declareAction('attack');
+                
+                if (result.success) {
+                    log(`⚔️ Ação declarada: ${result.actionType} em ${result.timeTaken}ms`, 'success');
+                    
+                    // Processar a ação
+                    const processResult = battleMechanics.processTurn();
+                    if (processResult.success) {
+                        log('✅ Ação processada com sucesso', 'success');
+                    } else {
+                        log(`❌ Erro no processamento: ${processResult.error}`, 'error');
+                    }
+                    
+                } else {
+                    log(`❌ Erro ao declarar ação: ${result.reason}`, 'error');
+                }
+                
+                const status = battleMechanics.getTurnStatus();
+                updateStatus(`Turno: ${status.currentPlayer} | Fase: ${status.currentPhase} | Ação: ${status.actionDeclared ? 'Sim' : 'Não'}`);
+                
+            } catch (error) {
+                log(`❌ Erro no teste de ação: ${error.message}`, 'error');
+            }
+        }
+        
+        function testSwap() {
+            if (!battleMechanics) {
+                log('❌ Sistema não inicializado', 'error');
+                return;
+            }
+            
+            try {
+                const result = battleMechanics.executeSwap('char1', 'char2');
+                log(`🔄 Troca executada: ${result.swapsUsed}/${result.swapsUsed + result.swapsRemaining}`, 'success');
+                
+                const status = battleMechanics.getTurnStatus();
+                updateStatus(`Turno: ${status.currentPlayer} | Trocas: ${status.swapsUsed}`);
+                
+            } catch (error) {
+                log(`❌ Erro na troca: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearTestLog() {
+            document.getElementById('testLog').innerHTML = 
+                '<div class="log-entry system">Log limpo...</div>';
+        }
+        
+        // Mensagem inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🧪 Sistema de teste carregado', 'system');
+            log('Execute "Inicializar Sistema" para começar', 'system');
+        });
+    </script>
+</body>
+</html>

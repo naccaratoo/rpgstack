@@ -34,13 +34,22 @@ class VintageBattleDemo {
         this.characterData = null;
         
         this.selectedCharacter = null;
+        this.selectedTeam = [];      // Array para 3 personagens selecionados
+        this.maxTeamSize = 3;        // Sistema 3v3
         this.battleState = 'character-selection';
         this.skillsVisible = false;
         this.logVisible = true;
         
         // Pagination for character selection
         this.currentPage = 0;
-        this.charactersPerPage = 3;
+        this.charactersPerPage = 15; // Mostrar todos os personagens de uma vez
+        
+        // Sistema de Turnos Integrado
+        this.battleMechanics = null;
+        
+        // UI Elements para timer
+        this.timerDisplay = null;
+        this.turnIndicator = null;
     }
 
     async init() {
@@ -55,21 +64,38 @@ class VintageBattleDemo {
     }
 
     async loadCharacters() {
+        console.log('🚀 Iniciando carregamento de personagens...');
         try {
-            // Load from main characters database
-            const response = await fetch('/data/characters.json?t=' + Date.now());
+            // Load from main characters database API
+            const response = await fetch('/api/characters?t=' + Date.now());
             console.log('📡 Response status:', response.status, response.statusText);
             console.log('📡 Response URL:', response.url);
             
             if (response.ok) {
+                console.log('✅ Response OK, parsing JSON...');
                 const mainData = await response.json();
+                console.log('📊 Raw data structure:', Object.keys(mainData));
                 this.characterData = mainData;
                 console.log(`📊 Encontrados ${Object.keys(mainData.characters).length} personagens no arquivo`);
                 console.log('🔍 Debug - personagens no JSON:', Object.keys(mainData.characters));
                 console.log('🔍 Debug - dados completos:', mainData.characters);
                 const rawCharacters = Object.values(mainData.characters);
-                console.log('🔍 Debug - personagens antes do map:', rawCharacters.length);
-                this.characters = rawCharacters.map((char, index) => {
+                console.log('🔍 Debug - personagens antes do filtro:', rawCharacters.length);
+                
+                // Aceitar todas as classes originais do sistema CHRONOS
+                const validClasses = [
+                    'Lutador', 'Armamentista', 'Arcano',           // Classes base
+                    'Oráculo', 'Artífice', 'Guardião da Natureza', // Classes originais CHRONOS
+                    'Mercador-Diplomata', 'Curandeiro Ritualista'  // Classes culturais
+                ];
+                const filteredCharacters = rawCharacters.filter(char => 
+                    validClasses.includes(char.classe)
+                );
+                
+                console.log('🔍 Debug - personagens após filtro:', filteredCharacters.length);
+                console.log('📋 Classes válidas encontradas:', filteredCharacters.map(c => `${c.name} (${c.classe})`));
+                
+                this.characters = filteredCharacters.map((char, index) => {
                     console.log(`🔍 Processando personagem ${index + 1}: ${char.name}`);
                     return {
                         id: index + 1,
@@ -79,12 +105,13 @@ class VintageBattleDemo {
                         maxHP: char.maxHP,
                         mp: char.anima || 50,
                         maxMP: char.anima || 50,
-                        class: char.classe || 'Unknown',
+                        class: char.classe,
                         description: char.description && char.description.trim() !== "" ? char.description : `${char.classe} experiente com poderes únicos`,
                         attack: char.attack || 25,
                         defense: char.defense || 10,
                         critical: char.critico || 15,
                         skills: char.skills || [],
+                        sprite: char.sprite || "assets/sprites/default.webp",
                         image: this.generateCharacterImage(char.name)
                     };
                 });
@@ -97,8 +124,9 @@ class VintageBattleDemo {
             
         } catch (error) {
             console.error('❌ Erro ao carregar personagens:', error);
-            console.error('🌐 URL tentada:', '/data/characters.json?t=' + Date.now());
+            console.error('🌐 URL tentada:', '/api/characters?t=' + Date.now());
             console.error('🔍 Status da response:', error.response?.status || 'N/A');
+            console.error('🔍 Error message:', error.message);
             console.log('⚠️ Carregando personagens de fallback...');
             this.loadFallbackCharacters();
         }
@@ -156,20 +184,31 @@ class VintageBattleDemo {
         };
         
         const color = colors[name] || "#666666";
-        const shortName = name.split(' ').map(word => word.charAt(0)).join('').toUpperCase();
+        // Remover caracteres especiais e criar iniciais seguras
+        const shortName = name.split(' ')
+            .map(word => word.charAt(0))
+            .join('')
+            .toUpperCase()
+            .substring(0, 3); // Limitar a 3 caracteres máximo
         
         const svg = `<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="100" height="100" fill="${color}" rx="8"/>
             <text x="50" y="55" text-anchor="middle" fill="#FDF5E6" font-size="12" font-family="serif">${shortName}</text>
         </svg>`;
         
-        return `data:image/svg+xml;base64,${btoa(svg)}`;
+        // Usar encodeURIComponent ao invés de btoa para suportar Unicode
+        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     }
 
     setupEventListeners() {
         // Character selection
         document.getElementById('startBattle')?.addEventListener('click', () => this.startBattle());
         document.getElementById('backToMenu')?.addEventListener('click', () => this.backToMenu());
+        
+        // Botão Limpar Seleção (3v3)
+        document.getElementById('clearTeam')?.addEventListener('click', () => {
+            this.clearTeamSelection();
+        });
 
         // Action buttons
         document.querySelector('[data-action="attack"]')?.addEventListener('click', () => this.performAttack());
@@ -253,7 +292,7 @@ class VintageBattleDemo {
                 ${currentCharacters.map(char => `
                     <div class="character-option" data-character-id="${char.id}">
                         <div class="character-portrait">
-                            <img src="${char.image}" alt="${char.name}">
+                            <img src="${char.sprite || char.image}" alt="${char.name}">
                         </div>
                         <div class="character-info">
                             <h4>${char.name}</h4>
@@ -304,22 +343,36 @@ class VintageBattleDemo {
             }
         });
 
-        // Add click handlers to character options
+        // Add click handlers to character options (Sistema 3v3)
         grid.querySelectorAll('.character-option').forEach(option => {
             option.addEventListener('click', (e) => {
-                grid.querySelectorAll('.character-option').forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                
                 const characterId = parseInt(option.dataset.characterId);
-                this.selectedCharacter = this.characters.find(char => char.id === characterId);
+                const character = this.characters.find(char => char.id === characterId);
                 
-                const startButton = document.getElementById('startBattle');
-                if (startButton) {
-                    startButton.disabled = false;
-                    startButton.textContent = 'Começar Duelo';
+                if (!character) return;
+                
+                // Verificar se já está selecionado
+                const isAlreadySelected = this.selectedTeam.some(c => c.id === characterId);
+                
+                if (isAlreadySelected) {
+                    // Remover da equipe
+                    this.selectedTeam = this.selectedTeam.filter(c => c.id !== characterId);
+                    option.classList.remove('selected');
+                    this.removeFromTeamSlot(characterId);
+                } else if (this.selectedTeam.length < this.maxTeamSize) {
+                    // Adicionar à equipe
+                    this.selectedTeam.push(character);
+                    option.classList.add('selected');
+                    this.addToTeamSlot(character);
+                } else {
+                    // Equipe cheia
+                    this.showMessage('Equipe completa! Remova um personagem para adicionar outro.', 'warning');
                 }
                 
-                console.log('🎯 Personagem selecionado:', this.selectedCharacter?.name);
+                this.updateTeamCounter();
+                this.updateStartButton();
+                
+                console.log('🎯 Equipe selecionada:', this.selectedTeam.map(c => c.name));
             });
         });
     }
@@ -331,11 +384,149 @@ class VintageBattleDemo {
         }
     }
 
-    startBattle() {
-        if (!this.selectedCharacter) return;
+    // Funções para gerenciar slots da equipe
+    addToTeamSlot(character) {
+        const slotIndex = this.selectedTeam.length - 1;
+        const teamSlot = document.getElementById(`teamSlot${slotIndex}`);
+        
+        if (teamSlot) {
+            teamSlot.classList.remove('empty');
+            teamSlot.classList.add('filled');
+            teamSlot.innerHTML = `
+                <div class="slot-number">${slotIndex + 1}</div>
+                <div class="slot-label">${slotIndex === 0 ? 'Líder' : 'Reserva'}</div>
+                <img src="${character.sprite || character.image || '/assets/sprites/default.png'}" alt="${character.name}" style="width: 60px; height: 60px; border-radius: 6px;">
+                <div class="char-name-small">${character.name}</div>
+            `;
+        }
+    }
+    
+    removeFromTeamSlot(characterId) {
+        // Reorganizar slots após remoção
+        this.selectedTeam.forEach((char, index) => {
+            const teamSlot = document.getElementById(`teamSlot${index}`);
+            if (teamSlot) {
+                teamSlot.classList.remove('empty');
+                teamSlot.classList.add('filled');
+                teamSlot.innerHTML = `
+                    <div class="slot-number">${index + 1}</div>
+                    <div class="slot-label">${index === 0 ? 'Líder' : 'Reserva'}</div>
+                    <img src="${char.sprite || char.image || '/assets/sprites/default.png'}" alt="${char.name}" style="width: 60px; height: 60px; border-radius: 6px;">
+                    <div class="char-name-small">${char.name}</div>
+                `;
+            }
+        });
+        
+        // Limpar slot vazio
+        const emptySlotIndex = this.selectedTeam.length;
+        if (emptySlotIndex < this.maxTeamSize) {
+            const emptySlot = document.getElementById(`teamSlot${emptySlotIndex}`);
+            if (emptySlot) {
+                emptySlot.classList.add('empty');
+                emptySlot.classList.remove('filled');
+                emptySlot.innerHTML = `
+                    <div class="slot-number">${emptySlotIndex + 1}</div>
+                    <div class="slot-label">${emptySlotIndex === 0 ? 'Líder' : 'Reserva'}</div>
+                    <div class="empty-indicator">+</div>
+                `;
+            }
+        }
+    }
+    
+    updateTeamCounter() {
+        const counterElement = document.getElementById('selectedCount');
+        if (counterElement) {
+            counterElement.textContent = this.selectedTeam.length;
+        }
+    }
+    
+    updateStartButton() {
+        const startButton = document.getElementById('startBattle');
+        if (startButton) {
+            if (this.selectedTeam.length === this.maxTeamSize) {
+                startButton.disabled = false;
+                startButton.textContent = '⚔ Iniciar Duelo Ancestral 3v3';
+            } else {
+                startButton.disabled = true;
+                startButton.textContent = `Selecione ${this.maxTeamSize - this.selectedTeam.length} personagem(ns)`;
+            }
+        }
+    }
+    
+    showMessage(message, type = 'info') {
+        console.log(`📢 ${type.toUpperCase()}: ${message}`);
+        
+        // Criar toast message temporário
+        const toast = document.createElement('div');
+        toast.className = `message-toast ${type}`;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--parchment);
+            border: 2px solid var(--gold-primary);
+            border-radius: var(--radius-vintage);
+            padding: var(--space-md);
+            font-family: var(--font-ornate);
+            color: var(--burgundy);
+            z-index: 10000;
+            max-width: 300px;
+            box-shadow: var(--shadow-ornate);
+            animation: slideIn 0.3s ease-out;
+        `;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+    
+    clearTeamSelection() {
+        // Limpar array da equipe
+        this.selectedTeam = [];
+        
+        // Remover seleção visual dos personagens
+        document.querySelectorAll('.character-option.selected').forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // Resetar slots da equipe
+        for (let i = 0; i < this.maxTeamSize; i++) {
+            const teamSlot = document.getElementById(`teamSlot${i}`);
+            if (teamSlot) {
+                teamSlot.classList.add('empty');
+                teamSlot.classList.remove('filled');
+                teamSlot.innerHTML = `
+                    <div class="slot-number">${i + 1}</div>
+                    <div class="slot-label">${i === 0 ? 'Líder' : 'Reserva'}</div>
+                    <div class="empty-indicator">+</div>
+                `;
+            }
+        }
+        
+        // Atualizar contador e botão
+        this.updateTeamCounter();
+        this.updateStartButton();
+        
+        this.showMessage('Seleção de equipe limpa!', 'info');
+        console.log('🧹 Equipe limpa');
+    }
 
-        // Update player data with selected character
-        this.playerData = {...this.selectedCharacter};
+    startBattle() {
+        if (this.selectedTeam.length !== this.maxTeamSize) return;
+
+        // Configurar equipes 3v3
+        this.playerTeam = {
+            active: 0,
+            reserve: [1, 2],
+            characters: [...this.selectedTeam] // Clonar array da equipe selecionada
+        };
+        
+        // Gerar equipe inimiga aleatória
+        this.generateEnemyTeam();
         
         // Hide character modal
         const modal = document.getElementById('characterModal');
@@ -346,14 +537,157 @@ class VintageBattleDemo {
         // Update battle state
         this.battleState = 'battle';
         
-        // Update UI with character data
-        this.updatePlayerCard();
-        this.updateEnemyCard();
+        // Atualizar interface 3v3 completa
+        this.update3v3BattleField();
         this.populateSkills();
         
+        // Inicializar sistema de turnos
+        this.initializeTurnSystem();
+        this.setupActionButtons();
+        
         // Add initial log entry
-        this.addBattleLogEntry('system', `${this.playerData.name} entra na arena ancestral...`);
-        this.addBattleLogEntry('system', `${this.enemyData.name} emerge das sombras!`);
+        this.addBattleLogEntry('system', `${this.playerTeam.characters[0].name} entra na arena ancestral...`);
+        this.addBattleLogEntry('system', `Equipe inimiga se posiciona para a batalha!`);
+        
+        // Iniciar primeiro turno após delay
+        setTimeout(() => {
+            this.startPlayerTurn();
+        }, 2000);
+    }
+
+    generateEnemyTeam() {
+        // Selecionar 3 personagens aleatórios diferentes da equipe do jogador
+        const availableEnemies = this.characters.filter(char => 
+            !this.selectedTeam.some(selected => selected.id === char.id)
+        );
+        
+        // Embaralhar e pegar os primeiros 3
+        const shuffled = availableEnemies.sort(() => 0.5 - Math.random());
+        const enemyCharacters = shuffled.slice(0, 3);
+        
+        this.enemyTeam = {
+            active: 0,
+            reserve: [1, 2],
+            characters: enemyCharacters
+        };
+        
+        console.log('🤖 Equipe inimiga gerada:', this.enemyTeam.characters.map(c => c.name));
+    }
+
+    update3v3BattleField() {
+        // Atualizar personagens ativos no battle field
+        this.updateActiveBattleSlot('player', this.playerTeam.characters[this.playerTeam.active]);
+        this.updateActiveBattleSlot('enemy', this.enemyTeam.characters[this.enemyTeam.active]);
+        
+        // Atualizar personagens na reserva
+        this.updateReserveSlots('player', this.playerTeam);
+        this.updateReserveSlots('enemy', this.enemyTeam);
+    }
+
+    updateActiveBattleSlot(teamType, character) {
+        const prefix = `${teamType}ActiveBattle`;
+        
+        // Atualizar imagem
+        const img = document.getElementById(`${prefix}Image`);
+        if (img) {
+            img.src = character.sprite || character.image || `/assets/sprites/${character.name.toLowerCase().replace(/\s+/g, '_')}.png`;
+        }
+        
+        // Atualizar nome e nível
+        const nameEl = document.getElementById(`${prefix}Name`);
+        if (nameEl) nameEl.textContent = character.name;
+        
+        const levelEl = document.getElementById(`${prefix}Level`);
+        if (levelEl) levelEl.textContent = character.nivel || character.level || 1;
+        
+        // Atualizar HP
+        const hpEl = document.getElementById(`${prefix}HP`);
+        const maxHpEl = document.getElementById(`${prefix}MaxHP`);
+        if (hpEl) hpEl.textContent = character.currentHP || character.hp || 100;
+        if (maxHpEl) maxHpEl.textContent = character.maxHP || character.hp || 100;
+        
+        // Atualizar MP
+        const mpEl = document.getElementById(`${prefix}MP`);
+        const maxMpEl = document.getElementById(`${prefix}MaxMP`);
+        if (mpEl) mpEl.textContent = character.currentMP || character.mp || 50;
+        if (maxMpEl) maxMpEl.textContent = character.maxMP || character.mp || 50;
+        
+        // Atualizar barras
+        this.updateMiniBar(`${prefix}HPBar`, 
+            character.currentHP || character.hp || 100, 
+            character.maxHP || character.hp || 100
+        );
+        this.updateMiniBar(`${prefix}MPBar`, 
+            character.currentMP || character.mp || 50, 
+            character.maxMP || character.mp || 50
+        );
+        
+        console.log(`⚔️ ${teamType} ativo atualizado:`, character.name);
+    }
+
+    updateReserveSlots(teamType, team) {
+        team.reserve.forEach((reserveIndex, slotIndex) => {
+            const character = team.characters[reserveIndex];
+            const actualSlotIndex = slotIndex + 1; // Slots 1 e 2 (slot 0 está ativo)
+            
+            this.updateCharacterSlot(teamType, actualSlotIndex, character, 'reserve');
+        });
+    }
+
+    updateCharacterSlot(teamType, slotIndex, character, status) {
+        const prefix = `${teamType}`;
+        
+        // Atualizar imagem
+        const img = document.getElementById(`${prefix}Image${slotIndex}`);
+        if (img) {
+            img.src = character.sprite || character.image || `/assets/sprites/${character.name.toLowerCase().replace(/\s+/g, '_')}.png`;
+        }
+        
+        // Atualizar nome e nível
+        const nameEl = document.getElementById(`${prefix}Name${slotIndex}`);
+        if (nameEl) nameEl.textContent = character.name;
+        
+        const levelEl = document.getElementById(`${prefix}Level${slotIndex}`);
+        if (levelEl) levelEl.textContent = character.nivel || character.level || 1;
+        
+        // Atualizar HP
+        const hpEl = document.getElementById(`${prefix}HP${slotIndex}`);
+        const maxHpEl = document.getElementById(`${prefix}MaxHP${slotIndex}`);
+        if (hpEl) hpEl.textContent = character.currentHP || character.hp || 100;
+        if (maxHpEl) maxHpEl.textContent = character.maxHP || character.hp || 100;
+        
+        // Atualizar MP  
+        const mpEl = document.getElementById(`${prefix}MP${slotIndex}`);
+        const maxMpEl = document.getElementById(`${prefix}MaxMP${slotIndex}`);
+        if (mpEl) mpEl.textContent = character.currentMP || character.mp || 50;
+        if (maxMpEl) maxMpEl.textContent = character.maxMP || character.mp || 50;
+        
+        // Atualizar barras
+        this.updateMiniBar(`${prefix}HPBar${slotIndex}`, 
+            character.currentHP || character.hp || 100, 
+            character.maxHP || character.hp || 100
+        );
+        this.updateMiniBar(`${prefix}MPBar${slotIndex}`, 
+            character.currentMP || character.mp || 50, 
+            character.maxMP || character.mp || 50
+        );
+        
+        // Atualizar estado visual do slot
+        const slot = document.getElementById(`${teamType}-slot-${slotIndex}`);
+        if (slot) {
+            slot.className = `character-slot ${status}`;
+            if (status === 'reserve' && teamType === 'player') {
+                slot.classList.add('selectable');
+            }
+        }
+    }
+
+    updateMiniBar(barId, current, max) {
+        const bar = document.getElementById(barId);
+        if (bar) {
+            const percentage = Math.max(0, Math.min(100, (current / max) * 100));
+            bar.style.width = `${percentage}%`;
+        }
     }
 
     updatePlayerCard() {
@@ -744,6 +1078,374 @@ class VintageBattleDemo {
         // This would typically navigate back to main menu
         console.log('Voltando ao menu principal...');
         this.resetBattle();
+    }
+
+    /**
+     * Sistema de Turnos Integrado
+     */
+
+    initializeTurnSystem() {
+        // Inicializar BattleMechanics se disponível
+        if (typeof BattleMechanics !== 'undefined') {
+            this.battleMechanics = new BattleMechanics();
+            
+            // Configurar personagens de teste para o sistema
+            const playerCharacter = {
+                id: "player_test",
+                name: this.playerTeam.characters[0].name || "Herói",
+                hp: 100, maxHP: 100,
+                anima: 50, maxAnima: 50,
+                velocidade: 80,
+                swapsUsed: 0
+            };
+            
+            const enemyCharacter = {
+                id: "enemy_test", 
+                name: "Inimigo",
+                hp: 80, maxHP: 80,
+                anima: 30, maxAnima: 30,
+                velocidade: 60,
+                swapsUsed: 0
+            };
+            
+            // Inicializar batalha no BattleMechanics
+            this.battleMechanics.initializeBattle(playerCharacter, enemyCharacter);
+            
+            // Configurar callbacks para UI
+            this.battleMechanics.onTimeWarningCallback = () => {
+                this.showTimeWarning();
+            };
+            
+            this.battleMechanics.onTimeoutCallback = () => {
+                this.updateTurnIndicator('Jogador', 'Tempo Esgotado...');
+            };
+            
+            this.battleMechanics.onTurnStartCallback = (player) => {
+                this.showTurnUI();
+                this.enableActionButtons();
+                this.updateTurnIndicator(player === 'player' ? 'Jogador' : 'Inimigo', 'Selecionando Ação...');
+            };
+            
+            this.battleMechanics.onTurnEndCallback = (nextPlayer) => {
+                this.hideTurnUI();
+                this.disableActionButtons();
+                if (nextPlayer === 'player') {
+                    setTimeout(() => this.startPlayerTurn(), 1000);
+                } else {
+                    setTimeout(() => this.processEnemyTurn(), 1000);
+                }
+            };
+            
+            this.battleMechanics.initializeTurnSystem();
+            this.addBattleLogEntry('system', '🎯 Sistema de turnos inicializado');
+        } else {
+            console.warn('BattleMechanics não encontrado, usando sistema simplificado');
+        }
+
+        // Inicializar elementos UI
+        this.initializeTurnUI();
+    }
+
+    initializeTurnUI() {
+        // Criar display do timer se não existir
+        if (!document.getElementById('turnTimer')) {
+            const timerHTML = `
+                <div id="turnTimer" class="turn-timer" style="display: none;">
+                    <div class="timer-content">
+                        <div class="timer-circle">
+                            <div class="timer-text">
+                                <span id="timerSeconds">20</span>s
+                            </div>
+                        </div>
+                        <div class="timer-label">Tempo Restante</div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', timerHTML);
+        }
+
+        // Criar indicador de turno
+        if (!document.getElementById('turnIndicator')) {
+            const indicatorHTML = `
+                <div id="turnIndicator" class="turn-indicator" style="display: none;">
+                    <div class="indicator-content">
+                        <span id="currentPlayerName">Jogador</span>
+                        <div class="turn-phase" id="turnPhase">Selecionando Ação...</div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', indicatorHTML);
+        }
+
+        this.timerDisplay = document.getElementById('turnTimer');
+        this.turnIndicator = document.getElementById('turnIndicator');
+    }
+
+    startPlayerTurn() {
+        if (this.battleMechanics) {
+            // Usar BattleMechanics para iniciar turno
+            const turnInfo = this.battleMechanics.startPlayerTurn();
+            this.addBattleLogEntry('system', '🎮 Seu turno! Selecione uma ação (20s)');
+            
+            // Mostrar UI do turno
+            this.showTurnUI();
+            this.enableActionButtons();
+            this.updateTurnIndicator('Jogador', 'Selecionando Ação...');
+            
+            // Iniciar o timer visual na UI
+            this.startTimerDisplay();
+        } else {
+            // Fallback para sistema simplificado
+            this.showTurnUI();
+            this.enableActionButtons();
+            this.updateTurnIndicator('Jogador', 'Selecionando Ação...');
+        }
+    }
+
+    startTimerDisplay() {
+        // Timer visual que sincroniza com o BattleMechanics
+        if (!this.battleMechanics) return;
+        
+        this.timerInterval = setInterval(() => {
+            const status = this.battleMechanics.getTurnStatus();
+            this.updateTimerDisplay(status.timeRemaining);
+        }, 1000);
+    }
+
+    updateTimerDisplay(timeRemaining) {
+        const seconds = Math.max(0, Math.ceil(timeRemaining / 1000));
+        const timerText = document.getElementById('timerSeconds');
+        if (timerText) {
+            timerText.textContent = seconds;
+            
+            // Mudar cor conforme o tempo
+            const timerCircle = document.querySelector('.timer-circle');
+            if (timerCircle) {
+                if (seconds <= 5) {
+                    timerCircle.classList.add('warning');
+                } else {
+                    timerCircle.classList.remove('warning');
+                }
+            }
+        }
+    }
+
+    clearTimerDisplay() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    showTimeWarning() {
+        const timerDisplay = this.timerDisplay;
+        if (timerDisplay) {
+            timerDisplay.classList.add('warning-pulse');
+            setTimeout(() => {
+                timerDisplay.classList.remove('warning-pulse');
+            }, 1000);
+        }
+    }
+
+    declareAction(actionType, actionData = {}) {
+        if (!this.battleMechanics) {
+            this.addBattleLogEntry('error', 'Sistema de turnos não inicializado');
+            return;
+        }
+
+        // Usar BattleMechanics para declarar ação
+        const result = this.battleMechanics.declareAction(actionType, actionData);
+        
+        if (result.success) {
+            this.updateTurnIndicator('Jogador', 'Processando...');
+            this.disableActionButtons();
+            this.clearTimerDisplay();
+            
+            // Processar ação após breve delay
+            setTimeout(() => {
+                this.processPlayerAction();
+            }, 1000);
+        } else {
+            this.addBattleLogEntry('error', `Erro: ${result.reason}`);
+        }
+    }
+
+    processPlayerAction() {
+        if (!this.battleMechanics) {
+            this.addBattleLogEntry('error', 'Sistema de turnos não inicializado');
+            return;
+        }
+
+        // Usar BattleMechanics para processar ação
+        const processResult = this.battleMechanics.processTurn();
+        
+        if (processResult.success) {
+            this.addBattleLogEntry('system', '✅ Ação processada com sucesso');
+        } else {
+            this.addBattleLogEntry('error', `Erro no processamento: ${processResult.error}`);
+        }
+        
+        // Finalizar turno após processamento
+        setTimeout(() => {
+            this.endPlayerTurn();
+        }, 2000);
+    }
+
+    executeSwap(fromCharacter, toCharacter) {
+        if (!this.battleMechanics) {
+            this.addBattleLogEntry('error', 'Sistema de turnos não inicializado');
+            return false;
+        }
+
+        try {
+            const result = this.battleMechanics.executeSwap(fromCharacter, toCharacter);
+            this.addBattleLogEntry('swap', `🔄 Troca executada (${result.swapsUsed}/${result.swapsUsed + result.swapsRemaining})`);
+            return true;
+        } catch (error) {
+            this.addBattleLogEntry('error', `🚫 ${error.message}`);
+            return false;
+        }
+    }
+
+    endPlayerTurn() {
+        if (this.battleMechanics) {
+            this.battleMechanics.endTurn();
+        }
+        this.clearTimerDisplay();
+        this.hideTurnUI();
+    }
+
+    processEnemyTurn() {
+        this.updateTurnIndicator('Inimigo', 'Pensando...');
+        
+        // Simular "pensamento" da IA
+        const thinkingTime = 1000 + Math.random() * 2000;
+        
+        setTimeout(() => {
+            // IA escolhe ação aleatória
+            const actions = ['attack', 'defend', 'meditate'];
+            const randomAction = actions[Math.floor(Math.random() * actions.length)];
+            
+            this.addBattleLogEntry('action', `🤖 Inimigo usa: ${randomAction}`);
+            this.updateTurnIndicator('Inimigo', 'Executando...');
+            
+            // Processar ação do inimigo
+            setTimeout(() => {
+                this.processEnemyAction(randomAction);
+            }, 1000);
+        }, thinkingTime);
+    }
+
+    processEnemyAction(actionType) {
+        // Processar ação do inimigo
+        switch (actionType) {
+            case 'attack':
+                this.enemyAttack();
+                break;
+            case 'defend':
+                this.addBattleLogEntry('defend', '🛡️ Inimigo se defende!');
+                break;
+            case 'meditate':
+                this.addBattleLogEntry('meditate', '🧘 Inimigo medita e recupera energia!');
+                break;
+        }
+        
+        // Finalizar turno do inimigo
+        setTimeout(() => {
+            this.endEnemyTurn();
+        }, 2000);
+    }
+
+    endEnemyTurn() {
+        // Verificar fim de batalha
+        if (this.playerData.hp <= 0 || this.enemyData.hp <= 0) {
+            this.endBattle();
+            return;
+        }
+        
+        // Iniciar próximo turno do jogador
+        setTimeout(() => {
+            this.startPlayerTurn();
+        }, 1000);
+    }
+
+    showTurnUI() {
+        if (this.timerDisplay) {
+            this.timerDisplay.style.display = 'flex';
+        }
+        if (this.turnIndicator) {
+            this.turnIndicator.style.display = 'flex';
+        }
+    }
+
+    hideTurnUI() {
+        if (this.timerDisplay) {
+            this.timerDisplay.style.display = 'none';
+        }
+    }
+
+    updateTurnIndicator(player, phase) {
+        const playerNameEl = document.getElementById('currentPlayerName');
+        const turnPhaseEl = document.getElementById('turnPhase');
+        
+        if (playerNameEl) playerNameEl.textContent = player;
+        if (turnPhaseEl) turnPhaseEl.textContent = phase;
+    }
+
+    enableActionButtons() {
+        const buttons = document.querySelectorAll('.action-btn');
+        buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('disabled');
+        });
+    }
+
+    disableActionButtons() {
+        const buttons = document.querySelectorAll('.action-btn');
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+        });
+    }
+
+    canExecuteAction(actionType, actionData = {}) {
+        if (!this.battleMechanics) {
+            return { canExecute: false, reason: 'Sistema de turnos não inicializado' };
+        }
+
+        return this.battleMechanics.canExecuteAction(actionType, actionData);
+    }
+
+    setupActionButtons() {
+        // Conectar botões de ação com sistema de turnos
+        const attackBtn = document.querySelector('[data-action="attack"]');
+        if (attackBtn) {
+            attackBtn.addEventListener('click', () => {
+                this.declareAction('attack');
+            });
+        }
+
+        const defendBtn = document.querySelector('[data-action="defend"]');
+        if (defendBtn) {
+            defendBtn.addEventListener('click', () => {
+                this.declareAction('defend');
+            });
+        }
+
+        const meditateBtn = document.querySelector('[data-action="meditate"]');
+        if (meditateBtn) {
+            meditateBtn.addEventListener('click', () => {
+                this.declareAction('meditate');
+            });
+        }
+
+        // Conectar botões de skill
+        document.querySelectorAll('.skill-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cost = parseInt(btn.dataset.cost || 0);
+                this.declareAction('skill', { cost });
+            });
+        });
     }
 }
 

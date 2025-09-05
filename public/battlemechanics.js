@@ -14,10 +14,13 @@ class BattleMechanics {
             turn: 'player',
             round: 1,
             isActive: false,
-            battleId: null
+            battleId: null,
+            currentPhase: 'action_selection', // action_selection, priority_resolution, turn_end
+            pendingActions: [],  // Ações aguardando processamento
+            priorityQueue: []    // Queue ordenada por prioridade
         };
 
-        // Combat constants - balanceados para RPGStack v4.3
+        // Combat constants - balanceados para RPGStack v4.4
         this.COMBAT_CONSTANTS = {
             DAMAGE_VARIANCE: 0.4,       // ±20% damage variance
             DEFENSE_EFFICIENCY: 0.7,    // Physical defense reduces 70% of attack
@@ -27,8 +30,43 @@ class BattleMechanics {
             MAX_CRITICAL_CHANCE: 0.3,   // Maximum 30% critical chance
             CRITICAL_BASE_CHANCE: 0.1,  // Base 10% critical multiplier
             MANA_RESTORE_MEDITATE: [15, 25], // Mana restoration range for meditation
-            HEALTH_RESTORE_MEDITATE: [10, 15] // Health restoration range for meditation
+            HEALTH_RESTORE_MEDITATE: [10, 15], // Health restoration range for meditation
+            TURN_TIME_LIMIT: 20000,     // 20 segundos por turno
+            MAX_SWAPS_PER_TURN: 1       // Máximo de 1 troca por turno
         };
+
+        // Tipos de ação permitidos
+        this.ACTION_TYPES = {
+            ATTACK: 'attack',
+            DEFEND: 'defend', 
+            MEDITATE: 'meditate',
+            SKILL: 'skill',
+            SWAP: 'swap'  // Não consome ação, mas limitado por turno
+        };
+
+        // Sistema de Prioridade - 5 níveis de -2 a +2
+        this.PRIORITY_LEVELS = {
+            VERY_HIGH: 2,    // Ações de emergência, intervenções críticas
+            HIGH: 1,         // Ataques rápidos, ações de reação, movimentos evasivos
+            NORMAL: 0,       // Ações padrão de combate, movimentação normal, habilidades básicas
+            LOW: -1,         // Ações de preparação, concentração, requer foco
+            VERY_LOW: -2     // Alterações de campo, ações de grande escala
+        };
+
+        // Configurações de prioridade por tipo de ação
+        this.ACTION_PRIORITIES = {
+            attack: this.PRIORITY_LEVELS.NORMAL,
+            defend: this.PRIORITY_LEVELS.HIGH,      // Defesa tem prioridade alta
+            skill: this.PRIORITY_LEVELS.NORMAL,     // Skills normais têm prioridade normal
+            meditate: this.PRIORITY_LEVELS.LOW,     // Meditação tem prioridade baixa
+            quick_attack: this.PRIORITY_LEVELS.HIGH, // Ataques rápidos
+            emergency_heal: this.PRIORITY_LEVELS.VERY_HIGH, // Cura de emergência
+            field_change: this.PRIORITY_LEVELS.VERY_LOW,    // Mudanças de campo
+            preparation: this.PRIORITY_LEVELS.LOW           // Ações de preparação
+        };
+
+        // Queue de ações para processamento baseado em prioridade
+        this.actionQueue = [];
 
         // AI behavior weights for different enemy types
         this.AI_BEHAVIORS = {
@@ -55,7 +93,8 @@ class BattleMechanics {
                 currentHP: playerCharacter.hp || playerCharacter.maxHP,
                 currentMP: playerCharacter.anima || playerCharacter.mp || 50,
                 defending: false,
-                statusEffects: []
+                statusEffects: [],
+                swapsUsed: 0  // Contador de trocas usadas no turno
             },
             enemy: {
                 ...enemyCharacter,
@@ -63,14 +102,22 @@ class BattleMechanics {
                 currentMP: enemyCharacter.anima || enemyCharacter.mp || 30,
                 defending: false,
                 statusEffects: [],
-                aiType: enemyCharacter.aiType || 'aggressive'
+                aiType: enemyCharacter.aiType || 'aggressive',
+                swapsUsed: 0  // Contador de trocas usadas no turno
             },
             turn: 'player',
             round: 1,
             isActive: true,
             battleId: this.generateBattleId(),
             log: [],
-            winner: null
+            winner: null,
+            // Sistema de Turnos
+            turnTimer: null,           // Timer do turno atual
+            turnTimeLimit: 20000,      // 20 segundos por turno
+            turnStartTime: null,       // Quando o turno começou
+            turnPhase: 'action_select', // action_select, action_declared, processing
+            actionDeclared: null,      // Ação declarada pelo jogador
+            autoActionOnTimeout: 'attack' // Ação padrão se o tempo esgotar
         };
 
         this.addToLog('system', `Batalha iniciada: ${playerCharacter.name} vs ${enemyCharacter.name}!`);
@@ -510,6 +557,1064 @@ class BattleMechanics {
             totalDamage,
             effectsRemoved: effectsRemoved.length,
             characterDefeated: characterData.currentHP <= 0
+        };
+    }
+
+    /**
+     * Sistema de Prioridade - Métodos principais
+     */
+
+    /**
+     * Adiciona uma ação à queue de prioridade
+     * @param {Object} action - Ação a ser adicionada
+     * @param {string} action.actor - 'player' ou 'enemy'
+     * @param {string} action.type - Tipo da ação (attack, defend, skill, etc.)
+     * @param {Object} action.data - Dados específicos da ação
+     * @param {number} action.basePriority - Prioridade base da ação
+     * @param {Array} action.priorityModifiers - Modificadores de prioridade
+     */
+    queueAction(action) {
+        // Calcular prioridade final
+        const finalPriority = this.calculateFinalPriority(action);
+        
+        // Adicionar à queue com prioridade calculada
+        const queuedAction = {
+            ...action,
+            finalPriority: finalPriority,
+            timestamp: Date.now(),
+            speed: this.battleState[action.actor].speed || this.battleState[action.actor].velocidade || 50
+        };
+
+        this.battleState.priorityQueue.push(queuedAction);
+        this.addToLog('system', `Ação ${action.type} de ${this.battleState[action.actor].name} adicionada à queue (Prioridade: ${finalPriority})`);
+    }
+
+    /**
+     * Calcula a prioridade final de uma ação considerando modificadores
+     * @param {Object} action - Ação para calcular prioridade
+     * @returns {number} Prioridade final
+     */
+    calculateFinalPriority(action) {
+        let basePriority = action.basePriority !== undefined 
+            ? action.basePriority 
+            : this.ACTION_PRIORITIES[action.type] || this.PRIORITY_LEVELS.NORMAL;
+        
+        // Aplicar modificadores de prioridade
+        if (action.priorityModifiers) {
+            action.priorityModifiers.forEach(modifier => {
+                basePriority += modifier.value;
+            });
+        }
+
+        // Aplicar modificadores de habilidades especiais do personagem
+        const actor = this.battleState[action.actor];
+        if (actor.priorityModifiers) {
+            actor.priorityModifiers.forEach(modifier => {
+                if (modifier.appliesToAction && modifier.appliesToAction.includes(action.type)) {
+                    basePriority += modifier.value;
+                }
+            });
+        }
+
+        // Limitar prioridade aos valores permitidos (-2 a +2)
+        return Math.max(this.PRIORITY_LEVELS.VERY_LOW, Math.min(this.PRIORITY_LEVELS.VERY_HIGH, basePriority));
+    }
+
+    /**
+     * Ordena a queue de prioridade
+     * Prioridade maior primeiro, depois por velocidade em caso de empate
+     */
+    sortPriorityQueue() {
+        this.battleState.priorityQueue.sort((a, b) => {
+            // Primeiro critério: prioridade (maior primeiro)
+            if (a.finalPriority !== b.finalPriority) {
+                return b.finalPriority - a.finalPriority;
+            }
+            
+            // Segundo critério: velocidade (maior primeiro)
+            if (a.speed !== b.speed) {
+                return b.speed - a.speed;
+            }
+            
+            // Terceiro critério: timestamp (primeiro a ser adicionado)
+            return a.timestamp - b.timestamp;
+        });
+    }
+
+    /**
+     * Processa todas as ações na queue de prioridade
+     * @returns {Array} Resultados de todas as ações processadas
+     */
+    processPriorityQueue() {
+        this.sortPriorityQueue();
+        const results = [];
+        
+        this.addToLog('system', `Processando ${this.battleState.priorityQueue.length} ações por ordem de prioridade...`);
+
+        while (this.battleState.priorityQueue.length > 0) {
+            const action = this.battleState.priorityQueue.shift();
+            
+            // Verificar se o ator ainda pode agir
+            if (!this.canActorPerformAction(action.actor)) {
+                this.addToLog('system', `${this.battleState[action.actor].name} não pode mais agir`);
+                continue;
+            }
+
+            try {
+                const result = this.executeAction(action);
+                results.push(result);
+                
+                // Verificar se a batalha terminou após esta ação
+                if (this.checkBattleEnd()) {
+                    break;
+                }
+            } catch (error) {
+                this.addToLog('error', `Erro ao executar ação: ${error.message}`);
+                continue;
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Executa uma ação específica baseada no seu tipo
+     * @param {Object} action - Ação a ser executada
+     * @returns {Object} Resultado da ação
+     */
+    executeAction(action) {
+        const actor = action.actor;
+        const actorData = this.battleState[actor];
+        const target = actor === 'player' ? 'enemy' : 'player';
+
+        this.addToLog('action', `${actorData.name} executa: ${action.type} (Prioridade: ${action.finalPriority})`);
+
+        switch (action.type) {
+            case 'attack':
+            case 'quick_attack':
+                return this.processAttack(actor, target, action.data);
+                
+            case 'defend':
+                return this.processDefend(actor);
+                
+            case 'meditate':
+                return this.processMeditate(actor);
+                
+            case 'skill':
+                return this.processSkill(actor, target, action.data);
+                
+            case 'emergency_heal':
+                return this.processEmergencyHeal(actor, action.data);
+                
+            default:
+                throw new Error(`Tipo de ação desconhecido: ${action.type}`);
+        }
+    }
+
+    /**
+     * Verifica se um ator pode executar ações
+     * @param {string} actor - 'player' ou 'enemy'
+     * @returns {boolean} Se pode agir
+     */
+    canActorPerformAction(actor) {
+        const actorData = this.battleState[actor];
+        return actorData.currentHP > 0 && !actorData.incapacitated;
+    }
+
+    /**
+     * Processa uma cura de emergência (prioridade muito alta)
+     * @param {string} actor - Ator que executa a ação
+     * @param {Object} data - Dados da cura
+     * @returns {Object} Resultado da cura
+     */
+    processEmergencyHeal(actor, data = {}) {
+        const actorData = this.battleState[actor];
+        const healAmount = data.amount || Math.floor(actorData.maxHP * 0.3);
+        
+        const actualHeal = Math.min(healAmount, actorData.maxHP - actorData.currentHP);
+        actorData.currentHP += actualHeal;
+        
+        this.addToLog('heal', `${actorData.name} usa cura de emergência e recupera ${actualHeal} HP!`);
+        
+        return {
+            type: 'emergency_heal',
+            actor: actor,
+            healAmount: actualHeal,
+            priority: this.PRIORITY_LEVELS.VERY_HIGH,
+            success: true
+        };
+    }
+
+    /**
+     * Limpa a queue de prioridade
+     */
+    clearPriorityQueue() {
+        this.battleState.priorityQueue = [];
+        this.addToLog('system', 'Queue de prioridade limpa');
+    }
+
+    /**
+     * Retorna informações sobre a prioridade de uma ação
+     * @param {string} actionType - Tipo da ação
+     * @returns {Object} Informações de prioridade
+     */
+    getActionPriorityInfo(actionType) {
+        const priority = this.ACTION_PRIORITIES[actionType] || this.PRIORITY_LEVELS.NORMAL;
+        const priorityNames = {
+            [this.PRIORITY_LEVELS.VERY_HIGH]: 'Muito Alta',
+            [this.PRIORITY_LEVELS.HIGH]: 'Alta',
+            [this.PRIORITY_LEVELS.NORMAL]: 'Normal',
+            [this.PRIORITY_LEVELS.LOW]: 'Baixa',
+            [this.PRIORITY_LEVELS.VERY_LOW]: 'Muito Baixa'
+        };
+
+        return {
+            value: priority,
+            name: priorityNames[priority],
+            description: this.getPriorityDescription(priority)
+        };
+    }
+
+    /**
+     * Retorna descrição de um nível de prioridade
+     * @param {number} priority - Nível de prioridade
+     * @returns {string} Descrição
+     */
+    getPriorityDescription(priority) {
+        const descriptions = {
+            [this.PRIORITY_LEVELS.VERY_HIGH]: 'Ações de emergência, intervenções críticas',
+            [this.PRIORITY_LEVELS.HIGH]: 'Ataques rápidos, ações de reação, movimentos evasivos',
+            [this.PRIORITY_LEVELS.NORMAL]: 'Ações padrão de combate, movimentação normal, habilidades básicas',
+            [this.PRIORITY_LEVELS.LOW]: 'Ações de preparação, concentração, requer foco',
+            [this.PRIORITY_LEVELS.VERY_LOW]: 'Alterações de campo, ações de grande escala'
+        };
+        
+        return descriptions[priority] || 'Prioridade desconhecida';
+    }
+
+    /**
+     * Método atualizado do nextTurn para usar sistema de prioridade
+     * @returns {Object} Estado da batalha
+     */
+    nextTurnWithPriority() {
+        if (!this.battleState.isActive) {
+            throw new Error('Batalha não está ativa');
+        }
+
+        // Se há ações na queue, processar por prioridade
+        if (this.battleState.priorityQueue.length > 0) {
+            this.processPriorityQueue();
+        }
+
+        // Processar efeitos de status
+        this.processStatusEffects('player');
+        this.processStatusEffects('enemy');
+
+        // Avançar rodada se necessário
+        this.battleState.round++;
+        this.addToLog('system', `Rodada ${this.battleState.round} iniciada`);
+
+        return this.battleState;
+    }
+
+    /**
+     * Métodos utilitários para facilitar o uso do sistema de prioridade
+     */
+
+    /**
+     * Adiciona uma ação de ataque à queue
+     * @param {string} actor - 'player' ou 'enemy' 
+     * @param {Object} data - Dados do ataque
+     * @param {number} priorityModifier - Modificador de prioridade opcional
+     */
+    queueAttack(actor, data = {}, priorityModifier = 0) {
+        this.queueAction({
+            actor: actor,
+            type: 'attack',
+            data: data,
+            basePriority: this.PRIORITY_LEVELS.NORMAL + priorityModifier
+        });
+    }
+
+    /**
+     * Adiciona uma ação de ataque rápido à queue
+     * @param {string} actor - 'player' ou 'enemy'
+     * @param {Object} data - Dados do ataque
+     */
+    queueQuickAttack(actor, data = {}) {
+        this.queueAction({
+            actor: actor,
+            type: 'quick_attack',
+            data: data,
+            basePriority: this.PRIORITY_LEVELS.HIGH
+        });
+    }
+
+    /**
+     * Adiciona uma ação de defesa à queue
+     * @param {string} actor - 'player' ou 'enemy'
+     */
+    queueDefend(actor) {
+        this.queueAction({
+            actor: actor,
+            type: 'defend',
+            data: {},
+            basePriority: this.PRIORITY_LEVELS.HIGH
+        });
+    }
+
+    /**
+     * Adiciona uma skill à queue
+     * @param {string} actor - 'player' ou 'enemy'
+     * @param {Object} skillData - Dados da skill
+     * @param {number} priorityOverride - Prioridade específica da skill
+     */
+    queueSkill(actor, skillData, priorityOverride = null) {
+        this.queueAction({
+            actor: actor,
+            type: 'skill',
+            data: skillData,
+            basePriority: priorityOverride !== null ? priorityOverride : this.PRIORITY_LEVELS.NORMAL
+        });
+    }
+
+    /**
+     * Adiciona meditação à queue
+     * @param {string} actor - 'player' ou 'enemy'
+     */
+    queueMeditate(actor) {
+        this.queueAction({
+            actor: actor,
+            type: 'meditate',
+            data: {},
+            basePriority: this.PRIORITY_LEVELS.LOW
+        });
+    }
+
+    /**
+     * Adiciona cura de emergência à queue
+     * @param {string} actor - 'player' ou 'enemy'
+     * @param {Object} data - Dados da cura
+     */
+    queueEmergencyHeal(actor, data = {}) {
+        this.queueAction({
+            actor: actor,
+            type: 'emergency_heal',
+            data: data,
+            basePriority: this.PRIORITY_LEVELS.VERY_HIGH
+        });
+    }
+
+    /**
+     * Verifica se alguma ação na queue tem prioridade maior que a especificada
+     * @param {number} priorityThreshold - Limite de prioridade
+     * @returns {boolean} Se existe ação com prioridade maior
+     */
+    hasHigherPriorityActions(priorityThreshold) {
+        return this.battleState.priorityQueue.some(action => 
+            action.finalPriority > priorityThreshold
+        );
+    }
+
+    /**
+     * Conta quantas ações de um tipo específico estão na queue
+     * @param {string} actionType - Tipo da ação
+     * @returns {number} Quantidade de ações do tipo
+     */
+    countActionsInQueue(actionType) {
+        return this.battleState.priorityQueue.filter(action => 
+            action.type === actionType
+        ).length;
+    }
+
+    /**
+     * Remove todas as ações de um ator específico da queue
+     * @param {string} actor - 'player' ou 'enemy'
+     * @returns {number} Quantidade de ações removidas
+     */
+    removeActorActionsFromQueue(actor) {
+        const initialLength = this.battleState.priorityQueue.length;
+        this.battleState.priorityQueue = this.battleState.priorityQueue.filter(action => 
+            action.actor !== actor
+        );
+        const removedCount = initialLength - this.battleState.priorityQueue.length;
+        
+        if (removedCount > 0) {
+            this.addToLog('system', `${removedCount} ações de ${this.battleState[actor].name} removidas da queue`);
+        }
+        
+        return removedCount;
+    }
+
+    /**
+     * Obtém preview da ordem de execução das ações na queue
+     * @returns {Array} Array com preview das ações ordenadas
+     */
+    getExecutionOrderPreview() {
+        const queueCopy = [...this.battleState.priorityQueue];
+        queueCopy.sort((a, b) => {
+            if (a.finalPriority !== b.finalPriority) {
+                return b.finalPriority - a.finalPriority;
+            }
+            if (a.speed !== b.speed) {
+                return b.speed - a.speed;
+            }
+            return a.timestamp - b.timestamp;
+        });
+
+        return queueCopy.map(action => ({
+            actor: this.battleState[action.actor].name,
+            actionType: action.type,
+            priority: action.finalPriority,
+            speed: action.speed
+        }));
+    }
+
+    /**
+     * Adiciona modificador de prioridade a um personagem
+     * @param {string} actor - 'player' ou 'enemy'
+     * @param {Object} modifier - Modificador de prioridade
+     */
+    addPriorityModifier(actor, modifier) {
+        const actorData = this.battleState[actor];
+        if (!actorData.priorityModifiers) {
+            actorData.priorityModifiers = [];
+        }
+        
+        actorData.priorityModifiers.push(modifier);
+        this.addToLog('system', `${actorData.name} recebe modificador de prioridade: ${modifier.name}`);
+    }
+
+    /**
+     * Remove modificador de prioridade de um personagem
+     * @param {string} actor - 'player' ou 'enemy'
+     * @param {string} modifierName - Nome do modificador a remover
+     */
+    removePriorityModifier(actor, modifierName) {
+        const actorData = this.battleState[actor];
+        if (actorData.priorityModifiers) {
+            const initialLength = actorData.priorityModifiers.length;
+            actorData.priorityModifiers = actorData.priorityModifiers.filter(mod => 
+                mod.name !== modifierName
+            );
+            
+            if (actorData.priorityModifiers.length < initialLength) {
+                this.addToLog('system', `${actorData.name} perde modificador de prioridade: ${modifierName}`);
+            }
+        }
+    }
+
+    /**
+     * Sistema de Turnos com Timer
+     */
+
+    /**
+     * Inicia um novo turno com timer
+     * @param {string} player - 'player' ou 'enemy'
+     * @returns {Object} Estado do turno
+     */
+    startTurn(player = this.battleState.turn) {
+        if (!this.battleState.isActive) {
+            throw new Error('Batalha não está ativa');
+        }
+
+        // Limpar timer anterior se existir
+        this.clearTurnTimer();
+
+        // Resetar contadores de troca
+        this.battleState.player.swapsUsed = 0;
+        this.battleState.enemy.swapsUsed = 0;
+
+        // Configurar novo turno
+        this.battleState.turn = player;
+        this.battleState.turnPhase = 'action_select';
+        this.battleState.actionDeclared = null;
+        this.battleState.turnStartTime = Date.now();
+
+        this.addToLog('system', `Turno de ${this.battleState[player].name} iniciado (${this.COMBAT_CONSTANTS.TURN_TIME_LIMIT / 1000}s)`);
+
+        // Iniciar timer apenas para jogador humano
+        if (player === 'player') {
+            this.startTurnTimer();
+        }
+
+        return {
+            currentPlayer: player,
+            timeLimit: this.COMBAT_CONSTANTS.TURN_TIME_LIMIT,
+            phase: this.battleState.turnPhase,
+            swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN - this.battleState[player].swapsUsed
+        };
+    }
+
+    /**
+     * Inicia o timer do turno
+     */
+    startTurnTimer() {
+        this.battleState.turnTimer = setTimeout(() => {
+            this.onTurnTimeout();
+        }, this.COMBAT_CONSTANTS.TURN_TIME_LIMIT);
+
+        // Aviso aos 5 segundos restantes
+        setTimeout(() => {
+            if (this.battleState.turnPhase === 'action_select') {
+                this.addToLog('warning', `⏰ 5 segundos restantes!`);
+                this.onTurnTimeWarning();
+            }
+        }, this.COMBAT_CONSTANTS.TURN_TIME_LIMIT - 5000);
+    }
+
+    /**
+     * Limpa o timer do turno atual
+     */
+    clearTurnTimer() {
+        if (this.battleState.turnTimer) {
+            clearTimeout(this.battleState.turnTimer);
+            this.battleState.turnTimer = null;
+        }
+    }
+
+    /**
+     * Callback quando o tempo do turno se esgota
+     */
+    onTurnTimeout() {
+        if (this.battleState.turnPhase !== 'action_select') {
+            return; // Turno já foi processado
+        }
+
+        const currentPlayer = this.battleState.turn;
+        this.addToLog('timeout', `⏰ Tempo esgotado! ${this.battleState[currentPlayer].name} executa ação padrão.`);
+
+        // Executar ação padrão (ataque básico)
+        this.declareAction(this.battleState.autoActionOnTimeout, {});
+    }
+
+    /**
+     * Callback para aviso de tempo
+     */
+    onTurnTimeWarning() {
+        // Callback para interface - pode ser sobrescrito
+        if (this.onTimeWarningCallback) {
+            this.onTimeWarningCallback();
+        }
+    }
+
+    /**
+     * Declara uma ação para o jogador atual
+     * @param {string} actionType - Tipo da ação (attack, defend, meditate, skill)
+     * @param {Object} actionData - Dados específicos da ação
+     * @returns {Object} Resultado da declaração
+     */
+    declareAction(actionType, actionData = {}) {
+        if (!this.battleState.isActive) {
+            throw new Error('Batalha não está ativa');
+        }
+
+        if (this.battleState.turnPhase !== 'action_select') {
+            throw new Error('Não é possível declarar ação nesta fase do turno');
+        }
+
+        const currentPlayer = this.battleState.turn;
+        
+        // Validar tipo de ação
+        if (!Object.values(this.ACTION_TYPES).includes(actionType) || actionType === this.ACTION_TYPES.SWAP) {
+            throw new Error(`Tipo de ação inválido: ${actionType}`);
+        }
+
+        // Limpar timer
+        this.clearTurnTimer();
+
+        // Salvar ação declarada
+        this.battleState.actionDeclared = {
+            type: actionType,
+            data: actionData,
+            actor: currentPlayer,
+            declaredAt: Date.now()
+        };
+
+        this.battleState.turnPhase = 'action_declared';
+        
+        const timeTaken = Date.now() - this.battleState.turnStartTime;
+        this.addToLog('action', `${this.battleState[currentPlayer].name} declara: ${actionType} (${Math.floor(timeTaken/1000)}s)`);
+
+        return {
+            success: true,
+            actionType: actionType,
+            actionData: actionData,
+            timeTaken: timeTaken
+        };
+    }
+
+    /**
+     * Executa troca de personagem (não consome ação)
+     * @param {string} fromCharacterId - ID do personagem atual
+     * @param {string} toCharacterId - ID do personagem para trocar
+     * @returns {Object} Resultado da troca
+     */
+    executeSwap(fromCharacterId, toCharacterId) {
+        if (!this.battleState.isActive) {
+            throw new Error('Batalha não está ativa');
+        }
+
+        const currentPlayer = this.battleState.turn;
+        const playerData = this.battleState[currentPlayer];
+
+        // Verificar se ainda pode fazer trocas
+        if (playerData.swapsUsed >= this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN) {
+            throw new Error(`Máximo de ${this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN} troca(s) por turno já utilizada(s)`);
+        }
+
+        // Validar personagens (aqui seria integrado com sistema 3v3)
+        if (!fromCharacterId || !toCharacterId || fromCharacterId === toCharacterId) {
+            throw new Error('IDs de personagem inválidos para troca');
+        }
+
+        // Executar troca
+        playerData.swapsUsed++;
+        
+        this.addToLog('swap', `${playerData.name} troca de personagem (${playerData.swapsUsed}/${this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN})`);
+
+        return {
+            success: true,
+            fromCharacter: fromCharacterId,
+            toCharacter: toCharacterId,
+            swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN - playerData.swapsUsed
+        };
+    }
+
+    /**
+     * Processa o turno atual (executa ação declarada)
+     * @returns {Object} Resultado do processamento
+     */
+    processTurn() {
+        if (!this.battleState.isActive) {
+            throw new Error('Batalha não está ativa');
+        }
+
+        if (this.battleState.turnPhase !== 'action_declared') {
+            throw new Error('Nenhuma ação foi declarada para processar');
+        }
+
+        this.battleState.turnPhase = 'processing';
+        const action = this.battleState.actionDeclared;
+        
+        try {
+            // Adicionar ação à queue de prioridade
+            this.queueAction({
+                actor: action.actor,
+                type: action.type,
+                data: action.data,
+                declaredAt: action.declaredAt
+            });
+
+            // Se ambos os jogadores declararam ações, processar queue
+            const result = this.processPriorityQueue();
+
+            // Limpar ação declarada
+            this.battleState.actionDeclared = null;
+            
+            return {
+                success: true,
+                results: result,
+                battleState: this.getBattleState()
+            };
+
+        } catch (error) {
+            this.addToLog('error', `Erro ao processar turno: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Finaliza o turno atual e passa para o próximo jogador
+     * @returns {Object} Estado do novo turno
+     */
+    endTurn() {
+        if (!this.battleState.isActive) {
+            throw new Error('Batalha não está ativa');
+        }
+
+        this.clearTurnTimer();
+        
+        const currentPlayer = this.battleState.turn;
+        const nextPlayer = currentPlayer === 'player' ? 'enemy' : 'player';
+        
+        // Processar efeitos de fim de turno
+        this.processEndOfTurnEffects(currentPlayer);
+        
+        // Verificar se a batalha terminou
+        if (this.checkBattleEnd()) {
+            return this.battleState;
+        }
+
+        // Se for turno do enemy (IA), processar automaticamente
+        if (nextPlayer === 'enemy') {
+            this.startTurn(nextPlayer);
+            this.processAITurn();
+        } else {
+            this.startTurn(nextPlayer);
+        }
+
+        return this.getBattleState();
+    }
+
+    /**
+     * Processa turno da IA automaticamente
+     */
+    processAITurn() {
+        if (this.battleState.turn !== 'enemy') {
+            return;
+        }
+
+        // Simular tempo de "pensamento" da IA (1-3 segundos)
+        const thinkingTime = 1000 + Math.random() * 2000;
+        
+        setTimeout(() => {
+            if (this.battleState.turn === 'enemy' && this.battleState.turnPhase === 'action_select') {
+                const aiAction = this.selectAIAction();
+                this.declareAction(aiAction.type, aiAction.data);
+                this.processTurn();
+                this.endTurn();
+            }
+        }, thinkingTime);
+    }
+
+    /**
+     * Processa efeitos de fim de turno
+     * @param {string} player - Jogador que está terminando o turno
+     */
+    processEndOfTurnEffects(player) {
+        const playerData = this.battleState[player];
+        
+        // Resetar defesa
+        if (playerData.defending) {
+            playerData.defending = false;
+            this.addToLog('system', `${playerData.name} para de se defender`);
+        }
+
+        // Processar efeitos de status
+        this.processStatusEffects(player);
+        
+        // Avançar round se necessário
+        if (player === 'enemy') {
+            this.battleState.round++;
+        }
+    }
+
+    /**
+     * Verifica se o jogador pode executar uma ação específica
+     * @param {string} actionType - Tipo da ação
+     * @param {Object} actionData - Dados da ação
+     * @returns {Object} Resultado da verificação
+     */
+    canExecuteAction(actionType, actionData = {}) {
+        if (!this.battleState.isActive) {
+            return { canExecute: false, reason: 'Batalha não está ativa' };
+        }
+
+        const currentPlayer = this.battleState.turn;
+        const playerData = this.battleState[currentPlayer];
+
+        switch (actionType) {
+            case this.ACTION_TYPES.ATTACK:
+                return { canExecute: true };
+
+            case this.ACTION_TYPES.DEFEND:
+                return { canExecute: true };
+
+            case this.ACTION_TYPES.MEDITATE:
+                return { canExecute: true };
+
+            case this.ACTION_TYPES.SKILL:
+                if (!actionData.skillId) {
+                    return { canExecute: false, reason: 'ID da skill não especificado' };
+                }
+                
+                const requiredAnima = actionData.animaCost || 0;
+                if (playerData.currentMP < requiredAnima) {
+                    return { canExecute: false, reason: 'Ânima insuficiente' };
+                }
+                
+                return { canExecute: true };
+
+            case this.ACTION_TYPES.SWAP:
+                if (playerData.swapsUsed >= this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN) {
+                    return { canExecute: false, reason: 'Máximo de trocas por turno atingido' };
+                }
+                return { canExecute: true };
+
+            default:
+                return { canExecute: false, reason: 'Tipo de ação desconhecido' };
+        }
+    }
+
+    /**
+     * Obtém informações do turno atual
+     * @returns {Object} Informações do turno
+     */
+    getCurrentTurnInfo() {
+        const currentPlayer = this.battleState.turn;
+        const timeElapsed = this.battleState.turnStartTime ? 
+            Date.now() - this.battleState.turnStartTime : 0;
+        const timeRemaining = Math.max(0, this.COMBAT_CONSTANTS.TURN_TIME_LIMIT - timeElapsed);
+
+        return {
+            currentPlayer: currentPlayer,
+            playerName: this.battleState[currentPlayer].name,
+            phase: this.battleState.turnPhase,
+            timeElapsed: timeElapsed,
+            timeRemaining: timeRemaining,
+            swapsUsed: this.battleState[currentPlayer].swapsUsed,
+            swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN - this.battleState[currentPlayer].swapsUsed,
+            actionDeclared: this.battleState.actionDeclared,
+            availableActions: Object.values(this.ACTION_TYPES).filter(action => action !== 'swap')
+        };
+    }
+
+    /**
+     * SISTEMA DE TURNOS - Lógica Principal
+     */
+
+    initializeTurnSystem() {
+        // Inicializar propriedades específicas do sistema de turnos
+        this.battleState.turnTimer = null;
+        this.battleState.turnStartTime = null;
+        this.battleState.turnPhase = 'selection';
+        this.battleState.actionDeclared = null;
+        this.battleState.timeRemaining = 0;
+        
+        // Resetar contadores de troca
+        if (this.battleState.player) {
+            this.battleState.player.swapsUsed = 0;
+        }
+        if (this.battleState.enemy) {
+            this.battleState.enemy.swapsUsed = 0;
+        }
+        
+        // Callbacks para UI (podem ser definidos externamente)
+        this.onTimeWarningCallback = null;
+        this.onTimeoutCallback = null;
+        this.onTurnStartCallback = null;
+        this.onTurnEndCallback = null;
+        
+        this.addToLog('system', '🎯 Sistema de turnos inicializado');
+        return true;
+    }
+
+    startPlayerTurn() {
+        this.clearTurnTimer();
+        
+        // Configurar estado do turno
+        this.battleState.turn = 'player';
+        this.battleState.turnPhase = 'action_select';
+        this.battleState.turnStartTime = Date.now();
+        this.battleState.timeRemaining = this.COMBAT_CONSTANTS.TURN_TIME_LIMIT;
+        this.battleState.actionDeclared = null;
+        
+        // Resetar trocas para novo turno
+        this.battleState.player.swapsUsed = 0;
+        this.battleState.enemy.swapsUsed = 0;
+        
+        this.addToLog('system', '🎮 Seu turno! Selecione uma ação (20s)');
+        
+        // Iniciar timer
+        this.startTurnTimer();
+        
+        // Callback para UI
+        if (this.onTurnStartCallback) {
+            this.onTurnStartCallback('player');
+        }
+        
+        return {
+            currentPlayer: 'player',
+            timeLimit: this.COMBAT_CONSTANTS.TURN_TIME_LIMIT,
+            swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN,
+            phase: 'action_select'
+        };
+    }
+
+    startTurnTimer() {
+        this.battleState.turnTimer = setInterval(() => {
+            this.battleState.timeRemaining -= 1000;
+            
+            // Aviso aos 5 segundos
+            if (this.battleState.timeRemaining === 5000) {
+                this.addToLog('warning', '⚠️ 5 segundos restantes!');
+                if (this.onTimeWarningCallback) {
+                    this.onTimeWarningCallback();
+                }
+            }
+            
+            // Timeout
+            if (this.battleState.timeRemaining <= 0) {
+                this.onTurnTimeout();
+            }
+        }, 1000);
+    }
+
+    onTurnTimeout() {
+        this.clearTurnTimer();
+        this.addToLog('timeout', '⏰ Tempo esgotado! Executando ataque básico...');
+        
+        if (this.onTimeoutCallback) {
+            this.onTimeoutCallback();
+        }
+        
+        // Executar ação padrão
+        this.declareAction('attack');
+    }
+
+    declareAction(actionType, actionData = {}) {
+        if (this.battleState.turnPhase !== 'action_select') {
+            return { success: false, reason: 'Não é possível declarar ação nesta fase' };
+        }
+
+        this.clearTurnTimer();
+        this.battleState.turnPhase = 'processing';
+        
+        this.battleState.actionDeclared = {
+            type: actionType,
+            data: actionData,
+            declaredAt: Date.now()
+        };
+
+        const timeTaken = Date.now() - this.battleState.turnStartTime;
+        this.addToLog('action', `⚔️ Ação declarada: ${actionType} (${Math.floor(timeTaken/1000)}s)`);
+        
+        return {
+            success: true,
+            actionType: actionType,
+            timeTaken: timeTaken,
+            actionData: actionData
+        };
+    }
+
+    processTurn() {
+        if (!this.battleState.actionDeclared) {
+            return { success: false, reason: 'Nenhuma ação declarada' };
+        }
+
+        const action = this.battleState.actionDeclared;
+        
+        try {
+            let result;
+            switch (action.type) {
+                case 'attack':
+                    result = this.processAttack('player', 'enemy', action.data);
+                    break;
+                case 'defend':
+                    result = this.processDefend('player');
+                    break;
+                case 'meditate':
+                    result = this.processMeditate('player');
+                    break;
+                case 'skill':
+                    result = this.processSkill('player', 'enemy', action.data);
+                    break;
+                default:
+                    throw new Error(`Tipo de ação desconhecido: ${action.type}`);
+            }
+            
+            return { success: true, result: result };
+        } catch (error) {
+            this.addToLog('error', `Erro ao processar ação: ${error.message}`);
+            return { success: false, error: error.message };
+        }
+    }
+
+    endTurn() {
+        this.clearTurnTimer();
+        this.battleState.turnPhase = 'turn_end';
+        this.battleState.actionDeclared = null;
+        
+        // Verificar fim de batalha
+        if (this.checkBattleEnd()) {
+            return;
+        }
+        
+        // Alternar para próximo jogador
+        this.battleState.turn = this.battleState.turn === 'player' ? 'enemy' : 'player';
+        
+        if (this.onTurnEndCallback) {
+            this.onTurnEndCallback(this.battleState.turn);
+        }
+        
+        this.addToLog('system', `🔄 Turno finalizado, próximo: ${this.battleState.turn}`);
+    }
+
+    executeSwap(fromCharacter, toCharacter) {
+        const currentPlayer = this.battleState.turn;
+        const playerData = this.battleState[currentPlayer];
+        
+        if (playerData.swapsUsed >= this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN) {
+            throw new Error('Máximo de trocas por turno atingido');
+        }
+        
+        playerData.swapsUsed++;
+        
+        this.addToLog('swap', `🔄 Troca executada (${playerData.swapsUsed}/${this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN})`);
+        
+        return {
+            success: true,
+            fromCharacter: fromCharacter,
+            toCharacter: toCharacter,
+            swapsUsed: playerData.swapsUsed,
+            swapsRemaining: this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN - playerData.swapsUsed
+        };
+    }
+
+    canExecuteAction(actionType, actionData = {}) {
+        if (this.battleState.turnPhase !== 'action_select') {
+            return { canExecute: false, reason: 'Não é possível agir nesta fase' };
+        }
+
+        if (this.battleState.turn !== 'player') {
+            return { canExecute: false, reason: 'Não é seu turno' };
+        }
+
+        const player = this.battleState.player;
+
+        switch (actionType) {
+            case 'attack':
+                return { canExecute: true };
+                
+            case 'defend':
+                return { canExecute: true };
+                
+            case 'meditate':
+                return { canExecute: true };
+                
+            case 'skill':
+                const requiredMP = actionData.cost || actionData.animaCost || 0;
+                if (player.anima < requiredMP) {
+                    return { canExecute: false, reason: 'Ânima insuficiente' };
+                }
+                return { canExecute: true };
+                
+            case 'swap':
+                if (player.swapsUsed >= this.COMBAT_CONSTANTS.MAX_SWAPS_PER_TURN) {
+                    return { canExecute: false, reason: 'Máximo de trocas atingido' };
+                }
+                return { canExecute: true };
+        }
+        
+        return { canExecute: false, reason: 'Ação desconhecida' };
+    }
+
+    clearTurnTimer() {
+        if (this.battleState.turnTimer) {
+            clearInterval(this.battleState.turnTimer);
+            this.battleState.turnTimer = null;
+        }
+    }
+
+    getTurnStatus() {
+        return {
+            currentPhase: this.battleState.turnPhase,
+            currentPlayer: this.battleState.turn,
+            timeRemaining: this.battleState.timeRemaining,
+            swapsUsed: this.battleState[this.battleState.turn]?.swapsUsed || 0,
+            actionDeclared: !!this.battleState.actionDeclared,
+            isPlayerTurn: this.battleState.turn === 'player'
         };
     }
 }

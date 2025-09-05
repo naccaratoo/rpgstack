@@ -408,9 +408,9 @@
             "EA32D10F2D": { // Shi Wuxing
                 name: "☯️ Ciclo Perpétuo dos Elementos",
                 trigger: "A cada 5 turnos",
-                description: "A harmonia com os cinco elementos restaura energia e aprimora a sabedoria. A cada ciclo completo de Wu Xing, Shi recupera mana e ganha bônus crescente em todas as habilidades elementais.",
+                description: "A harmonia com os cinco elementos restaura energia e aprimora a sabedoria. A cada ciclo completo de Wu Xing, Shi recupera Ânima e ganha bônus crescente em todas as habilidades elementais.",
                 effects: [
-                    { name: "Regeneração de Qi", value: "20+ MP" },
+                    { name: "Regeneração de Qi", value: "20+ Ânima" }
                     { name: "Maestria Elemental", value: "+10% por ciclo" },
                     { name: "Harmonia Natural", value: "Resistência a debuffs" }
                 ],
@@ -597,7 +597,7 @@
                         <div class="skill-item" onclick="testSkill('${characterId}', '${skill.id}')">
                             <div class="skill-name">${skill.name}</div>
                             <div class="skill-details">
-                                <span>Custo: ${skill.manaCost} mana</span>
+                                <span>Custo: ${skill.animaCost} Ânima</span>
                                 <span>Dano: ${skill.damage}</span>
                                 <span>Tipo: ${skill.type}</span>
                             </div>
@@ -642,7 +642,7 @@
                                 <div class="skill-item" onclick="testSkill('${char.id}', '${skill.id}')">
                                     <div class="skill-name">${skill.name}</div>
                                     <div class="skill-details">
-                                        <span>Custo: ${skill.manaCost} mana</span>
+                                        <span>Custo: ${skill.animaCost} Ânima</span>
                                         <span>Dano: ${skill.damage}</span>
                                     </div>
                                 </div>
@@ -674,7 +674,7 @@
                 const mockCaster = {
                     ...character,
                     currentHP: character.hp || 100,
-                    currentMP: character.anima || 50,
+                    currentAnima: character.anima || 50,
                     statusEffects: []
                 };
                 

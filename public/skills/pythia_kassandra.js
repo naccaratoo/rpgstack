@@ -28,17 +28,17 @@ class PythiaKassandraSkills {
         const skillData = {
             name: "🔮 Visão Oracular dos Três Destinos",
             description: "Vislumbra futuros possíveis para alterar o combate",
-            manaCost: 35,
+            animaCost: 35,
             baseDamage: 70,
             type: "prediction",
             element: "divine_sight"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia divina insuficiente para a visão oracular');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Inicializar sistema de profecias
         if (!caster.prophecySystem) {
@@ -109,7 +109,7 @@ class PythiaKassandraSkills {
 
         return {
             damage: damage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'oracle_vision',
                 futureGlimpses: futureVisions,
@@ -133,17 +133,17 @@ class PythiaKassandraSkills {
         const skillData = {
             name: "🌪️ Tempestade Profética de Delfos",
             description: "Invoca os ventos sagrados carregados com fragmentos de profecias",
-            manaCost: 50,
+            animaCost: 50,
             baseDamage: 95,
             type: "divine_storm",
             element: "prophetic_wind"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia divina insuficiente para invocar a tempestade');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         let damage = skillData.baseDamage;
 
@@ -189,7 +189,7 @@ class PythiaKassandraSkills {
 
         return {
             damage: totalDamage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'prophetic_storm',
                 windBursts: windBursts,
@@ -210,16 +210,16 @@ class PythiaKassandraSkills {
         const skillData = {
             name: "👁️ Olho de Apolo",
             description: "Canaliza a visão do deus para revelar e explorar todas as fraquezas",
-            manaCost: 25,
+            animaCost: 25,
             type: "divine_insight",
             element: "solar_sight"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia divina insuficiente para canalizar Apolo');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Revelar informações completas do inimigo
         const enemyAnalysis = this.performCompleteAnalysis(target);
@@ -249,7 +249,7 @@ class PythiaKassandraSkills {
 
         return {
             damage: 0,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'divine_eye_opening',
                 solarBeam: true,
@@ -320,7 +320,7 @@ class PythiaKassandraSkills {
         return {
             currentHP: target.currentHP,
             maxHP: target.maxHP,
-            currentMP: target.currentMP,
+            currentAnima: target.currentAnima,
             attack: target.attack,
             defense: target.defense,
             criticalChance: target.critico || 2.0,
@@ -402,7 +402,7 @@ class PythiaKassandraSkills {
                 {
                     id: 'visao_oracular_dos_tres_destinos',
                     name: '🔮 Visão Oracular dos Três Destinos',
-                    manaCost: 35,
+                    animaCost: 35,
                     damage: 70,
                     type: 'prediction',
                     cooldown: 0,
@@ -411,7 +411,7 @@ class PythiaKassandraSkills {
                 {
                     id: 'tempestade_profetica_de_delfos',
                     name: '🌪️ Tempestade Profética de Delfos',
-                    manaCost: 50,
+                    animaCost: 50,
                     damage: 95,
                     type: 'divine_storm',
                     cooldown: 2,
@@ -420,7 +420,7 @@ class PythiaKassandraSkills {
                 {
                     id: 'olho_de_apolo',
                     name: '👁️ Olho de Apolo',
-                    manaCost: 25,
+                    animaCost: 25,
                     damage: 0,
                     type: 'divine_insight',
                     cooldown: 3,

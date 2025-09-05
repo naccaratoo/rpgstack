@@ -29,17 +29,17 @@ class ShiWuxingSkills {
         const skillData = {
             name: "🌊 Ciclo dos Cinco Elementos",
             description: "Rotaciona através dos elementos Wu Xing com efeitos únicos",
-            manaCost: 35,
+            animaCost: 35,
             baseDamage: 75,
             type: "elemental_cycle",
             element: "wu_xing"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Qi insuficiente para canalizar os elementos');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Inicializar ou avançar ciclo elemental
         if (!caster.elementalCycle) {
@@ -134,7 +134,7 @@ class ShiWuxingSkills {
 
         return {
             damage: damage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: `element_${currentElement}`,
                 elementalGlow: elementData.color,
@@ -154,16 +154,16 @@ class ShiWuxingSkills {
         const skillData = {
             name: "☯️ Harmonia do Yin Yang",
             description: "Equilibra energia vital entre Shi e o alvo",
-            manaCost: 25,
+            animaCost: 25,
             type: "balance_harmony",
             element: "yin_yang"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Qi insuficiente para canalizar Yin Yang');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Calcular HP médio entre os dois
         const totalHP = caster.currentHP + target.currentHP;
@@ -199,7 +199,7 @@ class ShiWuxingSkills {
         return {
             damage: Math.abs(targetHPChange) < Math.abs(casterHPChange) ? Math.abs(targetHPChange) : 0,
             healing: casterHPChange > 0 ? casterHPChange : 0,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'yin_yang_circle',
                 harmonyGlow: true,
@@ -218,17 +218,17 @@ class ShiWuxingSkills {
         const skillData = {
             name: "🐉 Invocação do Dragão Imperial",
             description: "Canaliza o poder do dragão chinês para ataque devastador",
-            manaCost: 60,
+            animaCost: 60,
             baseDamage: 110,
             type: "dragon_summon",
             element: "imperial_dragon"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Qi insuficiente para invocar o Dragão Imperial');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         let damage = skillData.baseDamage;
 
@@ -275,7 +275,7 @@ class ShiWuxingSkills {
         return {
             damage: damage,
             isCritical: isCritical,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'imperial_dragon_descent',
                 dragonRoar: true,
@@ -298,9 +298,9 @@ class ShiWuxingSkills {
             
             // A cada ciclo completo, recuperar um pouco de mana
             if (cycleCount % 5 === 0 && cycleCount > 0) {
-                const manaRestore = 20 + (completeCycles * 5);
-                character.currentMP = Math.min(character.maxMP, character.currentMP + manaRestore);
-                battle.addToLog('cultural', `🌟 Shi completa um ciclo Wu Xing e recupera ${manaRestore} de Qi!`);
+                const animaRestore = 20 + (completeCycles * 5);
+                character.currentAnima = Math.min(character.maxAnima, character.currentAnima + animaRestore);
+                battle.addToLog('cultural', `🌟 Shi completa um ciclo Wu Xing e recupera ${animaRestore} de Qi!`);
             }
         }
     }
@@ -347,7 +347,7 @@ class ShiWuxingSkills {
                 {
                     id: 'ciclo_dos_cinco_elementos',
                     name: '🌊 Ciclo dos Cinco Elementos',
-                    manaCost: 35,
+                    animaCost: 35,
                     damage: 75,
                     type: 'elemental_cycle',
                     cooldown: 0,
@@ -356,7 +356,7 @@ class ShiWuxingSkills {
                 {
                     id: 'harmonia_do_yin_yang',
                     name: '☯️ Harmonia do Yin Yang',
-                    manaCost: 25,
+                    animaCost: 25,
                     damage: 0,
                     type: 'balance_harmony',
                     cooldown: 1,
@@ -365,7 +365,7 @@ class ShiWuxingSkills {
                 {
                     id: 'invocacao_do_dragao_imperial',
                     name: '🐉 Invocação do Dragão Imperial',
-                    manaCost: 60,
+                    animaCost: 60,
                     damage: 110,
                     type: 'dragon_summon',
                     cooldown: 3,

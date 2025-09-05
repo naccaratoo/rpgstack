@@ -55,17 +55,17 @@ class YamazakiKarakuriSkills {
         const skillData = {
             name: "⚙️ Invocação do Karakuri Kyūdō",
             description: "Constrói e ativa autômato arqueiro de precisão extrema",
-            manaCost: 40,
+            animaCost: 40,
             baseDamage: 85,
             type: "karakuri_summon",
             element: "mechanical_precision"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia de construção insuficiente');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Inicializar sistema karakuri
         if (!caster.karakuriState) {
@@ -143,7 +143,7 @@ class YamazakiKarakuriSkills {
 
         return {
             damage: totalDamage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'karakuri_archery',
                 mechanicalGears: true,
@@ -165,16 +165,16 @@ class YamazakiKarakuriSkills {
         const skillData = {
             name: "🍵 Ritual do Karakuri Chadō",
             description: "Ativa autômato servo do chá que cura e harmoniza o grupo",
-            manaCost: 35,
+            animaCost: 35,
             type: "healing_automation",
             element: "harmonious_service"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Serenidade insuficiente para o ritual');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Sistema karakuri
         caster.karakuriState = caster.karakuriState || { 
@@ -265,7 +265,7 @@ class YamazakiKarakuriSkills {
             damage: 0,
             healing: totalHealing,
             groupHealing: groupHealing,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'tea_ceremony',
                 steamRising: true,
@@ -287,17 +287,17 @@ class YamazakiKarakuriSkills {
         const skillData = {
             name: "🛡️ Defesa do Karakuri Bushi",
             description: "Ativa autômato guerreiro para proteção e contra-ataques",
-            manaCost: 50,
+            animaCost: 50,
             baseDamage: 70,
             type: "defensive_automation",
             element: "protective_mechanism"
         };
 
-        if (caster.currentMP < skillData.manaCost) {
+        if (caster.currentAnima < skillData.animaCost) {
             throw new Error('Energia defensiva insuficiente');
         }
 
-        caster.currentMP -= skillData.manaCost;
+        caster.currentAnima -= skillData.animaCost;
 
         // Sistema karakuri
         caster.karakuriState = caster.karakuriState || { 
@@ -385,7 +385,7 @@ class YamazakiKarakuriSkills {
 
         return {
             damage: damage,
-            manaCost: skillData.manaCost,
+            animaCost: skillData.animaCost,
             effects: {
                 animation: 'bushi_stance',
                 defensivePosture: true,
@@ -507,7 +507,7 @@ class YamazakiKarakuriSkills {
                 {
                     id: 'invocacao_do_karakuri_kyudo',
                     name: '⚙️ Invocação do Karakuri Kyūdō',
-                    manaCost: 40,
+                    animaCost: 40,
                     damage: 85,
                     type: 'karakuri_summon',
                     cooldown: 2,
@@ -516,7 +516,7 @@ class YamazakiKarakuriSkills {
                 {
                     id: 'ritual_do_karakuri_chado',
                     name: '🍵 Ritual do Karakuri Chadō',
-                    manaCost: 35,
+                    animaCost: 35,
                     damage: 0,
                     type: 'healing_automation',
                     cooldown: 2,
@@ -525,7 +525,7 @@ class YamazakiKarakuriSkills {
                 {
                     id: 'defesa_do_karakuri_bushi',
                     name: '🛡️ Defesa do Karakuri Bushi',
-                    manaCost: 50,
+                    animaCost: 50,
                     damage: 70,
                     type: 'defensive_automation',
                     cooldown: 3,

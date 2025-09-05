@@ -322,16 +322,16 @@ class SkillLoader {
                     {
                         id: 'ataque_basico',
                         name: '⚔️ Ataque Básico',
-                        manaCost: 0,
+                        animaCost: 0,
                         damage: 50,
                         type: 'basic_attack',
                         cooldown: 0,
-                        description: 'Ataque básico sem custo de mana'
+                        description: 'Ataque básico sem custo de Ânima'
                     },
                     {
                         id: 'investida_poderosa',
                         name: '💥 Investida Poderosa',
-                        manaCost: 25,
+                        animaCost: 25,
                         damage: 80,
                         type: 'power_strike',
                         cooldown: 1,
@@ -345,13 +345,13 @@ class SkillLoader {
                 culturalNarrative: `${caster.name} desfere um golpe básico!`
             }),
             investidaPoderosa: (battle, caster, target) => {
-                if (caster.currentMP < 25) {
-                    throw new Error('Mana insuficiente');
+                if (caster.currentAnima < 25) {
+                    throw new Error('Ânima insuficiente');
                 }
-                caster.currentMP -= 25;
+                caster.currentAnima -= 25;
                 return {
                     damage: 80 + Math.floor(Math.random() * 30),
-                    manaCost: 25,
+                    animaCost: 25,
                     effects: { animation: 'power_strike' },
                     culturalNarrative: `${caster.name} concentra energia em um ataque poderoso!`
                 };
