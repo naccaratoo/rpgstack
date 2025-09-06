@@ -62,14 +62,22 @@ export class DamageCalculationSystem {
    * Fórmula: (Ataque × Multiplicador + Dano_Base) × (100 ÷ (100 + Defesa)) × Modificadores
    */
   calculatePhysicalDamage(attacker, defender, skill, options = {}) {
+    // console.log('🔍 [DEBUG] calculatePhysicalDamage called with skill:', skill);
     const stats = this._getValidatedStats(attacker, defender);
     const skillData = this._getSkillData(skill);
+    // console.log('🔍 [DEBUG] skillData:', skillData);
     
     // Componentes básicos
     const attackPower = stats.attacker.attack || 1;
     const defense = stats.defender.defense || 0;
     const multiplier = skillData.multiplier || this.skillMultipliers[skillData.category] || 1.0;
     const baseDamage = skillData.baseDamage || this._getBaseDamageForCategory(skillData.category);
+    
+    // console.log('🔍 [DEBUG] Damage calculation components:');
+    // console.log('  - attackPower:', attackPower);
+    // console.log('  - defense:', defense);
+    // console.log('  - multiplier:', multiplier);
+    // console.log('  - baseDamage:', baseDamage);
 
     // Cálculo base
     let damage = (attackPower * multiplier + baseDamage) * (100 / (100 + defense));
@@ -80,6 +88,13 @@ export class DamageCalculationSystem {
 
     // Aplicar caps e arredondamento
     damage = this._applyCapsAndRounding(damage);
+    // console.log('🔍 [DEBUG] Final damage after caps:', damage);
+
+    // Validar se damage é um número válido
+    if (isNaN(damage) || damage === undefined) {
+      console.error('❌ [DEBUG] Invalid damage calculated, using 1 as fallback');
+      damage = 1;
+    }
 
     // Log do cálculo
     if (this.config.logCalculations) {
@@ -95,6 +110,7 @@ export class DamageCalculationSystem {
       });
     }
 
+    // console.log('🔍 [DEBUG] Returning damage object:', { damage: Math.floor(damage) });
     return {
       damage: Math.floor(damage),
       type: 'physical',
@@ -489,7 +505,10 @@ export class DamageCalculationSystem {
    * Valida e obtém stats dos personagens
    */
   _getValidatedStats(attacker, defender) {
-    return {
+    // console.log('🔍 [DEBUG] _getValidatedStats - attacker:', attacker);
+    // console.log('🔍 [DEBUG] _getValidatedStats - defender:', defender);
+    
+    const stats = {
       attacker: {
         attack: attacker.attack || attacker.ataque || 1,
         special_attack: attacker.special_attack || attacker.ataque_especial || attacker.attack || 1,
@@ -500,12 +519,29 @@ export class DamageCalculationSystem {
         spirit: defender.spirit || defender.defesa_especial || defender.defense || 0
       }
     };
+    
+    // console.log('🔍 [DEBUG] Final stats:', stats);
+    return stats;
   }
 
   /**
    * Processa dados da skill
    */
   _getSkillData(skill) {
+    // Para ataques básicos (skill = null)
+    if (!skill) {
+      return {
+        multiplier: null,
+        baseDamage: null,
+        category: 'basic',
+        criticalBonus: 0,
+        criticalMultiplier: this.config.baseCriticalMultiplier,
+        element: null,
+        specialEffect: null,
+        flatDamageBonus: 0
+      };
+    }
+
     return {
       multiplier: skill.multiplier || null,
       baseDamage: skill.baseDamage || skill.damage || null,

@@ -699,19 +699,7 @@
             margin: 0 auto;
         }
 
-        .level-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .level-1-10 { background: #28a745; }
-        .level-11-20 { background: #ffc107; color: #000; }
-        .level-21-30 { background: #fd7e14; }
-        .level-31-plus { background: #dc3545; }
+        /* Level system CSS removido */
 
         .ai-type {
             padding: 3px 8px;
@@ -1055,6 +1043,7 @@
         .table-container::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
+
     </style>
 </head>
 <body>
@@ -1097,10 +1086,7 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="level">Nível</label>
-                            <input type="number" id="level" name="level" min="1" max="50" value="1" required>
-                        </div>
+                        <!-- Level removido do sistema -->
                         <div class="form-group">
                             <label>Sprite do Personagem</label>
                             <div class="sprite-file-container" id="spriteContainer" onclick="triggerImageUpload()">
@@ -1128,18 +1114,18 @@
                             <input type="number" id="hp" name="hp" min="1" value="100" required>
                         </div>
                         <div class="form-group">
-                            <label for="attack">Ataque</label>
+                            <label for="attack">Físico</label>
                             <input type="number" id="attack" name="attack" min="1" value="10" required>
                         </div>
                         <div class="form-group">
-                            <label for="ataque_especial">Ataque Especial</label>
+                            <label for="ataque_especial">Especial</label>
                             <input type="number" id="ataque_especial" name="ataque_especial" min="1" value="10" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="defense">Defesa</label>
+                            <label for="defense">Defesa Física</label>
                             <input type="number" id="defense" name="defense" min="0" value="5" required>
                         </div>
                         <div class="form-group">
@@ -1155,6 +1141,46 @@
                             <option value="">Selecione uma classe...</option>
                             <!-- Classes serão carregadas dinamicamente -->
                         </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cultura">Cultura</label>
+                            <select id="cultura" name="cultura">
+                                <option value="">Selecione uma cultura...</option>
+                                <option value="Romana">🏛️ Romana</option>
+                                <option value="Chinesa">🐲 Chinesa</option>
+                                <option value="Eslava">⚔️ Eslava</option>
+                                <option value="Grega Antiga">🏺 Grega Antiga</option>
+                                <option value="Asteca/Mexica">🐆 Asteca/Mexica</option>
+                                <option value="Renascimento Italiano">🎨 Renascimento Italiano</option>
+                                <option value="Japão Período Edo">🎭 Japão Período Edo</option>
+                                <option value="Lakota/Dakota">🌪️ Lakota/Dakota</option>
+                                <option value="Viking/Nórdico">🐺 Viking/Nórdico</option>
+                                <option value="Califado Abássida">🌙 Califado Abássida</option>
+                                <option value="Inglaterra Vitoriana">🎩 Inglaterra Vitoriana</option>
+                                <option value="Reino de Oyó/Iorubá">🪘 Reino de Oyó/Iorubá</option>
+                                <option value="Império Russo">🇷🇺 Império Russo</option>
+                                <option value="Reino Ashanti/Gana">🟨 Reino Ashanti/Gana</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subclasse">Subclasse</label>
+                            <select id="subclasse" name="subclasse">
+                                <option value="">Nenhuma subclasse</option>
+                                <option value="Lutador">Lutador</option>
+                                <option value="Armamentista">Armamentista</option>
+                                <option value="Arcano">Arcano</option>
+                                <option value="Naturalista">Naturalista</option>
+                                <option value="Oráculo">Oráculo</option>
+                                <option value="Artífice">Artífice</option>
+                                <option value="Diplomata">Diplomata</option>
+                                <option value="Curandeiro">Curandeiro</option>
+                                <option value="Ritualista">Ritualista</option>
+                                <option value="Mercador">Mercador</option>
+                                <option value="Guardião">Guardião</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -1255,13 +1281,15 @@
                                 <th>ID (Hex)</th>
                                 <th>Nome</th>
                                 <th>Sprite</th>
-                                <th>Level</th>
+                                <!-- Level removido -->
                                 <th>HP</th>
-                                <th>ATK</th>
-                                <th>ATK ESP</th>
-                                <th>DEF</th>
-                                <th>DEF ESP</th>
+                                <th>FÍsico</th>
+                                <th>Especial</th>
+                                <th>Def. Física</th>
+                                <th>Def. Especial</th>
                                 <th>Classe</th>
+                                <th>Cultura</th>
+                                <th>Subclasse</th>
                                 <th>Ânima</th>
                                 <th>Crítico</th>
                                 <th>IA</th>
@@ -1270,7 +1298,7 @@
                         </thead>
                         <tbody id="charactersTableBody">
                             <tr>
-                                <td colspan="13" style="text-align: center; padding: 20px; color: #6c757d;">
+                                <td colspan="15" style="text-align: center; padding: 20px; color: #6c757d;">
                                     Carregando personagens...
                                 </td>
                             </tr>
@@ -1300,8 +1328,7 @@
                         <input type="text" id="editName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="editLevel">Level</label>
-                        <input type="number" id="editLevel" name="level" min="1" required>
+                        <!-- Level removido do sistema -->
                     </div>
                 </div>
 
@@ -1342,18 +1369,18 @@
                         <input type="number" id="editHp" name="hp" min="1" required>
                     </div>
                     <div class="form-group">
-                        <label for="editAttack">Ataque</label>
+                        <label for="editAttack">Físico</label>
                         <input type="number" id="editAttack" name="attack" min="1" required>
                     </div>
                     <div class="form-group">
-                        <label for="editAtaqueEspecial">Ataque Especial</label>
+                        <label for="editAtaqueEspecial">Especial</label>
                         <input type="number" id="editAtaqueEspecial" name="ataque_especial" min="1" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="editDefense">Defesa</label>
+                        <label for="editDefense">Defesa Física</label>
                         <input type="number" id="editDefense" name="defense" min="0" required>
                     </div>
                     <div class="form-group">
@@ -1369,6 +1396,46 @@
                         <select id="editClasse" name="classe" required>
                             <option value="">Selecione uma classe...</option>
                             <!-- Classes serão carregadas dinamicamente -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCultura">Cultura</label>
+                        <select id="editCultura" name="cultura">
+                            <option value="">Selecione uma cultura...</option>
+                            <option value="Romana">🏛️ Romana</option>
+                            <option value="Chinesa">🐲 Chinesa</option>
+                            <option value="Eslava">⚔️ Eslava</option>
+                            <option value="Grega Antiga">🏺 Grega Antiga</option>
+                            <option value="Asteca/Mexica">🐆 Asteca/Mexica</option>
+                            <option value="Renascimento Italiano">🎨 Renascimento Italiano</option>
+                            <option value="Japão Período Edo">🎭 Japão Período Edo</option>
+                            <option value="Lakota/Dakota">🌪️ Lakota/Dakota</option>
+                            <option value="Viking/Nórdico">🐺 Viking/Nórdico</option>
+                            <option value="Califado Abássida">🌙 Califado Abássida</option>
+                            <option value="Inglaterra Vitoriana">🎩 Inglaterra Vitoriana</option>
+                            <option value="Reino de Oyó/Iorubá">🪘 Reino de Oyó/Iorubá</option>
+                            <option value="Império Russo">🇷🇺 Império Russo</option>
+                            <option value="Reino Ashanti/Gana">🟨 Reino Ashanti/Gana</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editSubclasse">Subclasse</label>
+                        <select id="editSubclasse" name="subclasse">
+                            <option value="">Nenhuma subclasse</option>
+                            <option value="Lutador">Lutador</option>
+                            <option value="Armamentista">Armamentista</option>
+                            <option value="Arcano">Arcano</option>
+                            <option value="Naturalista">Naturalista</option>
+                            <option value="Oráculo">Oráculo</option>
+                            <option value="Artífice">Artífice</option>
+                            <option value="Diplomata">Diplomata</option>
+                            <option value="Curandeiro">Curandeiro</option>
+                            <option value="Ritualista">Ritualista</option>
+                            <option value="Mercador">Mercador</option>
+                            <option value="Guardião">Guardião</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -2458,9 +2525,7 @@
                 const card = document.createElement('div');
                 card.className = 'character-card';
                 
-                const levelClass = char.level <= 10 ? 'level-1-10' : 
-                                 char.level <= 20 ? 'level-11-20' : 
-                                 char.level <= 30 ? 'level-21-30' : 'level-31-plus';
+                // Level system removido
 
                 // Criar seção da sprite
                 let spriteSection = `<div class="sprite-placeholder">🎭</div>`;
@@ -2500,7 +2565,7 @@
                         <div>
                             <div class="stat-item" style="display: inline-block; margin-right: 10px;">
                                 <div class="stat-label">Level</div>
-                                <div class="stat-value level-badge ${levelClass}">${char.level}</div>
+                                <!-- Level removido -->
                             </div>
                             <div class="stat-item" style="display: inline-block;">
                                 <div class="stat-label">IA</div>
@@ -2515,25 +2580,33 @@
                             <div class="stat-value">${char.hp}</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">ATK</div>
+                            <div class="stat-label">Físico</div>
                             <div class="stat-value">${char.attack}</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">ATK ESP</div>
+                            <div class="stat-label">Especial</div>
                             <div class="stat-value">${char.ataque_especial || char.attack || 'N/A'}</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">DEF</div>
+                            <div class="stat-label">Def. Física</div>
                             <div class="stat-value">${char.defense}</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">DEF ESP</div>
+                            <div class="stat-label">Def. Especial</div>
                             <div class="stat-value">${char.defesa_especial || 'N/A'}</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-label">Classe</div>
                             <div class="stat-value class-badge">${char.classe || 'Lutador'}</div>
                         </div>
+                        ${char.cultura ? `<div class="stat-item">
+                            <div class="stat-label">Cultura</div>
+                            <div class="stat-value culture-badge">${char.cultura}</div>
+                        </div>` : ''}
+                        ${char.subclasse ? `<div class="stat-item">
+                            <div class="stat-label">Subclasse</div>
+                            <div class="stat-value subclass-badge">${char.subclasse}</div>
+                        </div>` : ''}
                         <div class="stat-item">
                             <div class="stat-label">Ânima</div>
                             <div class="stat-value">${char.anima || 100}</div>
@@ -2566,7 +2639,7 @@
             if (!characters || Object.keys(characters).length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="13" style="text-align: center; padding: 20px; color: #6c757d;">
+                        <td colspan="15" style="text-align: center; padding: 20px; color: #6c757d;">
                             Nenhum personagem cadastrado ainda.
                         </td>
                     </tr>
@@ -2592,9 +2665,7 @@
             pageCharacters.forEach(char => {
                 const row = document.createElement('tr');
                 
-                const levelClass = char.level <= 10 ? 'level-1-10' : 
-                                 char.level <= 20 ? 'level-11-20' : 
-                                 char.level <= 30 ? 'level-21-30' : 'level-31-plus';
+                // Level system removido
 
                 // Criar célula da sprite com imagem real + cache busting
                 let spriteCell = `<div class="sprite-placeholder">🎭</div>`;
@@ -2634,13 +2705,15 @@
                     <td>${hexIdCell}</td>
                     <td><strong title="${char.name}">${truncatedName}</strong></td>
                     <td class="character-sprite">${spriteCell}</td>
-                    <td><span class="level-badge ${levelClass}">${char.level}</span></td>
+                    <!-- Level removido -->
                     <td>${char.hp}</td>
                     <td>${char.attack}</td>
                     <td>${char.ataque_especial || char.attack || 'N/A'}</td>
                     <td>${char.defense}</td>
                     <td>${char.defesa_especial || 'N/A'}</td>
                     <td><span class="class-badge">${char.classe || 'Lutador'}</span></td>
+                    <td>${char.cultura ? `<span class="culture-badge">${char.cultura}</span>` : 'N/A'}</td>
+                    <td>${char.subclasse ? `<span class="subclass-badge">${char.subclasse}</span>` : 'N/A'}</td>
                     <td>${char.anima || 100}</td>
                     <td>${char.critico || 1.0}</td>
                     <td><span class="ai-type ai-${char.ai_type}">${char.ai_type || 'N/A'}</span></td>
@@ -2840,9 +2913,9 @@
                 Object.entries(allCharacters).forEach(([key, char]) => {
                     const matchesName = char.name.toLowerCase().includes(searchTerm);
                     const matchesId = char.id.toLowerCase().includes(searchTerm);
-                    const matchesLevel = char.level.toString().includes(searchTerm);
+                    // Level search removido
                     
-                    if (matchesName || matchesId || matchesLevel) {
+                    if (matchesName || matchesId) {
                         filtered[key] = char;
                     }
                 });
@@ -2930,6 +3003,9 @@
                 document.getElementById('editDefense').value = character.defense;
                 document.getElementById('editDefesaEspecial').value = character.defesa_especial || 10;
                 document.getElementById('editClasse').value = character.classe || '';
+                document.getElementById('editCultura').value = character.cultura || '';
+                
+                document.getElementById('editSubclasse').value = character.subclasse || '';
                 document.getElementById('editAnima').value = character.anima || 100;
                 document.getElementById('editCritico').value = character.critico || 1.0;
                 document.getElementById('editAiType').value = character.ai_type;
@@ -3764,7 +3840,9 @@
             });
         }
 
-        // Iniciar quando a página carregar
+
+
+
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>

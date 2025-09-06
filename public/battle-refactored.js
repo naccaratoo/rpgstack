@@ -349,11 +349,11 @@ class VintageBattleUI {
         this.updatePlayerCard(battleState.player);
         this.updateEnemyCard(battleState.enemy);
         
-        // Atualizar barras de vida/mana
+        // Atualizar barras de vida/ânima
         this.updateHealthBar('player', battleState.player.currentHP, battleState.player.maxHP);
-        this.updateManaBar('player', battleState.player.currentMP, battleState.player.maxMP || battleState.player.anima || 50);
+        this.updateAnimaBar('player', battleState.player.currentAnima, battleState.player.maxAnima || battleState.player.anima || 50);
         this.updateHealthBar('enemy', battleState.enemy.currentHP, battleState.enemy.maxHP);
-        this.updateManaBar('enemy', battleState.enemy.currentMP, battleState.enemy.maxMP || battleState.enemy.anima || 30);
+        this.updateAnimaBar('enemy', battleState.enemy.currentAnima, battleState.enemy.maxAnima || battleState.enemy.anima || 30);
         
         // Atualizar turno
         this.updateTurnDisplay(battleState.turn, battleState.round);
@@ -415,12 +415,12 @@ class VintageBattleUI {
         }
     }
 
-    updateManaBar(target, current, max) {
-        const manaBar = document.getElementById(`${target}ManaBar`);
-        if (manaBar) {
+    updateAnimaBar(target, current, max) {
+        const animaBar = document.getElementById(`${target}AnimaBar`);
+        if (animaBar) {
             const percentage = (current / max) * 100;
-            manaBar.style.width = `${percentage}%`;
-            manaBar.style.background = 'linear-gradient(90deg, var(--emerald), var(--emerald-light))';
+            animaBar.style.width = `${percentage}%`;
+            animaBar.style.background = 'linear-gradient(90deg, var(--emerald), var(--emerald-light))';
         }
     }
 
@@ -455,9 +455,9 @@ class VintageBattleUI {
     getPlayerSkills() {
         // Retornar skills padrão para demonstração
         return [
-            { skillName: 'Lâmina Etérea', skillMana: 15, damage: [25, 35] },
-            { skillName: 'Escudo Arcano', skillMana: 20, damage: [0, 0] },
-            { skillName: 'Chama Interior', skillMana: 25, damage: [35, 50] }
+            { skillName: 'Lâmina Etérea', skillAnima: 15, damage: [25, 35] },
+            { skillName: 'Escudo Arcano', skillAnima: 20, damage: [0, 0] },
+            { skillName: 'Chama Interior', skillAnima: 25, damage: [35, 50] }
         ];
     }
 
@@ -490,10 +490,10 @@ class VintageBattleUI {
 
         const skills = this.getPlayerSkills();
         const battleState = this.battleEngine.getBattleState();
-        const currentMP = battleState.player.currentMP;
+        const currentAnima = battleState.player.currentAnima;
 
         skillsList.innerHTML = skills.map((skill, index) => {
-            const canUse = currentMP >= skill.skillMana;
+            const canUse = currentAnima >= skill.skillAnima;
             const damageText = skill.damage[0] === skill.damage[1] ? 
                 `${skill.damage[0]}` : 
                 `${skill.damage[0]}-${skill.damage[1]}`;
@@ -504,7 +504,7 @@ class VintageBattleUI {
                     <div class="skill-details">
                         <div class="skill-name">${skill.skillName}</div>
                         <div class="skill-stats">
-                            <span class="skill-cost">${skill.skillMana} ânima</span>
+                            <span class="skill-cost">${skill.skillAnima} ânima</span>
                             <span class="skill-damage">${damageText} dano</span>
                         </div>
                     </div>

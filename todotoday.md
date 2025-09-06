@@ -28,8 +28,8 @@
 - [x] **Sistema de skills totalmente integrado com APIs seguras**
 
 #### 🌍 Skills dos 15 Personagens - TODOS IMPLEMENTADOS
-- [x] **Aiyana Windtalker** (8A9B0C1D2E) - Lakota/Guardião da Natureza
-- [x] **Björn Ulfhednar** (3F4E5D6C7B) - Viking/Guardião da Natureza  
+- [x] **Aiyana Windtalker** (8A9B0C1D2E) - Lakota/Naturalista
+- [x] **Björn Ulfhednar** (3F4E5D6C7B) - Viking/Naturalista  
 - [x] **Hadji Abdul-Rahman** (6A7B8C9D0E) - Abássida/Mercador-Diplomata
 - [x] **Lady Catherine Ashworth** (1F2E3D4C5B) - Vitoriana/Mercador-Diplomata
 - [x] **Ọlọ́yẹ̀ Ifá Babalawo** (5A6B7C8D9E) - Iorubá/Curandeiro Ritualista
@@ -59,8 +59,8 @@
 5. ✅ **Asteca/Mexica** - Itzel Nahualli (Oráculo) - 3 skills
 6. ✅ **Italiana Renascentista** - Giovanni da Ferrara (Artífice) - 3 skills
 7. ✅ **Japonesa Edo** - Yamazaki Karakuri (Artífice) - 3 skills
-8. ✅ **Lakota (Nativo Americana)** - Aiyana Windtalker (Guardião da Natureza) - 3 skills
-9. ✅ **Viking/Nórdica** - Björn Ulfhednar (Guardião da Natureza) - 3 skills
+8. ✅ **Lakota (Nativo Americana)** - Aiyana Windtalker (Naturalista) - 3 skills
+9. ✅ **Viking/Nórdica** - Björn Ulfhednar (Naturalista) - 3 skills
 10. ✅ **Abássida/Árabe** - Hadji Abdul-Rahman (Mercador-Diplomata) - 3 skills
 11. ✅ **Vitoriana/Inglesa** - Lady Catherine Ashworth (Mercador-Diplomata) - 3 skills
 12. ✅ **Iorubá/Africana** - Ọlọ́yẹ̀ Ifá Babalawo (Curandeiro Ritualista) - 3 skills

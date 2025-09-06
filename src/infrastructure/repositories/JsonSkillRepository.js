@@ -561,6 +561,12 @@ export class JsonSkillRepository extends SkillRepository {
             ...skillData,
             id: new SkillId(skillData.id),
             classe: skillData.classe || skillData.element || 'Lutador',
+            multi_hit: skillData.multi_hit || null,
+            buffs: skillData.buffs || null,
+            battlefield_effects: skillData.battlefield_effects || null,
+            cultural_authenticity: skillData.cultural_authenticity || '',
+            affinity: skillData.affinity || '',
+            character_id: skillData.character_id || null,
             created_at: new Date(skillData.created_at),
             updated_at: new Date(skillData.updated_at),
           });

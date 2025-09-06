@@ -154,15 +154,57 @@ export class SecureBattleMechanics {
     async initializeCharacterState(characterId) {
         const character = await this.loadCharacterFromDatabase(characterId);
         
+        // Carregar skills completas do sistema de skills
+        const skillsWithDetails = [];
+        console.log(`🔍 [SKILL DEBUG] Carregando skills para ${characterId}:`, character.name);
+        console.log(`🔍 [SKILL DEBUG] Skills do personagem:`, character.skills);
+        
+        if (character.skills && Array.isArray(character.skills)) {
+            for (const skillRef of character.skills) {
+                const skillId = skillRef.skillId || skillRef.id || skillRef;
+                console.log(`🔍 [SKILL DEBUG] Tentando carregar skill ${skillId}`);
+                try {
+                    const skill = await this.getSkillFromServer(skillId);
+                    if (skill) {
+                        console.log(`✅ [SKILL DEBUG] Skill carregada:`, skill.name);
+                        skillsWithDetails.push({
+                            skillId: skill.id,
+                            name: skill.name,
+                            description: skill.description,
+                            damage: skill.damage,
+                            anima_cost: skill.anima_cost,
+                            cooldown: skill.cooldown,
+                            type: skill.type,
+                            effects: skill.effects || [],
+                            source: skillRef.source || 'skills_module'
+                        });
+                    } else {
+                        console.warn(`⚠️ [SKILL DEBUG] Skill ${skillId} não encontrada no servidor`);
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Erro ao carregar skill ${skillId} para ${characterId}:`, error.message);
+                }
+            }
+        } else {
+            console.warn(`⚠️ [SKILL DEBUG] Personagem ${characterId} não tem skills ou skills não é um array:`, character.skills);
+        }
+        
+        console.log(`🎯 [SKILL DEBUG] Total de ${skillsWithDetails.length} skills carregadas para ${characterId}`);
+        
         return {
             id: characterId,
+            name: character.name || `Character ${characterId}`,
             currentHP: character.hp || character.maxHP || 100,
             maxHP: character.hp || character.maxHP || 100,
             currentMP: character.mp || character.maxMP || character.anima || 50,
             maxMP: character.mp || character.maxMP || character.anima || 50,
             status: 'active',
             buffs: [],
-            debuffs: []
+            debuffs: [],
+            skills: skillsWithDetails,
+            classe: character.classe,
+            cultura: character.cultura,
+            sprite: character.sprite
         };
     }
 
@@ -319,6 +361,168 @@ export class SecureBattleMechanics {
         if (rand < 0.3) return 'skill';
         if (rand < 0.15) return 'defend';
         return 'meditate';
+    }
+
+    /**
+     * Sistema de Efeitos com Coeficientes Dinâmicos
+     */
+    async processSkillEffects(skill, attacker, target, battleId) {
+        const results = {
+            damage: 0,
+            healing: 0,
+            statusEffects: [],
+            buffs: [],
+            specialActions: [],
+            battlefieldEffects: []
+        };
+
+        if (!skill.effects || skill.effects.length === 0) {
+            return results;
+        }
+
+        for (const effectType of skill.effects) {
+            switch (effectType) {
+                case 'multi_hit':
+                    if (skill.multi_hit) {
+                        const multiHitResult = await this.processMultiHitEffect(skill.multi_hit, attacker, target);
+                        results.damage += multiHitResult.totalDamage;
+                        results.specialActions.push(`Multi-Hit: ${multiHitResult.hits} ataques por ${multiHitResult.damagePerHit} cada`);
+                    }
+                    break;
+
+                case 'critical_boost':
+                    if (skill.buffs && skill.buffs.critical_rate) {
+                        const buff = skill.buffs.critical_rate;
+                        results.buffs.push({
+                            type: 'critical_rate',
+                            target: 'attacker',
+                            bonus: buff.bonus,
+                            duration: buff.duration,
+                            description: buff.description
+                        });
+                    }
+                    break;
+
+                case 'physical_reduction':
+                    if (skill.buffs && skill.buffs.physical_reduction) {
+                        const buff = skill.buffs.physical_reduction;
+                        results.buffs.push({
+                            type: 'physical_reduction',
+                            target: 'attacker',
+                            reduction: buff.reduction_percentage,
+                            duration: buff.duration,
+                            description: buff.description
+                        });
+                    }
+                    break;
+
+                case 'critical_immunity':
+                    if (skill.buffs && skill.buffs.critical_immunity) {
+                        const buff = skill.buffs.critical_immunity;
+                        results.buffs.push({
+                            type: 'critical_immunity',
+                            target: 'attacker',
+                            immunity: true,
+                            duration: buff.duration,
+                            description: buff.description
+                        });
+                    }
+                    break;
+
+                case 'healing':
+                    const healAmount = skill.damage || 50; // Skills de cura usam campo damage como heal amount
+                    results.healing += healAmount;
+                    results.specialActions.push(`Cura: +${healAmount} HP`);
+                    break;
+
+                case 'intangibility':
+                    results.buffs.push({
+                        type: 'intangibility',
+                        target: 'attacker',
+                        immunity: true,
+                        duration: skill.duration || 2,
+                        description: 'Intangível a ataques físicos'
+                    });
+                    break;
+
+                case 'spiritual_stun':
+                    results.statusEffects.push({
+                        type: 'spiritual_stun',
+                        target: 'enemy',
+                        duration: skill.duration || 1,
+                        description: 'Atordoamento espiritual - perde próximo turno'
+                    });
+                    break;
+
+                case 'commercial_immunity':
+                    if (skill.buffs && skill.buffs.commercial_immunity) {
+                        const buff = skill.buffs.commercial_immunity;
+                        results.buffs.push({
+                            type: 'commercial_immunity',
+                            target: 'attacker',
+                            affinity_immunity: buff.affinity_immunity,
+                            duration: buff.duration,
+                            description: buff.description
+                        });
+                    }
+                    break;
+
+                case 'battlefield_commercial_restriction':
+                    if (skill.battlefield_effects && skill.battlefield_effects.commercial_restriction) {
+                        const effect = skill.battlefield_effects.commercial_restriction;
+                        results.battlefieldEffects = results.battlefieldEffects || [];
+                        results.battlefieldEffects.push({
+                            type: 'commercial_restriction',
+                            target: effect.target,
+                            restriction_type: effect.restriction_type,
+                            restricted_affinity: effect.restricted_affinity,
+                            duration: effect.duration,
+                            description: effect.description
+                        });
+                    }
+                    break;
+
+                default:
+                    // Efeitos genéricos que não requerem processamento especial
+                    console.log(`ℹ️  Efeito genérico aplicado: ${effectType}`);
+                    results.specialActions.push(`Efeito: ${effectType}`);
+                    break;
+            }
+        }
+
+        return results;
+    }
+
+    async processMultiHitEffect(multiHitData, attacker, target) {
+        const { hits, damage_per_hit, independent_crits } = multiHitData;
+        let totalDamage = 0;
+        const hitResults = [];
+
+        for (let i = 0; i < hits; i++) {
+            let hitDamage = damage_per_hit;
+            
+            // Aplicar chance crítica independente para cada hit se configurado
+            if (independent_crits) {
+                const critChance = 0.15; // 15% base critical chance
+                if (Math.random() < critChance) {
+                    hitDamage = Math.floor(hitDamage * 1.5);
+                    hitResults.push({ hit: i + 1, damage: hitDamage, critical: true });
+                } else {
+                    hitResults.push({ hit: i + 1, damage: hitDamage, critical: false });
+                }
+            } else {
+                hitResults.push({ hit: i + 1, damage: hitDamage, critical: false });
+            }
+            
+            totalDamage += hitDamage;
+        }
+
+        return {
+            totalDamage,
+            hits,
+            damagePerHit: damage_per_hit,
+            hitResults
+        };
     }
 
     /**
@@ -490,12 +694,17 @@ export class SecureBattleMechanics {
                 activeIndex: battle.playerTeam.activeIndex,
                 characters: battle.playerTeam.characters.map(char => ({
                     id: char.id,
+                    name: char.name,
                     currentHP: char.currentHP,
                     maxHP: char.maxHP,
                     currentMP: char.currentMP,
                     maxMP: char.maxMP,
                     position: char.position,
-                    status: char.status
+                    status: char.status,
+                    skills: char.skills, // ✅ Incluir skills do jogador
+                    classe: char.classe,
+                    cultura: char.cultura,
+                    sprite: char.sprite
                 })),
                 swapsUsed: battle.playerTeam.swapsUsed,
                 maxSwaps: battle.playerTeam.maxSwaps
@@ -508,7 +717,7 @@ export class SecureBattleMechanics {
                     maxHP: char.maxHP,
                     position: char.position,
                     status: char.status
-                    // Note: MP e stats de ataque/defesa são ocultados
+                    // Note: Ânima e stats de ataque/defesa são ocultados
                 })),
                 swapsUsed: battle.enemyTeam.swapsUsed
             },
@@ -520,16 +729,22 @@ export class SecureBattleMechanics {
      * Executar ação de ataque com validação anti-cheat
      */
     async executeAttack(battleId, attackerId, targetId, skillId) {
+        // console.log('🔍 [DEBUG] ===== executeAttack START =====');
+        // console.log('🔍 [DEBUG] executeAttack called:', { battleId, attackerId, targetId, skillId });
+        
         const battle = this.activeBattles.get(battleId);
+        // console.log('🔍 [DEBUG] Battle found:', !!battle);
         
         if (!battle) {
             throw new Error('Batalha não encontrada');
         }
 
+        // console.log('🔍 [DEBUG] Battle status:', battle.status);
         if (battle.status !== 'active') {
             throw new Error('Batalha não está ativa');
         }
 
+        // console.log('🔍 [DEBUG] Current turn:', battle.currentTurn);
         // Validar se é o turno correto
         if (battle.currentTurn !== 'player') {
             throw new Error('Não é seu turno');
@@ -537,33 +752,37 @@ export class SecureBattleMechanics {
 
         // Validar se o atacante é válido
         const activePlayerChar = battle.playerTeam.characters[battle.playerTeam.activeIndex];
+        // console.log('🔍 [DEBUG] Active player char:', activePlayerChar?.id, 'Expected:', attackerId);
         if (!activePlayerChar || activePlayerChar.id !== attackerId) {
             throw new Error('Personagem atacante inválido');
         }
 
-        // Validar skill e custos de Ânima (buscar do servidor)
-        const skill = this.getSkillFromServer(skillId);
-        if (!skill) {
-            throw new Error('Skill não encontrada');
-        }
+        // Buscar skill se fornecida, null para ataque básico
+        let skill = null;
+        if (skillId) {
+            skill = await this.getSkillFromServer(skillId);
+            if (!skill) {
+                throw new Error('Skill não encontrada');
+            }
 
-        // Verificar se jogador pode usar skill (Ânima + Cooldown)
-        if (this.animaCooldownSystem) {
-            const canUseSkill = this.animaCooldownSystem.canUseSkill(battleId, attackerId, skill);
-            
-            if (!canUseSkill.canUse) {
-                if (!canUseSkill.hasAnima) {
-                    throw new Error(`Ânima insuficiente: ${canUseSkill.currentAnima}/${canUseSkill.skillCost} necessários`);
-                }
-                if (canUseSkill.cooldownRemaining > 0) {
-                    throw new Error(`Skill em cooldown: ${canUseSkill.cooldownRemaining} turnos restantes`);
+            // Verificar se jogador pode usar skill (Ânima + Cooldown)
+            if (this.animaCooldownSystem) {
+                const canUseSkill = this.animaCooldownSystem.canUseSkill(battleId, attackerId, skill);
+                
+                if (!canUseSkill.canUse) {
+                    if (!canUseSkill.hasAnima) {
+                        throw new Error(`Ânima insuficiente: ${canUseSkill.currentAnima}/${canUseSkill.skillCost} necessários`);
+                    }
+                    if (canUseSkill.cooldownRemaining > 0) {
+                        throw new Error(`Skill em cooldown: ${canUseSkill.cooldownRemaining} turnos restantes`);
+                    }
                 }
             }
-        }
 
-        // Compatibilidade com sistema antigo de MP
-        if (activePlayerChar.currentMP !== undefined && skill.cost && activePlayerChar.currentMP < skill.cost) {
-            throw new Error('MP insuficiente (sistema legado)');
+            // Compatibilidade com sistema antigo de Ânima
+            if (activePlayerChar.currentAnima !== undefined && skill.cost && activePlayerChar.currentAnima < skill.cost) {
+                throw new Error('Ânima insuficiente (sistema legado)');
+            }
         }
 
         // Executar ataque
@@ -572,24 +791,54 @@ export class SecureBattleMechanics {
             throw new Error('Alvo não encontrado');
         }
 
-        let damage;
-        if (skill.type === 'physical') {
-            damage = await this.calculatePhysicalDamage(
-                { id: attackerId },
-                { id: targetId },
-                skill
-            );
+        // Para ataques básicos (sem skill), usar cálculo simples
+        let baseDamage;
+        let effectsResult = { damage: 0, effects: [], buffs: [], statusEffects: [] };
+        
+        // console.log('🔍 [DEBUG] About to process skill/effects, skill:', skill);
+        
+        if (skill) {
+            // Processar efeitos da skill com coeficientes dinâmicos
+            try {
+                effectsResult = await this.processSkillEffects(skill, activePlayerChar, target, battleId);
+                // console.log('🔍 [DEBUG] processSkillEffects completed:', effectsResult);
+            } catch (error) {
+                console.error('❌ [DEBUG] Error in processSkillEffects:', error);
+                throw error;
+            }
+            
+            // Calcular dano base da skill
+            if (skill.type === 'physical') {
+                baseDamage = await this.calculatePhysicalDamage(
+                    { id: attackerId },
+                    { id: targetId },
+                    skill
+                );
+            } else {
+                baseDamage = await this.calculateMagicalDamage(
+                    { id: attackerId },
+                    { id: targetId },
+                    skill
+                );
+            }
         } else {
-            damage = await this.calculateMagicalDamage(
+            // Ataque básico sem skill
+            baseDamage = await this.calculatePhysicalDamage(
                 { id: attackerId },
                 { id: targetId },
-                skill
+                null
             );
         }
 
-        // Usar skill no sistema de Ânima/Cooldown
+        // Combinar dano base com dano dos efeitos
+        // console.log('🔍 [DEBUG] baseDamage:', baseDamage, 'effectsResult.damage:', effectsResult.damage);
+        const baseDamageValue = typeof baseDamage === 'object' ? (baseDamage.damage || baseDamage) : baseDamage;
+        const totalDamage = baseDamageValue + effectsResult.damage;
+        // console.log('🔍 [DEBUG] totalDamage calculated:', totalDamage);
+
+        // Usar skill no sistema de Ânima/Cooldown (apenas se skill existir)
         let animaResult = null;
-        if (this.animaCooldownSystem) {
+        if (this.animaCooldownSystem && skill) {
             try {
                 animaResult = this.animaCooldownSystem.useSkill(battleId, attackerId, skill);
                 console.log(`⚡ [Ânima] ${attackerId} usou ${skill.name}: -${animaResult.animaCost} Ânima`);
@@ -598,25 +847,56 @@ export class SecureBattleMechanics {
             }
         }
 
-        // Extrair valor numérico do dano se necessário
-        const finalDamage = typeof damage === 'object' ? (damage.damage || damage) : damage;
+        // Usar o dano já calculado
+        const finalDamage = totalDamage;
+        // console.log('🔍 [DEBUG] finalDamage set to:', finalDamage);
 
         // Aplicar dano
-        target.currentHP = Math.max(0, target.currentHP - finalDamage);
-        
-        // Compatibilidade com sistema antigo de MP
-        if (activePlayerChar.currentMP !== undefined && skill.cost) {
-            activePlayerChar.currentMP -= skill.cost;
+        // console.log('🔍 [DEBUG] About to apply finalDamage:', finalDamage);
+        if (finalDamage > 0) {
+            target.currentHP = Math.max(0, target.currentHP - finalDamage);
+        }
+        // console.log('🔍 [DEBUG] Damage applied successfully');
+
+        // Aplicar cura no atacante se houver
+        if (effectsResult.healing > 0) {
+            activePlayerChar.currentHP = Math.min(
+                activePlayerChar.maxHP, 
+                activePlayerChar.currentHP + effectsResult.healing
+            );
         }
 
-        // Registrar no log
+        // Aplicar buffs no atacante
+        for (const buff of effectsResult.buffs) {
+            if (buff.target === 'attacker') {
+                this.applyStatusEffect(activePlayerChar, buff.type, buff.duration);
+            }
+        }
+
+        // Aplicar status effects no alvo
+        for (const statusEffect of effectsResult.statusEffects) {
+            if (statusEffect.target === 'enemy') {
+                this.applyStatusEffect(target, statusEffect.type, statusEffect.duration);
+            }
+        }
+        
+        // Compatibilidade com sistema antigo de Ânima
+        if (activePlayerChar.currentAnima !== undefined && skill && skill.cost) {
+            activePlayerChar.currentAnima -= skill.cost;
+        }
+
+        // Registrar no log com detalhes dos efeitos
         battle.battleLog.push({
             type: 'attack',
             attacker: attackerId,
             target: targetId,
-            skill: skill.name,
+            skill: skill ? skill.name : 'Ataque Básico',
             damage: finalDamage,
-            animaCost: animaResult ? animaResult.animaCost : (skill.animaCost || 0),
+            healing: effectsResult.healing,
+            effects: effectsResult.specialActions,
+            buffs: effectsResult.buffs.map(b => b.type),
+            statusEffects: effectsResult.statusEffects.map(s => s.type),
+            animaCost: animaResult ? animaResult.animaCost : (skill ? skill.animaCost || 0 : 0),
             cooldownApplied: animaResult ? animaResult.cooldownApplied : 0,
             timestamp: Date.now()
         });
@@ -650,11 +930,13 @@ export class SecureBattleMechanics {
 
         battle.lastAction = Date.now();
         
+        // console.log('🔍 [DEBUG] Returning attack result with finalDamage:', finalDamage);
+        
         return {
             success: true,
             battle: this.getSafeBattleState(battle),
             action: {
-                damage: damage,
+                damage: finalDamage,
                 targetHP: target.currentHP,
                 attackerMP: activePlayerChar.currentMP
             }
@@ -684,8 +966,12 @@ export class SecureBattleMechanics {
         }
 
         const newChar = battle.playerTeam.characters[newActiveIndex];
-        if (newChar.status !== 'active') {
-            throw new Error('Personagem não está disponível');
+        if (!newChar || newChar.currentHP <= 0) {
+            throw new Error('Personagem não está disponível para troca');
+        }
+
+        if (newActiveIndex === battle.playerTeam.activeIndex) {
+            throw new Error('Personagem já está ativo');
         }
 
         // Executar troca
@@ -735,21 +1021,15 @@ export class SecureBattleMechanics {
         // IA simples: atacar alvo aleatório
         const target = playerTargets[Math.floor(Math.random() * playerTargets.length)];
         
-        // Skill básica do inimigo
-        const enemySkill = {
-            id: 'basic_attack',
-            name: 'Ataque Básico',
-            type: 'physical',
-            multiplier: 1.0,
-            baseDamage: 15,
-            cost: 0
-        };
-
-        const damage = await this.calculatePhysicalDamage(
+        // Inimigo ataca sem skill específica
+        const damageResult = await this.calculatePhysicalDamage(
             { id: activeEnemy.id },
             { id: target.id },
-            enemySkill
+            null
         );
+
+        // Extrair valor do dano
+        const damage = typeof damageResult === 'object' ? damageResult.damage : damageResult;
 
         // Aplicar dano
         target.currentHP = Math.max(0, target.currentHP - damage);
@@ -883,38 +1163,55 @@ export class SecureBattleMechanics {
     }
 
     /**
-     * Placeholder para buscar skill do servidor
+     * Buscar skill do sistema de skills integrado
      */
-    getSkillFromServer(skillId) {
-        // TODO: Implementar busca real do banco de skills
-        const placeholderSkills = {
-            'basic_attack': {
-                id: 'basic_attack',
-                name: 'Ataque Básico',
-                type: 'physical',
-                multiplier: 1.0,
-                baseDamage: 10,
-                cost: 0
-            },
+    async getSkillFromServer(skillId) {
+        try {
+            // Tentar carregar do banco de dados de skills
+            const skillsPath = path.join(process.cwd(), 'data/skills.json');
+            const skillsData = JSON.parse(await fs.readFile(skillsPath, 'utf8'));
+            
+            const skill = skillsData.skills[skillId];
+            if (skill) {
+                return skill;
+            }
+            
+        } catch (error) {
+            console.warn(`⚠️ Erro ao carregar skill ${skillId}:`, error.message);
+        }
+        
+        // Skills hardcoded disponíveis
+        const hardcodedSkills = {
             'fire_spell': {
                 id: 'fire_spell',
                 name: 'Bola de Fogo',
-                type: 'magical',
-                multiplier: 1.5,
-                baseDamage: 25,
-                cost: 15
+                type: 'magic',
+                damage: 25,
+                anima_cost: 15,
+                cooldown: 1,
+                duration: 0,
+                effects: []
             },
             'heal': {
                 id: 'heal',
                 name: 'Cura',
-                type: 'heal',
-                multiplier: 0.3,
-                baseDamage: 30,
-                cost: 10
+                type: 'healing',
+                damage: 30, // Healing skills use damage field for heal amount
+                anima_cost: 10,
+                cooldown: 0,
+                duration: 0,
+                effects: ['healing']
             }
         };
 
-        return placeholderSkills[skillId];
+        // Retornar skill hardcoded se existir
+        if (hardcodedSkills[skillId]) {
+            return hardcodedSkills[skillId];
+        }
+
+        // Skill não encontrada
+        console.warn(`Skill '${skillId}' não encontrada`);
+        return null;
     }
 
     /**

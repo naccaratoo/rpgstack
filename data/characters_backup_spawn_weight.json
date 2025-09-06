@@ -261,7 +261,7 @@
           "source": "legacy"
         }
       ],
-      "classe": "Guardião da Natureza",
+      "classe": "Naturalista",
       "anima": 200,
       "critico": 90,
       "cultura": "Lakota/Dakota",
@@ -295,7 +295,7 @@
           "source": "legacy"
         }
       ],
-      "classe": "Guardião da Natureza",
+      "classe": "Naturalista",
       "anima": 220,
       "critico": 110,
       "cultura": "Viking/Nórdico",
@@ -500,7 +500,7 @@
           "source": "legacy"
         }
       ],
-      "classe": "Guardião da Natureza",
+      "classe": "Naturalista",
       "classe_secundaria": "Oráculo",
       "anima": 210,
       "critico": 100,

@@ -158,7 +158,6 @@ export class SkillService {
         description: sanitizedData.description ?? existingSkill.description,
         type: sanitizedData.type ?? existingSkill.type,
         classe: sanitizedData.classe ?? existingSkill.classe,
-        level: sanitizedData.level ?? existingSkill.level,
         damage: sanitizedData.damage ?? existingSkill.damage,
         sprite: sanitizedData.sprite ?? existingSkill.sprite,
         anima_cost: sanitizedData.anima_cost ?? existingSkill.anima_cost,
@@ -167,6 +166,12 @@ export class SkillService {
         prerequisites: sanitizedData.prerequisites ?? existingSkill.prerequisites,
         effects: sanitizedData.effects ?? existingSkill.effects,
         metadata: { ...existingSkill.metadata, ...sanitizedData.metadata },
+        // SISTEMA DE COEFICIENTES DINÂMICOS - Preservar campos críticos
+        multi_hit: sanitizedData.multi_hit ?? existingSkill.multi_hit,
+        buffs: sanitizedData.buffs ?? existingSkill.buffs,
+        battlefield_effects: sanitizedData.battlefield_effects ?? existingSkill.battlefield_effects,
+        cultural_authenticity: sanitizedData.cultural_authenticity ?? existingSkill.cultural_authenticity,
+        affinity: sanitizedData.affinity ?? existingSkill.affinity,
         created_at: existingSkill.created_at,
         updated_at: new Date()
       });
@@ -389,7 +394,7 @@ export class SkillService {
     try {
       this.logger.info('Getting skills by classe', { classe });
       
-      if (!Skill.VALID_CLASSES.includes(classe)) {
+      if (!Skill.VALID_CHARACTER_CLASSES.includes(classe)) {
         throw new ValidationError(`Invalid skill classe: ${classe}`);
       }
       
@@ -629,12 +634,25 @@ export class SkillService {
       }
     }
 
+    // Validar skill_class (novas classes)
+    const validSkillClasses = ['Damage', 'Utility', 'Damage&utility'];
+    if (skillData.skill_class && !validSkillClasses.includes(skillData.skill_class)) {
+      throw new ValidationError(`Invalid skill_class. Must be one of: ${validSkillClasses.join(', ')}`);
+    }
+
+    // Validar damage_type (novo campo)
+    const validDamageTypes = ['ataque', 'ataque_especial'];
+    if (skillData.damage_type && !validDamageTypes.includes(skillData.damage_type)) {
+      throw new ValidationError(`Invalid damage_type. Must be one of: ${validDamageTypes.join(', ')}`);
+    }
+
     return {
       name: this._sanitizeString(skillData.name),
       description: this._sanitizeString(skillData.description || ''),
+      skill_class: skillData.skill_class || 'Damage', // NOVO CAMPO
+      damage_type: skillData.damage_type || null, // NOVO CAMPO
       type: skillData.type,
       classe: skillData.classe || 'Lutador',
-      level: skillData.level || 1,
       damage: skillData.damage || 0,
       sprite: skillData.sprite || null,
       anima_cost: skillData.anima_cost || 0,
@@ -642,6 +660,8 @@ export class SkillService {
       duration: skillData.duration || 0,
       prerequisites: skillData.prerequisites || [],
       effects: skillData.effects || [],
+      cultural_authenticity: skillData.cultural_authenticity || '', // NOVO CAMPO
+      character_id: skillData.character_id || null, // NOVO CAMPO
       metadata: skillData.metadata || {},
     };
   }
@@ -652,6 +672,24 @@ export class SkillService {
     }
 
     const sanitized = {};
+    
+    // Validar skill_class se fornecido
+    if (updateData.skill_class !== undefined) {
+      const validSkillClasses = ['Damage', 'Utility', 'Damage&utility'];
+      if (updateData.skill_class && !validSkillClasses.includes(updateData.skill_class)) {
+        throw new ValidationError(`Invalid skill_class. Must be one of: ${validSkillClasses.join(', ')}`);
+      }
+      sanitized.skill_class = updateData.skill_class;
+    }
+
+    // Validar damage_type se fornecido
+    if (updateData.damage_type !== undefined) {
+      const validDamageTypes = ['ataque', 'ataque_especial'];
+      if (updateData.damage_type && !validDamageTypes.includes(updateData.damage_type)) {
+        throw new ValidationError(`Invalid damage_type. Must be one of: ${validDamageTypes.join(', ')}`);
+      }
+      sanitized.damage_type = updateData.damage_type;
+    }
     
     // Only include fields that are actually being updated
     if (updateData.name !== undefined) {
@@ -665,9 +703,6 @@ export class SkillService {
     }
     if (updateData.classe !== undefined) {
       sanitized.classe = updateData.classe;
-    }
-    if (updateData.level !== undefined) {
-      sanitized.level = updateData.level;
     }
     if (updateData.damage !== undefined) {
       sanitized.damage = updateData.damage;
@@ -692,6 +727,22 @@ export class SkillService {
     }
     if (updateData.metadata !== undefined) {
       sanitized.metadata = updateData.metadata;
+    }
+    // SISTEMA DE COEFICIENTES DINÂMICOS - Preservar multi_hit, buffs e battlefield_effects
+    if (updateData.multi_hit !== undefined) {
+      sanitized.multi_hit = updateData.multi_hit;
+    }
+    if (updateData.buffs !== undefined) {
+      sanitized.buffs = updateData.buffs;
+    }
+    if (updateData.battlefield_effects !== undefined) {
+      sanitized.battlefield_effects = updateData.battlefield_effects;
+    }
+    if (updateData.cultural_authenticity !== undefined) {
+      sanitized.cultural_authenticity = updateData.cultural_authenticity;
+    }
+    if (updateData.affinity !== undefined) {
+      sanitized.affinity = updateData.affinity;
     }
 
     return sanitized;
@@ -733,8 +784,6 @@ export class SkillService {
     
     if (filters.type) sanitized.type = filters.type;
     if (filters.classe) sanitized.classe = filters.classe;
-    if (filters.minLevel) sanitized.minLevel = Number(filters.minLevel);
-    if (filters.maxLevel) sanitized.maxLevel = Number(filters.maxLevel);
     if (filters.minDamage) sanitized.minDamage = Number(filters.minDamage);
     if (filters.maxDamage) sanitized.maxDamage = Number(filters.maxDamage);
     if (filters.minAnimaCost) sanitized.minAnimaCost = Number(filters.minAnimaCost);

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-09-06T17:53:36.710Z",
+  "totalSkills": 5,
+  "migratedSkills": 1,
+  "details": [
+    {
+      "id": "SHIWX001LT",
+      "name": "👁️ Qian Shou Qian Yan (千手千眼) - Mil Mãos, Mil Olhos",
+      "oldEffects": [
+        "multi_hit_5x",
+        "critical_boost_20%",
+        "critical_immunity",
+        "physical_reduction_80%"
+      ],
+      "newEffects": [
+        "multi_hit",
+        "critical_boost",
+        "critical_immunity",
+        "physical_reduction"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Sistema de Cache de Personagens</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: white;
+        }
+        .test-container {
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+            border: 2px solid #D4AF37;
+        }
+        .character-card {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid #D4AF37;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            width: 200px;
+            text-align: center;
+        }
+        .character-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #D4AF37;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); color: #4CAF50; }
+        .error { background: rgba(244, 67, 54, 0.3); color: #f44336; }
+        .info { background: rgba(33, 150, 243, 0.3); color: #2196F3; }
+        .warning { background: rgba(255, 152, 0, 0.3); color: #FF9800; }
+        
+        button {
+            background: linear-gradient(45deg, #D4AF37, #B8941F);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        button:hover { transform: translateY(-2px); }
+        
+        .log {
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #555;
+        }
+        
+        .team-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste do Sistema de Cache de Personagens</h1>
+    
+    <div class="test-container">
+        <h3>⚙️ Controles de Teste</h3>
+        <button onclick="testCacheSystem()">1️⃣ Testar Sistema de Cache</button>
+        <button onclick="startTestBattle()">2️⃣ Iniciar Batalha de Teste</button>
+        <button onclick="testCharacterSwap()">3️⃣ Testar Troca com Cache</button>
+        <button onclick="clearLog()">🗑️ Limpar Log</button>
+        
+        <div class="status" id="systemStatus">Sistema não inicializado</div>
+    </div>
+    
+    <div class="test-container">
+        <h3>👥 Equipe do Jogador (Cache)</h3>
+        <div id="playerTeamDisplay" class="team-display">
+            <div class="character-card">
+                <div class="status info">Aguardando inicialização...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h3>👹 Equipe Inimiga (Cache)</h3>
+        <div id="enemyTeamDisplay" class="team-display">
+            <div class="character-card">
+                <div class="status info">Aguardando inicialização...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h3>📜 Log de Teste</h3>
+        <div id="testLog" class="log">Sistema de teste carregado...\n</div>
+    </div>
+    
+    <script src="secure-battle-client.js"></script>
+    <script>
+        let testBattle = null;
+        let secureBattleClient = null;
+        let battleCharactersCache = null;
+        
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('testLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '📝';
+            logElement.textContent += `[${timestamp}] ${icon} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('systemStatus');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        async function testCacheSystem() {
+            log('🧪 Iniciando teste do sistema de cache...');
+            updateStatus('Testando sistema de cache...', 'info');
+            
+            try {
+                // Carregar dados dos personagens
+                log('📋 Carregando dados dos personagens...');
+                const response = await fetch('/api/characters');
+                const data = await response.json();
+                const characters = data.characters;
+                
+                log(`✅ ${Object.keys(characters).length} personagens carregados do backend`);
+                
+                // Testar cache com personagens específicos
+                const testPlayerTeam = [
+                    { id: '045CCF3515' }, // Miloš Železnikov
+                    { id: 'EA32D10F2D' }, // Shi Wuxing
+                    { id: '13BF61B218' }  // Aurelius Ignisvox
+                ];
+                
+                const testEnemyTeam = [
+                    { id: '7A8B9C0D1E' }, // Pythia Kassandra
+                    { id: '2F3E4D5C6B' }, // Itzel Nahualli
+                    { id: '9A8B7C6D5E' }  // Giovanni da Ferrara
+                ];
+                
+                // Simular cache
+                const playerCache = testPlayerTeam.map(char => {
+                    const fullData = characters[char.id];
+                    if (fullData) {
+                        return {
+                            id: char.id,
+                            name: fullData.name,
+                            level: fullData.level,
+                            sprite: fullData.sprite,
+                            cultura: fullData.cultura,
+                            classe: fullData.classe,
+                            currentHP: 300,
+                            maxHP: 300,
+                            currentMP: 100,
+                            maxMP: 100
+                        };
+                    }
+                    return null;
+                }).filter(Boolean);
+                
+                const enemyCache = testEnemyTeam.map(char => {
+                    const fullData = characters[char.id];
+                    if (fullData) {
+                        return {
+                            id: char.id,
+                            name: fullData.name,
+                            level: fullData.level,
+                            sprite: fullData.sprite,
+                            cultura: fullData.cultura,
+                            classe: fullData.classe,
+                            currentHP: 280,
+                            maxHP: 280,
+                            currentMP: 80,
+                            maxMP: 80
+                        };
+                    }
+                    return null;
+                }).filter(Boolean);
+                
+                // Salvar cache global para outros testes
+                battleCharactersCache = {
+                    playerTeam: playerCache,
+                    enemyTeam: enemyCache,
+                    initialized: true
+                };
+                
+                log(`✅ Cache criado - Jogador: ${playerCache.length} personagens`);
+                log(`✅ Cache criado - Inimigos: ${enemyCache.length} personagens`);
+                
+                // Atualizar displays
+                displayTeam('playerTeamDisplay', playerCache, 'player');
+                displayTeam('enemyTeamDisplay', enemyCache, 'enemy');
+                
+                updateStatus('Cache funcionando perfeitamente!', 'success');
+                
+            } catch (error) {
+                log(`❌ Erro no teste de cache: ${error.message}`, 'error');
+                updateStatus('Erro no sistema de cache', 'error');
+            }
+        }
+        
+        function displayTeam(containerId, teamCache, teamType) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            teamCache.forEach((char, index) => {
+                const charCard = document.createElement('div');
+                charCard.className = 'character-card';
+                
+                const spritePath = char.sprite ? `/${char.sprite}` : '/assets/sprites/character.webp';
+                
+                charCard.innerHTML = `
+                    <img src="${spritePath}" alt="${char.name}" onerror="this.src='/assets/sprites/character.webp'">
+                    <h4>${char.name}</h4>
+                    <div class="status info">Nv. ${char.level}</div>
+                    <div class="status success">${char.cultura}</div>
+                    <div class="status warning">${char.classe}</div>
+                    <div>HP: ${char.currentHP}/${char.maxHP}</div>
+                    <div>Ânima: ${char.currentAnima}/${char.maxAnima}</div>
+                `;
+                
+                container.appendChild(charCard);
+            });
+        }
+        
+        async function startTestBattle() {
+            if (!battleCharactersCache || !battleCharactersCache.initialized) {
+                log('⚠️ Execute o teste de cache primeiro!', 'warning');
+                return;
+            }
+            
+            log('🎮 Iniciando batalha de teste...');
+            updateStatus('Iniciando batalha de teste...', 'info');
+            
+            try {
+                secureBattleClient = new SecureBattleClient();
+                
+                const playerTeam = battleCharactersCache.playerTeam.map(c => ({ id: c.id, name: c.name }));
+                const enemyTeam = battleCharactersCache.enemyTeam.map(c => ({ id: c.id, name: c.name }));
+                
+                // Usar API direta para teste específico
+                const response = await fetch('/api/secure-battle/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        playerTeam: [
+                            {"id": "045CCF3515", "name": "Miloš Železnikov"},
+                            {"id": "EA32D10F2D", "name": "Shi Wuxing"}, 
+                            {"id": "13BF61B218", "name": "Aurelius Ignisvox"}
+                        ],
+                        enemyTeam: [
+                            {"id": "7A8B9C0D1E", "name": "Pythia Kassandra"},
+                            {"id": "2F3E4D5C6B", "name": "Itzel Nahualli"},
+                            {"id": "9A8B7C6D5E", "name": "Giovanni da Ferrara"}
+                        ],
+                        battleType: "3v3"
+                    })
+                });
+                
+                const battleResult = await response.json();
+                
+                if (battleResult.success) {
+                    log(`✅ Batalha iniciada! ID: ${battleResult.battleId}`, 'success');
+                    
+                    // Configurar cliente seguro manualmente
+                    secureBattleClient.currentBattleId = battleResult.battleId;
+                    secureBattleClient.battleState = battleResult.battle;
+                    
+                    log(`👥 Player IDs: ${battleResult.battle.playerTeam.characters.map(c => c.id).join(', ')}`);
+                    log(`👹 Enemy IDs: ${battleResult.battle.enemyTeam.characters.map(c => c.id).join(', ')}`);
+                    
+                    // Verificar se os IDs correspondem aos personagens selecionados
+                    const expectedPlayerIDs = ["045CCF3515", "EA32D10F2D", "13BF61B218"];
+                    const actualPlayerIDs = battleResult.battle.playerTeam.characters.map(c => c.id);
+                    
+                    log(`🔍 IDs esperados: ${expectedPlayerIDs.join(', ')}`);
+                    log(`🔍 IDs recebidos: ${actualPlayerIDs.join(', ')}`);
+                    log(`✅ IDs correspondem: ${JSON.stringify(expectedPlayerIDs) === JSON.stringify(actualPlayerIDs)}`);
+                    
+                    updateStatus(`Batalha ativa - ID: ${battleResult.battleId}`, 'success');
+                } else {
+                    log(`❌ Erro na batalha: ${battleResult.error}`, 'error');
+                    updateStatus('Erro ao iniciar batalha', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na batalha de teste: ${error.message}`, 'error');
+                updateStatus('Erro na batalha de teste', 'error');
+            }
+        }
+        
+        async function testCharacterSwap() {
+            if (!secureBattleClient || !secureBattleClient.isBattleActive()) {
+                log('⚠️ Inicie uma batalha primeiro!', 'warning');
+                return;
+            }
+            
+            log('🔄 Testando troca de personagem...');
+            
+            try {
+                // Fazer uma troca (índice 0 para 1)
+                const swapResult = await secureBattleClient.executeSecureSwap(0, 1);
+                
+                if (swapResult.success) {
+                    log(`✅ Troca executada com sucesso!`, 'success');
+                    log(`🆕 Novo ativo: ${swapResult.newActiveCharacter.name || swapResult.newActiveCharacter.id}`);
+                    log(`🔄 Trocas restantes: ${swapResult.swapsRemaining}`);
+                    
+                    // Atualizar cache local se necessário
+                    if (battleCharactersCache.initialized) {
+                        const battleState = secureBattleClient.battleState;
+                        const activeIndex = battleState.playerTeam.activeIndex;
+                        log(`📊 Personagem ativo no cache: ${battleCharactersCache.playerTeam[activeIndex]?.name}`);
+                    }
+                    
+                    updateStatus('Troca executada com sucesso!', 'success');
+                } else {
+                    log(`❌ Falha na troca: ${swapResult.error}`, 'error');
+                    updateStatus('Falha na troca', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na troca: ${error.message}`, 'error');
+                updateStatus('Erro na troca', 'error');
+            }
+        }
+        
+        function clearLog() {
+            document.getElementById('testLog').textContent = 'Log limpo...\n';
+        }
+        
+        // Auto-inicializar
+        window.addEventListener('load', () => {
+            log('🚀 Sistema de teste de cache carregado');
+            updateStatus('Pronto para testes', 'info');
+        });
+    </script>
+</body>
+</html>

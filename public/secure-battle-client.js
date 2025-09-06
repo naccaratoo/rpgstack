@@ -98,7 +98,12 @@ class SecureBattleClient {
             });
 
             if (!response.ok) {
-                throw new Error(`Erro no ataque: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                console.error('❌ Server error details:', errorData);
+                if (errorData.stack) {
+                    console.error('❌ Stack trace:', errorData.stack);
+                }
+                throw new Error(`Erro no ataque: ${response.status} - ${errorData.error || 'Unknown error'}`);
             }
 
             const result = await response.json();

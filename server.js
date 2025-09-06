@@ -25,6 +25,9 @@ app.use(express.static('public'));
 // IMPORTANTE: Servir arquivos de sprites estaticamente
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
+// Servir arquivos de histórias dos personagens (markdown)
+app.use('/Personagens', express.static(path.join(__dirname, 'Personagens')));
+
 // Configurar multer
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -534,12 +537,12 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
     const data = await loadDatabase();
     
     const {
-      name, level, hp, attack, defense, defesa_especial, ataque_especial,
+      name, hp, attack, defense, defesa_especial, ataque_especial,
       aiType, description,
-      skills, spriteFilename, classe, anima, critico,
+      skills, spriteFilename, classe, subclasse, cultura, anima, critico,
     } = req.body;
     
-    console.log('📊 Campos extraídos - classe:', classe, 'anima:', anima, 'critico:', critico);
+    console.log('📊 Campos extraídos - classe:', classe, 'subclasse:', subclasse, 'cultura:', cultura, 'anima:', anima, 'critico:', critico);
 
     // **IMPORTANTE**: APENAS personagens NOVOS recebem ID hexadecimal
     const existingIds = Object.keys(data.characters || {});
@@ -559,7 +562,7 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
     const character = {
       id: newId, // ID hexadecimal PERMANENTE - nunca será alterado
       name,
-      level: parseInt(level),
+      // level removido do sistema
       hp: parseInt(hp),
       maxHP: parseInt(hp),
       attack: parseInt(attack),
@@ -574,6 +577,8 @@ app.post('/api/characters', upload.single('sprite'), async (req, res) => {
       description,
       skills: JSON.parse(skills || '[]'),
       classe: classe || 'Lutador', // Campo classe adicionado
+      subclasse: subclasse || null, // Campo subclasse adicionado
+      cultura: cultura || null, // Campo cultura adicionado
       anima: parseInt(anima) || 100, // Campo anima adicionado
       critico: parseFloat(critico) || 1.0, // Campo critico adicionado
       created_at: new Date().toISOString(),
@@ -751,9 +756,9 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
     console.log(`🔄 Atualizando personagem: ${existingCharacter.name} (ID: ${id})`);
     
     const {
-      name, level, hp, attack, defense, defesa_especial, ataque_especial,
+      name, hp, attack, defense, defesa_especial, ataque_especial,
       aiType, description,
-      skills, spriteFilename, classe, anima, critico,
+      skills, spriteFilename, classe, subclasse, cultura, anima, critico,
     } = req.body;
 
     // Processar sprite se fornecida
@@ -780,7 +785,7 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       ...existingCharacter, // Manter dados existentes
       id: id, // ID NUNCA MUDA (IMUTÁVEL)
       name: name || existingCharacter.name,
-      level: level ? parseInt(level) : existingCharacter.level,
+      // level removido do sistema
       hp: hp ? parseInt(hp) : existingCharacter.hp,
       maxHP: hp ? parseInt(hp) : existingCharacter.maxHP,
       attack: attack ? parseInt(attack) : existingCharacter.attack,
@@ -792,6 +797,8 @@ app.put('/api/characters/:id', upload.single('sprite'), async (req, res) => {
       description: description !== undefined ? description : existingCharacter.description,
       skills: skills ? JSON.parse(skills) : existingCharacter.skills,
       classe: classe || existingCharacter.classe,
+      subclasse: subclasse !== undefined ? subclasse : existingCharacter.subclasse,
+      cultura: cultura !== undefined ? cultura : existingCharacter.cultura,
       anima: anima ? parseInt(anima) : existingCharacter.anima,
       critico: critico ? parseFloat(critico) : existingCharacter.critico,
       updated_at: new Date().toISOString(), // Adicionar timestamp de atualização
@@ -1031,12 +1038,12 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
     for (const [importId, character] of Object.entries(importCharacters)) {
       try {
         // Validate character data
-        if (!character.name || !character.level || !character.hp) {
+        if (!character.name || !character.hp) {
           results.push({
             id: importId,
             name: character.name || 'Unknown',
             status: 'skipped',
-            reason: 'Dados obrigatórios ausentes (name, level, hp)',
+            reason: 'Dados obrigatórios ausentes (name, hp)',
           });
           skipped++;
           continue;
@@ -1069,7 +1076,7 @@ app.post('/api/bulk-import', bulkUpload.single('bulkData'), async (req, res) => 
         const importedCharacter = {
           id: finalId,
           name: character.name,
-          level: parseInt(character.level) || 1,
+          // level removido do sistema
           hp: parseInt(character.hp) || 10,
           maxHP: parseInt(character.hp) || 10,
           attack: parseInt(character.attack) || 1,
@@ -1265,7 +1272,7 @@ app.get('/characters', (req, res) => {
 
 // Skills Database Module
 app.get('/skills', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'skills.html'));
+  res.sendFile(path.join(__dirname, 'public', 'skills', 'skills.html'));
 });
 
 // Classes Database Module
@@ -1503,19 +1510,31 @@ app.post('/api/secure-battle/:battleId/attack', async (req, res) => {
     const { battleId } = req.params;
     const { attackerId, targetId, skillData } = req.body;
 
+    // console.log('🔍 [DEBUG] Attack request:', { battleId, attackerId, targetId, skillData });
+
     if (!attackerId || !targetId) {
+      // console.log('❌ [DEBUG] Missing attackerId or targetId');
       return res.status(400).json({ error: 'Atacante e alvo são obrigatórios' });
     }
 
-    const result = await secureBattleMechanics.executeAttack(battleId, attackerId, targetId, skillData);
+    // Extrair skillId corretamente - usar null para ataque sem skill
+    const skillId = skillData?.id || skillData || null;
+    // console.log('🔍 [DEBUG] Using skillId:', skillId);
+    const result = await secureBattleMechanics.executeAttack(battleId, attackerId, targetId, skillId);
     
-    console.log(`⚔️ Ataque executado na batalha ${battleId}: ${result.damage} de dano`);
+    console.log(`⚔️ Ataque executado na batalha ${battleId}: ${result?.action?.damage || 'N/A'} de dano`);
     
     res.json(result);
 
   } catch (error) {
     console.error('❌ Erro ao executar ataque:', error);
-    res.status(400).json({ error: error.message });
+    console.error('❌ Stack trace:', error.stack);
+    // Incluir stack trace na resposta para debug
+    res.status(400).json({ 
+      error: error.message,
+      stack: error.stack,
+      debug: 'Error details for debugging'
+    });
   }
 });
 
@@ -1692,7 +1711,7 @@ function processPlayerAction(battle, action) {
         battle.player.currentMP -= 10;
         return processAttack(battle.player, battle.enemy, 'skill');
       } else {
-        return { message: 'MP insuficiente!', type: 'error' };
+        return { message: 'Ânima insuficiente!', type: 'error' };
       }
     case 'item':
       const healAmount = Math.floor(battle.player.maxHP * 0.3);

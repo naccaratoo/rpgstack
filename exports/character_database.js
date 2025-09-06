@@ -1,5 +1,5 @@
 // RPGStack Characters - Generated automatically
-// Generated at: 2025-09-04T21:13:12.240Z
+// Generated at: 2025-09-06T13:45:50.515Z
 // Mixed ID System: Legacy IDs preserved + New Hexadecimal IDs
 
 const CharacterDatabase = {
@@ -16,15 +16,8 @@ const CharacterDatabase = {
     "color": 4873507,
     "borderColor": 2962964,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        1,
-        3
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 10,
     "description": "Mestre ferreiro eslavo que forja armas lendárias usando técnicas ancestrais transmitidas por gerações de artesãos da resistência.",
-    "drops": [],
     "skills": [
         {
             "skillName": "🔨 Forja do Dragão Eslavo",
@@ -41,7 +34,8 @@ const CharacterDatabase = {
     "defesa_especial": 28,
     "cultura": "Eslava",
     "artefato": "Koljčuga Drakonova - Armadura forjada com escamas de dragão eslavo, oferece resistência contra magia e frio ancestral.",
-    "elemento_cultural": "Tradições de ferraria e resistência às adversidades do inverno eslavo. Conexão espiritual com os ancestrais guerreiros."
+    "elemento_cultural": "Tradições de ferraria e resistência às adversidades do inverno eslavo. Conexão espiritual com os ancestrais guerreiros.",
+    "ataque_especial": 50
 },
 
   // ID: EA32D10F2D (HEX)
@@ -57,37 +51,47 @@ const CharacterDatabase = {
     "color": 4873507,
     "borderColor": 2962964,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        1,
-        5
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 10,
     "description": "Guerreiro-filósofo que domina as artes marciais através da harmonia com os cinco elementos fundamentais da cosmologia chinesa.",
-    "drops": [],
     "skills": [
         {
-            "skillName": "🌊 Ciclo dos Cinco Elementos",
-            "skillDamage": 85,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillName": "👁️ Qian Shou Qian Yan (千手千眼) - Mil Mãos, Mil Olhos",
+            "skillDamage": 75,
+            "skillCost": 25,
+            "description": "Samādhi Combativo onde a percepção se expande através do Dhyāna Perfeito, permitindo captar múltiplos ataques simultâneos. Os movimentos se multiplicam como a compaixão infinita de Avalokiteśvara, defendendo e contra-atacando em unidade meditativa.",
+            "source": "chan_martial_arts"
+        },
+        {
+            "skillName": "🫥 Xu Kong Yin (虛空印) - Selo do Vazio",
+            "skillDamage": 0,
+            "skillCost": 40,
+            "description": "Manifestação física de Śūnyatā (vacuidade): Shi torna-se temporariamente intangível para ataques baseados em apego ao ego. Durante a técnica, emana Sabedoria da Vacuidade Luminosa que purifica ilusões mentais do oponente, causando atordoamento espiritual.",
+            "source": "chan_martial_arts"
+        },
+        {
+            "skillName": "🙏 Bodhicitta Mudra (菩提心印) - Selo da Compaixão Desperta",
+            "skillDamage": -120,
+            "skillCost": 30,
+            "description": "Canaliza Bodhicitta (mente desperta) através de mudra sagrado, emanando compaixão universal que cura ferimentos físicos e purifica venenos mentais. A energia búdica restaura vitalidade de aliados enquanto acalma hostilidade de oponentes, demonstrando que verdadeiro poder vem da bondade amorosa.",
+            "source": "chan_martial_arts"
         }
     ],
     "classe": "Lutador",
     "anima": 100,
     "critico": 50,
     "created_at": "2025-08-31T17:47:13.246Z",
-    "updated_at": "2025-09-04T18:26:59.721Z",
+    "updated_at": "2025-09-06T13:42:10.279Z",
     "defesa_especial": 32,
     "cultura": "Chinesa",
-    "artefato": "Amuleto dos Cinco Elementos - Talismã que canaliza Wu Xing (五行), permitindo harmonizar as forças naturais em combate.",
-    "elemento_cultural": "Filosofia dos Cinco Elementos (Metal, Madeira, Água, Fogo, Terra) e práticas de cultivo interno de qi."
+    "artefato": "Vajra dos Cinco Dhyāni-Budas (五智金剛杵) - Vajra sagrado de bronze tibetano forjado em 1160, consagrado aos cinco Dhyāni-Buddhas. Cada ponta representa a transformação dos venenos mentais em sabedorias transcendentes: corta ilusões (kleśas), manifesta sabedoria perfeita (prajñāpāramitā), canaliza compaixão universal (bodhicitta) e emite mantras protetivos em combate.",
+    "elemento_cultural": "Budismo Chan (禅) Shaolin: síntese entre Dharma búdico e sabedoria taoísta. Pratica Zazen (坐禅), cultiva as Três Joias (Buddha, Dharma, Sangha) e manifesta compaixão universal (慈悲) através das artes marciais dos 72 métodos Shaolin.",
+    "ataque_especial": 50,
+    "subclasse": "Naturalista"
 },
 
-  // ID: A9C4N0001E (LEGACY)
+  // ID: 13BF61B218 (HEX)
   "aurelius_ignisvox": {
-    "id": "A9C4N0001E",
+    "id": "13BF61B218",
     "name": "Aurelius Ignisvox",
     "level": 1,
     "hp": 300,
@@ -98,15 +102,8 @@ const CharacterDatabase = {
     "color": 8388736,
     "borderColor": 5592405,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        2,
-        6
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 8,
     "description": "Ex-senador romano que se tornou mago após descobrir pergaminhos arcanos nas bibliotecas de Alexandria, combinando liderança política com poder místico.",
-    "drops": [],
     "skills": [
         {
             "skillName": "🏛️ Decreto Senatorial Arcano",
@@ -123,7 +120,8 @@ const CharacterDatabase = {
     "defesa_especial": 47,
     "cultura": "Romana",
     "artefato": "Báculo do Senatus - Cetro consular que amplifica autoridade e poder de comando sobre elementos arcanos.",
-    "elemento_cultural": "Tradição senatorial romana e conhecimento das leis arcanas estabelecidas pelo Império. Oratória persuasiva e liderança natural."
+    "elemento_cultural": "Tradição senatorial romana e conhecimento das leis arcanas estabelecidas pelo Império. Oratória persuasiva e liderança natural.",
+    "ataque_especial": 25
 },
 
   // ID: 7A8B9C0D1E (HEX)
@@ -139,15 +137,8 @@ const CharacterDatabase = {
     "color": 9109504,
     "borderColor": 6966323,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        10,
-        25
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 5,
     "description": "Oráculo de Delphi - Sempre prevê desgraças, mas ninguém acredita",
-    "drops": [],
     "skills": [
         {
             "skillName": "🔮 Visão Oracular Délfica",
@@ -164,7 +155,8 @@ const CharacterDatabase = {
     "elemento_cultural": "Templo de Delphi, vapores oraculares sagrados",
     "created_at": "2025-09-04T17:30:00.000Z",
     "updated_at": "2025-09-04T20:31:39.757Z",
-    "defesa_especial": 70
+    "defesa_especial": 70,
+    "ataque_especial": 35
 },
 
   // ID: 2F3E4D5C6B (HEX)
@@ -180,15 +172,8 @@ const CharacterDatabase = {
     "color": 8388736,
     "borderColor": 5592405,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        15,
-        30
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 4,
     "description": "Nahualli Asteca - Transforma-se em jaguar durante rituais de sangue",
-    "drops": [],
     "skills": [
         {
             "skillName": "🐆 Transformação Jaguar",
@@ -205,7 +190,8 @@ const CharacterDatabase = {
     "elemento_cultural": "Códices astecas, calendário de 260 dias, obsidiana ritual",
     "created_at": "2025-09-04T17:35:00.000Z",
     "updated_at": "2025-09-04T20:18:30.533Z",
-    "defesa_especial": 73
+    "defesa_especial": 73,
+    "ataque_especial": 45
 },
 
   // ID: 9A8B7C6D5E (HEX)
@@ -221,21 +207,16 @@ const CharacterDatabase = {
     "color": 16776960,
     "borderColor": 13421568,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        20,
-        40
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 3,
     "description": "Artífice Renascentista - Cria autômatos movidos por engrenagens celestiais",
-    "drops": [],
     "skills": [
         {
+            "skillId": "7EABE8D702",
             "skillName": "⚙️ Autômato Celestial",
             "skillDamage": 60,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillMana": 0,
+            "skillType": "magic",
+            "source": "skills_module"
         }
     ],
     "classe": "Artífice",
@@ -245,8 +226,10 @@ const CharacterDatabase = {
     "artefato": "Esfera armilar mecânica que prevê movimentos planetários",
     "elemento_cultural": "Workshop renascentista, manuscritos de Leonardo, geometria sagrada",
     "created_at": "2025-09-04T17:40:00.000Z",
-    "updated_at": "2025-09-04T20:23:59.992Z",
-    "defesa_especial": 56
+    "updated_at": "2025-09-05T22:03:33.429Z",
+    "defesa_especial": 56,
+    "ataque_especial": 40,
+    "subclasse": "Armamentista"
 },
 
   // ID: 4F3E2D1C0B (HEX)
@@ -262,15 +245,8 @@ const CharacterDatabase = {
     "color": 16711935,
     "borderColor": 13369548,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        25,
-        45
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 2,
     "description": "Mestre Karakuri - Especialista em bonecas que imitam vida humana",
-    "drops": [],
     "skills": [
         {
             "skillName": "🎭 Boneca Viva",
@@ -287,7 +263,8 @@ const CharacterDatabase = {
     "elemento_cultural": "Teatro kabuki, precisão artesanal japonesa, mono no aware",
     "created_at": "2025-09-04T17:45:00.000Z",
     "updated_at": "2025-09-04T20:39:55.692Z",
-    "defesa_especial": 57
+    "defesa_especial": 57,
+    "ataque_especial": 50
 },
 
   // ID: 8A9B0C1D2E (HEX)
@@ -303,32 +280,29 @@ const CharacterDatabase = {
     "color": 9109504,
     "borderColor": 6966323,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        30,
-        60
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 2,
     "description": "Guardião Lakota - Comunica-se com espíritos dos bisões das Grandes Planícies",
-    "drops": [],
     "skills": [
         {
+            "skillId": "66D1796446",
             "skillName": "🌪️ Chamado dos Quatro Ventos",
             "skillDamage": 90,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillMana": 0,
+            "skillType": "magic",
+            "source": "skills_module"
         }
     ],
-    "classe": "Guardião da Natureza",
+    "classe": "Naturalista",
     "anima": 200,
     "critico": 90,
     "cultura": "Lakota/Dakota",
     "artefato": "Cachimbo sagrado chanupa conectado aos quatro ventos",
     "elemento_cultural": "Cocar sagrado, pinturas corporais rituais, tradição oral",
     "created_at": "2025-09-04T17:50:00.000Z",
-    "updated_at": "2025-09-04T20:44:01.643Z",
-    "defesa_especial": 65
+    "updated_at": "2025-09-05T22:03:54.543Z",
+    "defesa_especial": 65,
+    "ataque_especial": 55,
+    "subclasse": "Guardião"
 },
 
   // ID: 3F4E5D6C7B (HEX)
@@ -344,32 +318,29 @@ const CharacterDatabase = {
     "color": 4210752,
     "borderColor": 2763306,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        40,
-        80
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 1,
     "description": "Berserker Viking - Canaliza o espírito do lobo Fenrir",
-    "drops": [],
     "skills": [
         {
+            "skillId": "2909C7C9B3",
             "skillName": "🐺 Fúria do Fenrir",
             "skillDamage": 120,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillMana": 0,
+            "skillType": "combat",
+            "source": "skills_module"
         }
     ],
-    "classe": "Guardião da Natureza",
+    "classe": "Naturalista",
     "anima": 220,
     "critico": 110,
     "cultura": "Viking/Nórdico",
     "artefato": "Braceletes rúnicos que amplificam a ira divina",
     "elemento_cultural": "Runas bind, pele de lobo sagrada, fúria controlada",
     "created_at": "2025-09-04T17:55:00.000Z",
-    "updated_at": "2025-09-04T20:28:57.409Z",
-    "defesa_especial": 67
+    "updated_at": "2025-09-05T22:04:01.093Z",
+    "defesa_especial": 67,
+    "ataque_especial": 70,
+    "subclasse": "Guardião"
 },
 
   // ID: 6A7B8C9D0E (HEX)
@@ -385,32 +356,29 @@ const CharacterDatabase = {
     "color": 16776960,
     "borderColor": 13421568,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        50,
-        100
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 2,
     "description": "Mercador Abássida - Carrega bolsa infinita com tesouros de todo mundo conhecido",
-    "drops": [],
     "skills": [
         {
+            "skillId": "0788EB0AB6",
             "skillName": "✨ Tapete das Mil e Uma Noites",
-            "skillDamage": 0,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillDamage": 65,
+            "skillMana": 0,
+            "skillType": "magic",
+            "source": "skills_module"
         }
     ],
-    "classe": "Mercador-Diplomata",
+    "classe": "Mercador",
     "anima": 190,
     "critico": 65,
     "cultura": "Califado Abássida",
     "artefato": "Tapete voador tecido com fios de luz das estrelas",
     "elemento_cultural": "Rota da Seda, caligrafia árabe, hospitalidade islâmica",
     "created_at": "2025-09-04T18:00:00.000Z",
-    "updated_at": "2025-09-04T20:48:29.572Z",
-    "defesa_especial": 62
+    "updated_at": "2025-09-05T22:04:43.746Z",
+    "defesa_especial": 62,
+    "ataque_especial": 45,
+    "subclasse": "Diplomata"
 },
 
   // ID: 1F2E3D4C5B (HEX)
@@ -426,32 +394,29 @@ const CharacterDatabase = {
     "color": 16711935,
     "borderColor": 13369548,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        35,
-        70
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 3,
     "description": "Dama Vitoriana - Manipula alta sociedade através de chás ritualizados e fofocas codificadas",
-    "drops": [],
     "skills": [
         {
+            "skillId": "59B70F4B89",
             "skillName": "🍵 Chá da Revelação",
             "skillDamage": 0,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillMana": 0,
+            "skillType": "utility",
+            "source": "skills_module"
         }
     ],
-    "classe": "Mercador-Diplomata",
+    "classe": "Diplomata",
     "anima": 165,
     "critico": 70,
     "cultura": "Inglaterra Vitoriana",
     "artefato": "Serviço de chá que revela segredos alheios",
     "elemento_cultural": "Etiqueta vitoriana, linguagem dos leques, salões literários",
     "created_at": "2025-09-04T18:05:00.000Z",
-    "updated_at": "2025-09-04T20:56:23.810Z",
-    "defesa_especial": 59
+    "updated_at": "2025-09-05T22:04:35.843Z",
+    "defesa_especial": 59,
+    "ataque_especial": 35,
+    "subclasse": "Mercador"
 },
 
   // ID: 5A6B7C8D9E (HEX)
@@ -467,32 +432,29 @@ const CharacterDatabase = {
     "color": 8388736,
     "borderColor": 5592405,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        45,
-        90
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 1,
     "description": "Babalawo Iorubá - Lê destinos através de 256 configurações de búzios sagrados",
-    "drops": [],
     "skills": [
         {
+            "skillId": "7739E9D239",
             "skillName": "🪙 Leitura dos 256 Odús",
             "skillDamage": 0,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillMana": 0,
+            "skillType": "magic",
+            "source": "skills_module"
         }
     ],
-    "classe": "Curandeiro Ritualista",
+    "classe": "Ritualista",
     "anima": 240,
     "critico": 105,
     "cultura": "Reino de Oyó/Iorubá",
     "artefato": "Opele (corrente divinatória) conectada aos 401 Orixás",
     "elemento_cultural": "Culto aos Orixás, medicina tradicional yorubá, tradição oral Ifá",
     "created_at": "2025-09-04T18:10:00.000Z",
-    "updated_at": "2025-09-04T20:59:55.891Z",
-    "defesa_especial": 84
+    "updated_at": "2025-09-05T22:05:13.865Z",
+    "defesa_especial": 84,
+    "ataque_especial": 50,
+    "subclasse": "Curandeiro"
 },
 
   // ID: 0F1E2D3C4B (HEX)
@@ -508,15 +470,8 @@ const CharacterDatabase = {
     "color": 4210752,
     "borderColor": 2763306,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        50,
-        100
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 1,
     "description": "Médico-alquimista Russo - Obcecado com elixir da vida eterna",
-    "drops": [],
     "skills": [
         {
             "skillName": "🧪 Elixir da Imortalidade Russa",
@@ -525,7 +480,7 @@ const CharacterDatabase = {
             "source": "legacy"
         }
     ],
-    "classe": "Curandeiro Ritualista",
+    "classe": "Curandeiro",
     "anima": 250,
     "critico": 115,
     "cultura": "Império Russo",
@@ -533,7 +488,9 @@ const CharacterDatabase = {
     "elemento_cultural": "Laboratório ortodoxo, ícones religiosos, medicina popular russa",
     "created_at": "2025-09-04T18:15:00.000Z",
     "updated_at": "2025-09-04T21:03:50.480Z",
-    "defesa_especial": 85
+    "defesa_especial": 85,
+    "ataque_especial": 55,
+    "subclasse": "Curandeiro"
 },
 
   // ID: 4A5B6C7D8E (HEX)
@@ -549,15 +506,8 @@ const CharacterDatabase = {
     "color": 65280,
     "borderColor": 32768,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        40,
-        80
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 2,
     "description": "Lutadora-Artífice Chinesa - Forja suas próprias armas de jade durante o combate usando qi",
-    "drops": [],
     "skills": [
         {
             "skillName": "💎 Forja de Jade Imperial",
@@ -575,7 +525,8 @@ const CharacterDatabase = {
     "elemento_cultural": "Feng shui, jade imperial como condutor de energia, artes marciais internas",
     "created_at": "2025-09-04T18:20:00.000Z",
     "updated_at": "2025-09-04T21:08:53.328Z",
-    "defesa_especial": 55
+    "defesa_especial": 55,
+    "ataque_especial": 65
 },
 
   // ID: 9F0E1D2C3B (HEX)
@@ -591,24 +542,19 @@ const CharacterDatabase = {
     "color": 16776960,
     "borderColor": 13421568,
     "size": 12,
-    "experience": 1,
-    "goldRange": [
-        45,
-        85
-    ],
     "ai_type": "aggressive",
-    "spawn_weight": 1,
     "description": "Guerreiro-Sacerdote Ashanti - Lê futuro em padrões dos tecidos Kente",
-    "drops": [],
     "skills": [
         {
+            "skillId": "342E27FBB5",
             "skillName": "🥁 Tambores Ancestrais",
             "skillDamage": 75,
-            "skillCost": 0,
-            "source": "legacy"
+            "skillMana": 0,
+            "skillType": "combat",
+            "source": "skills_module"
         }
     ],
-    "classe": "Guardião da Natureza",
+    "classe": "Naturalista",
     "classe_secundaria": "Oráculo",
     "anima": 210,
     "critico": 100,
@@ -616,23 +562,23 @@ const CharacterDatabase = {
     "artefato": "Tamboril falante que se comunica com ancestrais",
     "elemento_cultural": "Tecidos Kente sagrados, tambores falantes, máscaras Adinkra",
     "created_at": "2025-09-04T18:25:00.000Z",
-    "updated_at": "2025-09-04T21:13:12.239Z",
-    "defesa_especial": 66
+    "updated_at": "2025-09-05T22:05:28.863Z",
+    "defesa_especial": 66,
+    "ataque_especial": 58,
+    "subclasse": "Ritualista"
 }
 
 };
 
 // Statistics:
 // Total characters: 15
-// Legacy IDs: 1
-// Hexadecimal IDs: 14
+// Legacy IDs: 0
+// Hexadecimal IDs: 15
 
-// Legacy ID Examples (PRESERVED):
-// Aurelius Ignisvox: A9C4N0001E
 // Hexadecimal ID Examples:
 // Miloš Železnikov: 045CCF3515
 // Shi Wuxing: EA32D10F2D
-// Pythia Kassandra: 7A8B9C0D1E
+// Aurelius Ignisvox: 13BF61B218
 
 module.exports = CharacterDatabase;
 // For ES6: export default CharacterDatabase;

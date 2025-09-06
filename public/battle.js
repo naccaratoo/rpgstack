@@ -9,6 +9,14 @@ class VintageBattleDemo {
         this.currentTurn = 1;
         this.swapsUsedThisTurn = 0; // Contador local para trocas
         this.lastSwapTime = 0; // Timestamp da última troca para debounce
+        
+        // Sistema de memória temporária para personagens da batalha
+        this.battleCharactersCache = {
+            playerTeam: [], // Armazena dados completos dos personagens do jogador
+            enemyTeam: [],  // Armazena dados completos dos personagens inimigos
+            initialized: false
+        };
+        
         this.playerData = {
             name: "Herói Ancestral",
             level: 1,
@@ -16,12 +24,11 @@ class VintageBattleDemo {
             maxHP: 100,
             mp: 50,
             maxMP: 50,
-            skills: [
-                { name: "Lâmina Etérea", cost: 15, damage: [25, 35], description: "Ataque espiritual que atravessa defesas" },
-                { name: "Escudo Arcano", cost: 20, healing: [0, 0], description: "Proteção mística contra danos" },
-                { name: "Chama Interior", cost: 25, damage: [35, 50], description: "Invoca fogo espiritual devastador" }
-            ]
+            skills: []
         };
+        
+        // Inicializar carregador de skills
+        this.skillLoader = new SkillLoader();
         
         this.enemyData = {
             name: "Sombra do Passado",
@@ -57,6 +64,7 @@ class VintageBattleDemo {
     async init() {
         this.showLoadingScreen();
         await this.loadCharacters();
+        await this.skillLoader.loadAllSkills();
         setTimeout(() => {
             this.hideLoadingScreen();
             this.showCharacterModal();
@@ -87,7 +95,7 @@ class VintageBattleDemo {
                 // Aceitar todas as classes originais do sistema CHRONOS
                 const validClasses = [
                     'Lutador', 'Armamentista', 'Arcano',           // Classes base
-                    'Oráculo', 'Artífice', 'Guardião da Natureza', // Classes originais CHRONOS
+                    'Oráculo', 'Artífice', 'Naturalista', // Classes originais CHRONOS
                     'Mercador-Diplomata', 'Curandeiro Ritualista'  // Classes culturais
                 ];
                 const filteredCharacters = rawCharacters.filter(char => 
@@ -207,7 +215,7 @@ class VintageBattleDemo {
         this.initScrollToTopButton();
 
         // Action buttons
-        document.querySelector('[data-action="attack"]')?.addEventListener('click', () => this.performAttack());
+        // ✅ REFATORAÇÃO v4.9.5: Removido performAttack() duplicado - usar apenas sistema seguro
         document.querySelector('[data-action="defend"]')?.addEventListener('click', () => this.performDefend());
         document.querySelector('[data-action="meditate"]')?.addEventListener('click', () => this.performMeditate());
         document.querySelector('[data-action="skills"]')?.addEventListener('click', () => this.toggleSkills());
@@ -228,7 +236,8 @@ class VintageBattleDemo {
 
         switch(e.key) {
             case '1':
-                this.performAttack();
+                // ✅ REFATORAÇÃO v4.9.5: Usar sistema seguro unificado
+                this.declareAction('attack');
                 break;
             case '2':
                 this.performDefend();
@@ -529,25 +538,33 @@ class VintageBattleDemo {
         
         // Atualizar interface 3v3 completa
         this.update3v3BattleField();
-        this.populateSkills();
+        // Nota: populateSkills() será chamado após a inicialização do sistema de batalha
         
         // Inicializar sistema de turnos
         this.initializeTurnSystem();
         this.setupActionButtons();
         
+        // GARANTIR que o cache seja inicializado se estivermos usando sistema seguro
+        if (this.secureBattleClient && this.secureBattleClient.isBattleActive() && !this.battleCharactersCache?.initialized) {
+            console.log('🗂️ Garantindo inicialização do cache na transição para batalha...');
+            setTimeout(async () => {
+                await this.initializeBattleCharactersCache();
+            }, 1000); // Dar tempo para o sistema seguro se estabilizar
+        }
+        
         // IMPORTANTE: Sincronizar dados após inicialização completa
-        setTimeout(() => {
+        setTimeout(async () => {
             // Verificar se estamos usando o sistema seguro ou legacy
             if (this.secureBattleClient && this.secureBattleClient.isBattleActive()) {
                 console.log('🔄 Sincronizando dados com sistema seguro...');
-                this.syncPlayerDataWithActiveCharacter();
+                await this.syncPlayerDataWithActiveCharacter();
                 this.updatePlayerCard(); // Atualizar interface com dados corretos
                 this.updateActiveBattleCharacter(); // Atualizar personagem ativo da batalha
                 this.updateCharacterSlots(); // Atualizar slots dos personagens
                 console.log('✅ Sincronização segura concluída');
             } else if (this.battleMechanics && this.battleMechanics.battleState && this.battleMechanics.battleState.teams) {
                 console.log('🔄 Sincronizando dados com sistema legacy...');
-                this.syncPlayerDataWithActiveCharacter();
+                await this.syncPlayerDataWithActiveCharacter();
                 this.updatePlayerCard(); // Atualizar interface com dados corretos
                 this.updateActiveBattleCharacter(); // Atualizar personagem ativo da batalha
                 this.updateCharacterSlots(); // Atualizar slots dos personagens
@@ -558,7 +575,8 @@ class VintageBattleDemo {
         }, 100); // Pequeno delay para garantir inicialização
         
         // Add initial log entry
-        this.addBattleLogEntry('system', `${this.playerTeam.characters[0].name} entra na arena ancestral...`);
+        const firstPlayerName = this.playerTeam.characters[0]?.name || this.playerTeam.characters[0]?.id || 'Jogador Desconhecido';
+        this.addBattleLogEntry('system', `${firstPlayerName} entra na arena ancestral...`);
         this.addBattleLogEntry('system', `Equipe inimiga se posiciona para a batalha!`);
         
         // Iniciar primeiro turno após delay
@@ -618,11 +636,11 @@ class VintageBattleDemo {
         if (hpEl) hpEl.textContent = character.currentHP || character.hp || 100;
         if (maxHpEl) maxHpEl.textContent = character.maxHP || character.hp || 100;
         
-        // Atualizar MP
-        const mpEl = document.getElementById(`${prefix}MP`);
-        const maxMpEl = document.getElementById(`${prefix}MaxMP`);
-        if (mpEl) mpEl.textContent = character.currentMP || character.mp || 50;
-        if (maxMpEl) maxMpEl.textContent = character.maxMP || character.mp || 50;
+        // Atualizar Ânima
+        const animaEl = document.getElementById(`${prefix}Anima`);
+        const maxAnimaEl = document.getElementById(`${prefix}MaxAnima`);
+        if (animaEl) animaEl.textContent = character.currentAnima || character.anima || 50;
+        if (maxAnimaEl) maxAnimaEl.textContent = character.maxAnima || character.anima || 50;
         
         // Atualizar barras
         this.updateMiniBar(`${prefix}HPBar`, 
@@ -668,11 +686,11 @@ class VintageBattleDemo {
         if (hpEl) hpEl.textContent = character.currentHP || character.hp || 100;
         if (maxHpEl) maxHpEl.textContent = character.maxHP || character.hp || 100;
         
-        // Atualizar MP  
-        const mpEl = document.getElementById(`${prefix}MP${slotIndex}`);
-        const maxMpEl = document.getElementById(`${prefix}MaxMP${slotIndex}`);
-        if (mpEl) mpEl.textContent = character.currentMP || character.mp || 50;
-        if (maxMpEl) maxMpEl.textContent = character.maxMP || character.mp || 50;
+        // Atualizar Ânima  
+        const animaEl = document.getElementById(`${prefix}Anima${slotIndex}`);
+        const maxAnimaEl = document.getElementById(`${prefix}MaxAnima${slotIndex}`);
+        if (animaEl) animaEl.textContent = character.currentAnima || character.anima || 50;
+        if (maxAnimaEl) maxAnimaEl.textContent = character.maxAnima || character.anima || 50;
         
         // Atualizar barras
         this.updateMiniBar(`${prefix}HPBar${slotIndex}`, 
@@ -698,7 +716,18 @@ class VintageBattleDemo {
         const bar = document.getElementById(barId);
         if (bar) {
             const percentage = Math.max(0, Math.min(100, (current / max) * 100));
+            
+            // CORREÇÃO v4.9.6: Adicionar animação suave às barras de HP/Ânima
+            bar.style.transition = 'width 0.8s ease-out, background-color 0.3s ease';
             bar.style.width = `${percentage}%`;
+            
+            // Efeito visual extra para perda de HP (piscar vermelho)
+            if (barId.includes('HP') && percentage < 50) {
+                bar.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.5)';
+                setTimeout(() => {
+                    bar.style.boxShadow = 'none';
+                }, 300);
+            }
         }
     }
 
@@ -729,7 +758,7 @@ class VintageBattleDemo {
 
         // Update health and mana bars
         this.updateHealthBar('player', this.playerData.hp, this.playerData.maxHP);
-        this.updateManaBar('player', this.playerData.mp, this.playerData.maxMP);
+        this.updateAnimaBar('player', this.playerData.anima, this.playerData.maxAnima);
     }
 
     updateEnemyCard() {
@@ -742,7 +771,7 @@ class VintageBattleDemo {
 
         // Update health and mana bars
         this.updateHealthBar('enemy', this.enemyData.hp, this.enemyData.maxHP);
-        this.updateManaBar('enemy', this.enemyData.mp, this.enemyData.maxMP);
+        this.updateAnimaBar('enemy', this.enemyData.anima, this.enemyData.maxAnima);
     }
 
     updateHealthBar(target, current, max) {
@@ -762,28 +791,42 @@ class VintageBattleDemo {
         }
     }
 
-    updateManaBar(target, current, max) {
-        const manaBar = document.getElementById(`${target}ManaBar`);
-        if (manaBar) {
+    updateAnimaBar(target, current, max) {
+        const animaBar = document.getElementById(`${target}AnimaBar`);
+        if (animaBar) {
             const percentage = (current / max) * 100;
-            manaBar.style.width = `${percentage}%`;
+            animaBar.style.width = `${percentage}%`;
             
-            // Ensure mana bar always has the emerald color
-            manaBar.style.background = 'linear-gradient(90deg, var(--emerald), var(--emerald-light))';
+            // Ensure anima bar always has the emerald color
+            animaBar.style.background = 'linear-gradient(90deg, var(--emerald), var(--emerald-light))';
         }
     }
 
-    populateSkills() {
+    async populateSkills() {
         const skillsList = document.getElementById('skillsList');
         if (!skillsList) return;
+
+        // Verificar se sistemas de batalha estão disponíveis antes de carregar
+        const hasSystemsReady = (this.battleMechanics && this.battleMechanics.battleState && this.battleMechanics.battleState.teams) ||
+                                (this.secureBattleClient && this.secureBattleClient.isBattleActive());
+
+        // Se playerData.skills está vazio, tentar carregar as skills do personagem ativo
+        if (this.playerData.skills.length === 0 && hasSystemsReady) {
+            await this.loadPlayerSkills();
+        }
+
+        if (this.playerData.skills.length === 0) {
+            skillsList.innerHTML = '<div class="no-skills-message">Nenhuma habilidade disponível</div>';
+            return;
+        }
 
         skillsList.innerHTML = this.playerData.skills.map((skill, index) => `
             <div class="skill-item" data-skill-index="${index}">
                 <div class="skill-icon">✦</div>
                 <div class="skill-info">
-                    <div class="skill-name">${skill.name}</div>
-                    <div class="skill-cost">Custo: ${skill.cost} ✦</div>
-                    <div class="skill-description">${skill.description}</div>
+                    <div class="skill-name">${skill.name || skill.skillName}</div>
+                    <div class="skill-cost">Custo: ${skill.anima_cost || skill.cost || 0} ✦</div>
+                    <div class="skill-description">${skill.description || 'Habilidade especial'}</div>
                 </div>
             </div>
         `).join('');
@@ -797,28 +840,112 @@ class VintageBattleDemo {
         });
     }
 
-    performAttack() {
-        if (this.battleState !== 'battle') return;
+    async loadPlayerSkills() {
+        try {
+            // Debug completo do estado
+            console.log('🔍 [DEBUG] Iniciando loadPlayerSkills()');
+            console.log('🔍 [DEBUG] this.battleMechanics:', !!this.battleMechanics);
+            console.log('🔍 [DEBUG] this.secureBattleClient:', !!this.secureBattleClient);
+            
+            // Buscar personagem ativo
+            let activeCharacter = null;
+            
+            if (this.battleMechanics && this.battleMechanics.battleState && this.battleMechanics.battleState.teams) {
+                console.log('🔍 [DEBUG] Usando battleMechanics');
+                const playerTeam = this.battleMechanics.battleState.teams.player;
+                console.log('🔍 [DEBUG] playerTeam:', playerTeam);
+                console.log('🔍 [DEBUG] activeIndex:', playerTeam.activeIndex);
+                console.log('🔍 [DEBUG] characters:', playerTeam.characters);
+                activeCharacter = playerTeam.characters[playerTeam.activeIndex];
+                console.log('🔍 [DEBUG] activeCharacter from battleMechanics:', activeCharacter);
+            } else if (this.secureBattleClient && this.secureBattleClient.isBattleActive()) {
+                console.log('🔍 [DEBUG] Usando secureBattleClient');
+                // Usar estado já carregado em memória
+                activeCharacter = this.secureBattleClient.getActiveCharacter('player');
+                console.log('🔍 [DEBUG] activeCharacter from secure:', activeCharacter);
+                
+                if (!activeCharacter && this.secureBattleClient.battleState) {
+                    // Fallback: acessar diretamente battleState
+                    const battleState = this.secureBattleClient.battleState;
+                    console.log('🔍 [DEBUG] battleState from secure (fallback):', battleState);
+                    if (battleState && battleState.playerTeam && battleState.playerTeam.characters) {
+                        activeCharacter = battleState.playerTeam.characters[battleState.playerTeam.activeIndex];
+                        console.log('🔍 [DEBUG] activeCharacter from secure (fallback):', activeCharacter);
+                    }
+                }
+            } else {
+                console.log('🔍 [DEBUG] Nenhum sistema de batalha disponível');
+                console.log('🔍 [DEBUG] battleMechanics exists:', !!this.battleMechanics);
+                if (this.battleMechanics) {
+                    console.log('🔍 [DEBUG] battleMechanics.battleState:', !!this.battleMechanics.battleState);
+                    if (this.battleMechanics.battleState) {
+                        console.log('🔍 [DEBUG] battleMechanics.battleState.teams:', !!this.battleMechanics.battleState.teams);
+                    }
+                }
+            }
 
-        const damage = this.calculateDamage(20, 30);
-        const isCritical = Math.random() < 0.15;
-        const finalDamage = isCritical ? Math.floor(damage * 1.5) : damage;
+            if (!activeCharacter) {
+                console.warn('⚠️ Nenhum personagem ativo encontrado');
+                return;
+            }
 
-        this.enemyData.hp = Math.max(0, this.enemyData.hp - finalDamage);
-        
-        this.showDamageNumber(finalDamage, isCritical, 'enemy');
-        this.addBattleLogEntry(isCritical ? 'critical' : 'damage', 
-            `${this.playerData.name} ${isCritical ? 'desfere um golpe crítico' : 'ataca'} causando ${finalDamage} de dano!`);
-        
-        this.updateEnemyCard();
-        
-        if (this.enemyData.hp <= 0) {
-            this.endBattle('victory');
-            return;
+            console.log('🔍 Carregando skills do personagem:', activeCharacter.name || activeCharacter.id);
+            console.log('📋 Skills do personagem:', activeCharacter.skills);
+            console.log('🔍 [DEBUG] activeCharacter completo:', activeCharacter);
+            console.log('🔍 [DEBUG] activeCharacter.keys:', Object.keys(activeCharacter));
+            console.log('🔍 [DEBUG] activeCharacter properties:');
+            Object.keys(activeCharacter).forEach(key => {
+                console.log(`  ${key}:`, activeCharacter[key]);
+            });
+
+            const playerSkills = [];
+            
+            // Se o personagem já tem skills completas (carregadas pelo backend)
+            if (activeCharacter.skills && Array.isArray(activeCharacter.skills)) {
+                for (const skill of activeCharacter.skills) {
+                    // Skills já vem completas do backend através do BattleMechanics
+                    if (skill.name && skill.skillId) {
+                        playerSkills.push({
+                            name: skill.name,
+                            cost: skill.anima_cost || 25,
+                            damage: [skill.damage || 20, (skill.damage || 20) + 10],
+                            description: skill.description || 'Habilidade especial',
+                            anima_cost: skill.anima_cost || 25,
+                            originalSkill: skill
+                        });
+                        console.log('✅ Skill carregada do backend:', skill.name);
+                    } else {
+                        // Fallback para skills que só têm ID
+                        let skillId = skill.skillId || skill.id || skill;
+                        let skillDetails = this.skillLoader.skills.get(skillId);
+                        
+                        if (skillDetails) {
+                            playerSkills.push({
+                                name: skillDetails.name,
+                                cost: skillDetails.anima_cost || 25,
+                                damage: [skillDetails.damage || 20, (skillDetails.damage || 20) + 10],
+                                description: skillDetails.description || 'Habilidade especial',
+                                anima_cost: skillDetails.anima_cost || 25,
+                                originalSkill: skillDetails
+                            });
+                            console.log('✅ Skill carregada do loader:', skillDetails.name);
+                        } else {
+                            console.warn('⚠️ Skill não encontrada:', skillId);
+                        }
+                    }
+                }
+            }
+
+            this.playerData.skills = playerSkills;
+            console.log(`🎯 ${playerSkills.length} skills carregadas para ${activeCharacter.name || activeCharacter.id}`);
+            
+        } catch (error) {
+            console.error('❌ Erro ao carregar skills do jogador:', error);
         }
-
-        setTimeout(() => this.enemyTurn(), 1500);
     }
+
+    // ✅ REFATORAÇÃO v4.9.5: performAttack() REMOVIDA
+    // Função legacy insegura eliminada - usar apenas declareAction('attack')
 
     performDefend() {
         if (this.battleState !== 'battle') return;
@@ -849,13 +976,17 @@ class VintageBattleDemo {
         setTimeout(() => this.enemyTurn(), 1500);
     }
 
-    toggleSkills() {
+    async toggleSkills() {
         const skillsPanel = document.getElementById('skillsPanel');
         if (!skillsPanel) return;
 
         this.skillsVisible = !this.skillsVisible;
         
         if (this.skillsVisible) {
+            // Tentar recarregar skills se não temos nenhuma
+            if (this.playerData.skills.length === 0) {
+                await this.populateSkills();
+            }
             skillsPanel.style.display = 'block';
             setTimeout(() => skillsPanel.classList.add('visible'), 10);
         } else {
@@ -978,12 +1109,26 @@ class VintageBattleDemo {
         
         damageEl.textContent = displayText;
 
-        // Position based on target
-        const targetCard = document.querySelector(`.${target}-card`);
-        if (targetCard) {
-            const rect = targetCard.getBoundingClientRect();
-            damageEl.style.left = `${rect.left + Math.random() * 100}px`;
-            damageEl.style.top = `${rect.top + Math.random() * 50}px`;
+        // CORREÇÃO v4.9.6: Position based on target usando estrutura atual
+        let targetElement = null;
+        if (target === 'enemy') {
+            targetElement = document.getElementById('enemyActiveBattleImage') || document.getElementById('enemyActiveBattleName');
+        } else if (target === 'player') {
+            targetElement = document.getElementById('playerActiveBattleImage') || document.getElementById('playerActiveBattleName');
+        }
+        
+        if (targetElement) {
+            const rect = targetElement.getBoundingClientRect();
+            damageEl.style.position = 'fixed';
+            damageEl.style.left = `${rect.left + rect.width/2 + Math.random() * 60 - 30}px`;
+            damageEl.style.top = `${rect.top + rect.height/2 + Math.random() * 40 - 20}px`;
+            damageEl.style.zIndex = '1000';
+        } else {
+            // Fallback: center of screen
+            damageEl.style.position = 'fixed';
+            damageEl.style.left = '50%';
+            damageEl.style.top = '30%';
+            damageEl.style.transform = 'translateX(-50%)';
         }
 
         damageOverlay.appendChild(damageEl);
@@ -1270,11 +1415,15 @@ class VintageBattleDemo {
                         playerTeamFormatted, 
                         enemyTeamFormatted, 
                         '3v3'
-                    ).then(result => {
+                    ).then(async result => {
                         this.addBattleLogEntry('system', '🔐 Sistema 3v3 seguro inicializado!');
                         
                         // Configurar modo 3v3 explicitamente
                         this.battleState = '3v3-secure-battle';
+                        
+                        // Inicializar cache de personagens com dados completos
+                        console.log('🗂️ Inicializando cache após sucesso da batalha segura...');
+                        await this.initializeBattleCharactersCache();
                         
                         // Log das equipes
                         this.addBattleLogEntry('system', 
@@ -1435,6 +1584,10 @@ class VintageBattleDemo {
 
     startSecureTimerDisplay() {
         // Timer visual para sistema seguro (independente do backend)
+        
+        // Limpar timer existente antes de criar novo
+        this.clearTimerDisplay();
+        
         let timeRemaining = 20000; // 20 segundos
         const startTime = Date.now();
         
@@ -1454,6 +1607,9 @@ class VintageBattleDemo {
     startTimerDisplay() {
         // Timer visual que sincroniza com o BattleMechanics
         if (!this.battleMechanics) return;
+        
+        // Limpar timer existente antes de criar novo
+        this.clearTimerDisplay();
         
         this.timerInterval = setInterval(() => {
             const status = this.battleMechanics.getTurnStatus();
@@ -1498,10 +1654,14 @@ class VintageBattleDemo {
             
             if (activeChar && enemyChar) {
                 console.log('🔐 Executando ação padrão do timeout no sistema seguro');
+                
+                // CORREÇÃO: Usar fallback para nomes undefined
+                const playerName = activeChar.name || activeChar.id || 'Jogador Desconhecido';
+                
                 this.secureBattleClient.executeSecureAttack(activeChar.id, enemyChar.id)
                     .then(result => {
                         if (result.success) {
-                            this.addBattleLogEntry('attack', `${activeChar.name} executa ataque básico por tempo esgotado`);
+                            this.addBattleLogEntry('attack', `${playerName} executa ataque básico por tempo esgotado`);
                         } else {
                             this.addBattleLogEntry('error', 'Falha na ação de timeout');
                         }
@@ -1529,6 +1689,10 @@ class VintageBattleDemo {
     }
 
     declareAction(actionType, actionData = {}) {
+        console.log('🔍 [DEBUG] declareAction called:', actionType, actionData);
+        console.log('🔍 [DEBUG] secureBattleClient exists:', !!this.secureBattleClient);
+        console.log('🔍 [DEBUG] isBattleActive:', this.secureBattleClient?.isBattleActive());
+        
         if (this.secureBattleClient && this.secureBattleClient.isBattleActive()) {
             // Sistema seguro - executar ação diretamente
             console.log('🔐 Executando ação no sistema seguro:', actionType);
@@ -1559,11 +1723,20 @@ class VintageBattleDemo {
     }
 
     executeSecureAction(actionType, actionData = {}) {
+        // ✅ DEBUG v4.9.5: Adicionar logs detalhados para debug
+        console.log('🔍 [DEBUG] executeSecureAction called:', actionType, actionData);
+        console.log('🔍 [DEBUG] secureBattleClient exists:', !!this.secureBattleClient);
+        console.log('🔍 [DEBUG] isBattleActive:', this.secureBattleClient?.isBattleActive());
+        
         // Executar ação no sistema seguro
         const playerChar = this.secureBattleClient.getActiveCharacter('player');
         const enemyChar = this.secureBattleClient.getActiveCharacter('enemy');
         
+        console.log('🔍 [DEBUG] playerChar:', playerChar);
+        console.log('🔍 [DEBUG] enemyChar:', enemyChar);
+        
         if (!playerChar || !enemyChar) {
+            console.error('❌ [DEBUG] Personagens não encontrados - playerChar:', !!playerChar, 'enemyChar:', !!enemyChar);
             this.addBattleLogEntry('error', 'Personagens não encontrados');
             return;
         }
@@ -1571,12 +1744,45 @@ class VintageBattleDemo {
         switch (actionType) {
             case 'attack':
                 // Executar ataque básico
+                console.log('🔍 [DEBUG] Calling executeSecureAttack with:', playerChar.id, enemyChar.id);
                 this.secureBattleClient.executeSecureAttack(playerChar.id, enemyChar.id)
-                    .then(result => {
+                    .then((result) => {
+                        console.log('🔍 [DEBUG] executeSecureAttack result:', result);
                         if (result.success) {
-                            this.addBattleLogEntry('attack', `${playerChar.name} ataca ${enemyChar.name}! Dano: ${result.damage}`);
-                            if (result.isCritical) {
+                            // CORREÇÃO v4.9.6: Resolver nomes usando cache de personagens
+                            // CORREÇÃO v4.9.6-hotfix: Resolver nomes diretamente sem função this
+                            const playerName = playerChar.name || playerChar.id || 'Jogador';
+                            const enemyName = enemyChar.name || enemyChar.id || 'Inimigo';
+                            
+                            // ✅ CORREÇÃO v4.9.6: Extrair dano numérico corretamente
+                            let damage = result.action?.damage || result.damage || 0;
+                            if (typeof damage === 'object' && damage.damage !== undefined) {
+                                damage = damage.damage; // DamageCalculationSystem retorna {damage: número}
+                            }
+                            const isCritical = result.isCritical || false;
+                            this.showDamageNumber(damage, isCritical, 'enemy');
+                            
+                            this.addBattleLogEntry('attack', `${playerName} ataca ${enemyName}! Dano: ${damage}`);
+                            if (isCritical) {
                                 this.addBattleLogEntry('critical', '💥 Acerto crítico!');
+                            }
+                            
+                            // CORREÇÃO v4.9.6: Atualizar HP do inimigo após ataque
+                            if (result.action && result.action.targetHP !== undefined) {
+                                const enemyHPElement = document.getElementById('enemyActiveBattleHP');
+                                const enemyHPBar = document.getElementById('enemyActiveBattleHPBar');
+                                const enemyMaxHPElement = document.getElementById('enemyActiveBattleMaxHP');
+                                
+                                if (enemyHPElement && enemyHPBar && enemyMaxHPElement) {
+                                    const newHP = result.action.targetHP;
+                                    const maxHP = parseInt(enemyMaxHPElement.textContent) || 100;
+                                    
+                                    // Atualizar texto do HP
+                                    enemyHPElement.textContent = newHP;
+                                    
+                                    // Atualizar barra com animação
+                                    this.updateMiniBar('enemyActiveBattleHPBar', newHP, maxHP);
+                                }
                             }
                         } else {
                             this.addBattleLogEntry('error', `Falha no ataque: ${result.error}`);
@@ -1584,20 +1790,26 @@ class VintageBattleDemo {
                         this.processSecureTurnEnd();
                     })
                     .catch(error => {
-                        console.error('Erro no ataque:', error);
-                        this.addBattleLogEntry('error', 'Erro no ataque');
+                        console.error('❌ [DEBUG] Erro no ataque detalhado:', error);
+                        console.error('❌ [DEBUG] Error message:', error.message);
+                        console.error('❌ [DEBUG] Error stack:', error.stack);
+                        this.addBattleLogEntry('error', `Erro no ataque: ${error.message}`);
                         this.processSecureTurnEnd();
                     });
                 break;
                 
             case 'defend':
-                this.addBattleLogEntry('buff', `${playerChar.name} assume posição defensiva!`);
+                // CORREÇÃO v4.9.6: Resolver nome usando cache de personagens
+                const playerNameDefend = playerChar.name || playerChar.id || 'Jogador';
+                this.addBattleLogEntry('buff', `${playerNameDefend} assume posição defensiva!`);
                 // No sistema seguro, defender pode ser implementado mais tarde
                 this.processSecureTurnEnd();
                 break;
                 
             case 'meditate':
-                this.addBattleLogEntry('buff', `${playerChar.name} medita e recupera energia!`);
+                // CORREÇÃO v4.9.6: Resolver nome usando cache de personagens
+                const playerNameMeditate = playerChar.name || playerChar.id || 'Jogador';
+                this.addBattleLogEntry('buff', `${playerNameMeditate} medita e recupera energia!`);
                 // No sistema seguro, meditar pode ser implementado mais tarde
                 this.processSecureTurnEnd();
                 break;
@@ -1626,13 +1838,48 @@ class VintageBattleDemo {
         const playerChar = this.secureBattleClient.getActiveCharacter('player');
         const enemyChar = this.secureBattleClient.getActiveCharacter('enemy');
         
+        console.log('🔍 [DEBUG DATA BINDING] processSecureEnemyTurn:');
+        console.log('📊 playerChar:', playerChar);
+        console.log('📊 enemyChar:', enemyChar);
+        
         if (playerChar && enemyChar) {
+            // CORREÇÃO v4.9.6: Resolver nomes usando cache de personagens
+            const playerName = playerChar.name || playerChar.id || 'Jogador';
+            const enemyName = enemyChar.name || enemyChar.id || 'Inimigo';
+            
             // Inimigo sempre ataca por enquanto (IA básica)
-            this.addBattleLogEntry('enemy', `${enemyChar.name} prepara um ataque...`);
+            this.addBattleLogEntry('enemy', `${enemyName} prepara um ataque...`);
             
             setTimeout(() => {
-                // Simular ataque inimigo (implementar depois no backend)
-                this.addBattleLogEntry('enemy', `${enemyChar.name} ataca ${playerChar.name}!`);
+                // ✅ CORREÇÃO v4.9.5: Adicionar animações de dano do inimigo
+                const enemyDamage = this.calculateDamage(15, 25); // Dano básico do inimigo
+                const isEnemyCritical = Math.random() < 0.1; // 10% chance crítico
+                const finalEnemyDamage = isEnemyCritical ? Math.floor(enemyDamage * 1.5) : enemyDamage;
+                
+                // Mostrar animação de dano no jogador
+                this.showDamageNumber(finalEnemyDamage, isEnemyCritical, 'player');
+                
+                // CORREÇÃO v4.9.6: Atualizar HP do jogador após ataque inimigo
+                const playerHPElement = document.getElementById('playerActiveBattleHP');
+                const playerHPBar = document.getElementById('playerActiveBattleHPBar');
+                const playerMaxHPElement = document.getElementById('playerActiveBattleMaxHP');
+                
+                if (playerHPElement && playerHPBar && playerMaxHPElement) {
+                    const currentHP = parseInt(playerHPElement.textContent) || 100;
+                    const maxHP = parseInt(playerMaxHPElement.textContent) || 100;
+                    const newHP = Math.max(0, currentHP - finalEnemyDamage);
+                    
+                    // Atualizar texto do HP
+                    playerHPElement.textContent = newHP;
+                    
+                    // Atualizar barra com animação
+                    this.updateMiniBar('playerActiveBattleHPBar', newHP, maxHP);
+                }
+                
+                this.addBattleLogEntry('enemy', `${enemyName} ataca ${playerName}! Dano: ${finalEnemyDamage}`);
+                if (isEnemyCritical) {
+                    this.addBattleLogEntry('critical', '💥 Inimigo causou crítico!');
+                }
                 
                 // Iniciar próximo turno do jogador
                 setTimeout(() => {
@@ -1640,6 +1887,7 @@ class VintageBattleDemo {
                 }, 2000);
             }, 1500);
         } else {
+            console.warn('⚠️ [DEBUG DATA BINDING] playerChar ou enemyChar são null/undefined');
             // Fallback - iniciar próximo turno
             setTimeout(() => {
                 this.startPlayerTurn();
@@ -1681,7 +1929,17 @@ class VintageBattleDemo {
                         const charName = newActiveChar?.name || `Personagem ${toCharacterIndex + 1}`;
                         this.addBattleLogEntry('swap', `🔄 Novo personagem ativo: ${charName}! (Trocas restantes: ${result.swapsRemaining})`);
                         
-                        // Atualizar dados locais das equipes
+                        // IMPORTANTE: Atualizar índices IMEDIATAMENTE após a troca bem-sucedida
+                        console.log('🔄 Atualizando índices locais imediatamente após a troca');
+                        const battleState = this.secureBattleClient.battleState;
+                        if (battleState && battleState.playerTeam) {
+                            // Atualizar índice ativo local para corresponder ao servidor
+                            this.playerTeam.active = battleState.playerTeam.activeIndex;
+                            this.playerTeam.reserve = [0, 1, 2].filter(i => i !== battleState.playerTeam.activeIndex);
+                            console.log('✅ Índice ativo local atualizado para:', this.playerTeam.active);
+                        }
+                        
+                        // Atualizar dados locais das equipes e interface
                         this.updateLocalTeamData();
                         
                         return { success: true, result };
@@ -1720,45 +1978,547 @@ class VintageBattleDemo {
     updateLocalTeamData() {
         // Sincronizar dados locais com estado do servidor seguro
         if (this.secureBattleClient && this.secureBattleClient.isBattleActive()) {
-            const battleStats = this.secureBattleClient.getBattleStats();
-            if (battleStats) {
-                // Atualizar interface baseado no estado seguro
+            const battleState = this.secureBattleClient.battleState;
+            if (battleState) {
                 console.log('🔄 Atualizando dados locais do sistema seguro');
+                console.log('📊 Estado antes da sincronização - playerTeam.active:', this.playerTeam.active);
+                console.log('📊 Estado do servidor - activeIndex:', battleState.playerTeam.activeIndex);
+                
+                // IMPORTANTE: Sincronizar índices ativos com o estado do servidor
+                if (battleState.playerTeam) {
+                    this.playerTeam.active = battleState.playerTeam.activeIndex;
+                    this.playerTeam.reserve = [0, 1, 2].filter(i => i !== battleState.playerTeam.activeIndex);
+                    console.log('✅ playerTeam.active atualizado para:', this.playerTeam.active);
+                }
+                
+                if (battleState.enemyTeam) {
+                    this.enemyTeam.active = battleState.enemyTeam.activeIndex;
+                    this.enemyTeam.reserve = [0, 1, 2].filter(i => i !== battleState.enemyTeam.activeIndex);
+                    console.log('✅ enemyTeam.active atualizado para:', this.enemyTeam.active);
+                }
+                
+                // Agora atualizar a interface com os índices corretos
                 this.update3v3BattleField();
             }
         }
     }
 
-    updateSecureTeamDisplay() {
+    async updateSecureTeamDisplay() {
         // Atualizar display baseado no estado do cliente seguro
         if (this.secureBattleClient && this.secureBattleClient.isBattleActive()) {
+            const battleState = this.secureBattleClient.battleState;
             const playerChar = this.secureBattleClient.getActiveCharacter('player');
             const enemyChar = this.secureBattleClient.getActiveCharacter('enemy');
             
-            if (playerChar) {
-                console.log('🔐 Personagem ativo atualizado:', playerChar.name);
-                // Atualizar dados do jogador para o novo personagem ativo
-                this.playerData.name = playerChar.name;
-                this.playerData.hp = playerChar.currentHP;
-                this.playerData.maxHP = playerChar.maxHP;
-                this.playerData.mp = playerChar.currentMP;
-                this.playerData.maxMP = playerChar.maxMP;
+            if (playerChar && battleState) {
+                console.log('🔐 Personagem ativo atualizado:', playerChar.name || playerChar.id);
                 
-                // Atualizar também o personagem ativo na interface
-                if (this.activePlayerCharacter) {
-                    this.activePlayerCharacter.name = playerChar.name;
-                    this.activePlayerCharacter.currentHP = playerChar.currentHP;
-                    this.activePlayerCharacter.maxHP = playerChar.maxHP;
-                    this.activePlayerCharacter.currentMP = playerChar.currentMP;
-                    this.activePlayerCharacter.maxMP = playerChar.maxMP;
+                // Garantir que o cache está inicializado
+                if (!this.battleCharactersCache.initialized) {
+                    await this.initializeBattleCharactersCache();
+                } else {
+                    // Atualizar dados do cache com estado atual da batalha
+                    this.updateCacheWithCurrentBattleState(battleState);
                 }
+                
+                // Buscar dados do personagem ativo do cache
+                const activeIndex = battleState.playerTeam.activeIndex;
+                const fullPlayerData = this.getCharacterFromCache('player', activeIndex);
+                
+                if (fullPlayerData) {
+                    // Atualizar dados do jogador com dados do cache
+                    this.playerData.name = fullPlayerData.name;
+                    this.playerData.hp = fullPlayerData.currentHP;
+                    this.playerData.maxHP = fullPlayerData.maxHP;
+                    this.playerData.mp = fullPlayerData.currentMP || 0;
+                    this.playerData.maxMP = fullPlayerData.maxMP || 100;
+                    this.playerData.level = fullPlayerData.level || 1;
+                    this.playerData.cultura = fullPlayerData.cultura;
+                    this.playerData.classe = fullPlayerData.classe;
+                    
+                    // Atualizar também o personagem ativo na interface
+                    if (this.activePlayerCharacter) {
+                        this.activePlayerCharacter.name = fullPlayerData.name;
+                        this.activePlayerCharacter.currentHP = fullPlayerData.currentHP;
+                        this.activePlayerCharacter.maxHP = fullPlayerData.maxHP;
+                        this.activePlayerCharacter.currentMP = fullPlayerData.currentMP || 0;
+                        this.activePlayerCharacter.maxMP = fullPlayerData.maxMP || 100;
+                        this.activePlayerCharacter.level = fullPlayerData.level || 1;
+                        this.activePlayerCharacter.sprite = fullPlayerData.sprite;
+                    }
+                    
+                    console.log('✅ Dados do personagem ativo atualizados do cache:', fullPlayerData.name);
+                } else {
+                    console.warn('⚠️ Personagem ativo não encontrado no cache:', activeIndex);
+                }
+                
+                // Atualizar todos os slots com dados do cache
+                await this.updateAllCharacterSlotsFromCache();
             }
             
             // Atualizar displays visuais
-            this.update3v3BattleField();
+            this.updateSecure3v3BattleField();
             this.updatePlayerCard(); // Atualizar card principal
             this.updateActiveBattleCharacter(); // Atualizar personagem ativo da batalha
         }
+    }
+
+    updateCacheWithCurrentBattleState(battleState) {
+        // Atualizar o cache com dados atuais de HP/Ânima do estado da batalha
+        if (this.battleCharactersCache.initialized) {
+            // Atualizar equipe do jogador
+            battleState.playerTeam.characters.forEach((char, index) => {
+                if (this.battleCharactersCache.playerTeam[index]) {
+                    this.battleCharactersCache.playerTeam[index].currentHP = char.currentHP;
+                    this.battleCharactersCache.playerTeam[index].maxHP = char.maxHP;
+                    this.battleCharactersCache.playerTeam[index].currentMP = char.currentMP;
+                    this.battleCharactersCache.playerTeam[index].maxMP = char.maxMP;
+                }
+            });
+            
+            // Atualizar equipe inimiga
+            battleState.enemyTeam.characters.forEach((char, index) => {
+                if (this.battleCharactersCache.enemyTeam[index]) {
+                    this.battleCharactersCache.enemyTeam[index].currentHP = char.currentHP;
+                    this.battleCharactersCache.enemyTeam[index].maxHP = char.maxHP;
+                    this.battleCharactersCache.enemyTeam[index].currentMP = char.currentMP;
+                    this.battleCharactersCache.enemyTeam[index].maxMP = char.maxMP;
+                }
+            });
+            
+            console.log('🔄 Cache atualizado com estado atual da batalha');
+        }
+    }
+
+    async syncSecureTeamData(battleState) {
+        // Carregar dados completos dos personagens do backend
+        if (!this.charactersData) {
+            await this.loadCharactersData();
+        }
+
+        // Sincronizar dados das equipes locais com o estado do sistema seguro
+        if (battleState.playerTeam) {
+            this.playerTeam.active = battleState.playerTeam.activeIndex;
+            this.playerTeam.characters = battleState.playerTeam.characters.map(char => {
+                // Buscar dados completos do personagem no backend
+                const fullCharData = this.charactersData[char.id];
+                
+                if (fullCharData) {
+                    return {
+                        ...char,
+                        name: fullCharData.name,
+                        level: fullCharData.level || 1,
+                        hp: char.currentHP,
+                        maxHP: char.maxHP,
+                        mp: char.currentMP || 0,
+                        maxMP: char.maxMP || 100,
+                        sprite: fullCharData.sprite || `/assets/sprites/${fullCharData.name.toLowerCase().replace(/\s+/g, '_')}.webp`,
+                        cultura: fullCharData.cultura,
+                        classe: fullCharData.classe,
+                        description: fullCharData.description
+                    };
+                } else {
+                    console.warn('⚠️ Dados do personagem não encontrados:', char.id);
+                    return {
+                        ...char,
+                        name: char.name || `Personagem ${char.id}`,
+                        level: 1,
+                        hp: char.currentHP,
+                        maxHP: char.maxHP,
+                        mp: char.currentMP || 0,
+                        maxMP: char.maxMP || 100,
+                        sprite: `/assets/sprites/character.webp` // sprite padrão
+                    };
+                }
+            });
+            this.playerTeam.reserve = [0, 1, 2].filter(i => i !== battleState.playerTeam.activeIndex);
+        }
+        
+        if (battleState.enemyTeam) {
+            this.enemyTeam.active = battleState.enemyTeam.activeIndex;
+            this.enemyTeam.characters = battleState.enemyTeam.characters.map(char => {
+                const fullCharData = this.charactersData[char.id];
+                
+                if (fullCharData) {
+                    return {
+                        ...char,
+                        name: fullCharData.name,
+                        level: fullCharData.level || 1,
+                        hp: char.currentHP,
+                        maxHP: char.maxHP,
+                        mp: char.currentMP || 0,
+                        maxMP: char.maxMP || 100,
+                        sprite: fullCharData.sprite || `/assets/sprites/${fullCharData.name.toLowerCase().replace(/\s+/g, '_')}.webp`,
+                        cultura: fullCharData.cultura,
+                        classe: fullCharData.classe,
+                        description: fullCharData.description
+                    };
+                } else {
+                    return {
+                        ...char,
+                        name: char.name || `Inimigo ${char.id}`,
+                        level: 1,
+                        hp: char.currentHP,
+                        maxHP: char.maxHP,
+                        mp: char.currentMP || 0,
+                        maxMP: char.maxMP || 100,
+                        sprite: `/assets/sprites/character.webp`
+                    };
+                }
+            });
+            this.enemyTeam.reserve = [0, 1, 2].filter(i => i !== battleState.enemyTeam.activeIndex);
+        }
+        
+        console.log('🔄 Dados locais sincronizados com backend:', {
+            playerActive: this.playerTeam.active,
+            enemyActive: this.enemyTeam.active,
+            playerChars: this.playerTeam.characters.map(c => c.name),
+            enemyChars: this.enemyTeam.characters.map(c => c.name)
+        });
+    }
+
+    async loadCharactersData() {
+        try {
+            console.log('📋 Carregando dados de personagens do backend...');
+            const response = await fetch('/api/characters');
+            const data = await response.json();
+            this.charactersData = data.characters;
+            console.log('✅ Dados de personagens carregados:', Object.keys(this.charactersData).length, 'personagens');
+        } catch (error) {
+            console.error('❌ Erro ao carregar dados dos personagens:', error);
+            this.charactersData = {};
+        }
+    }
+
+    async initializeBattleCharactersCache() {
+        console.log('🗂️ [CACHE-INIT] Iniciando inicialização do cache...');
+        console.log('🗂️ [CACHE-INIT] SecureBattleClient ativo:', !!this.secureBattleClient?.isBattleActive());
+        console.log('🗂️ [CACHE-INIT] CharactersData carregado:', !!this.charactersData && Object.keys(this.charactersData).length);
+        
+        // Garantir que temos os dados do backend
+        if (!this.charactersData) {
+            console.log('📋 [CACHE-INIT] Carregando dados do backend...');
+            await this.loadCharactersData();
+        }
+        
+        // Se estamos usando sistema seguro, inicializar com dados do estado da batalha
+        if (this.secureBattleClient && this.secureBattleClient.isBattleActive()) {
+            const battleState = this.secureBattleClient.battleState;
+            console.log('⚔️ [CACHE-INIT] BattleState obtido:', !!battleState);
+            
+            if (battleState && battleState.playerTeam && battleState.playerTeam.characters) {
+                console.log('👥 [CACHE-INIT] Characters encontrados no player team:', battleState.playerTeam.characters.length);
+                console.log('👥 [CACHE-INIT] IDs dos personagens:', battleState.playerTeam.characters.map(c => c.id));
+                
+                // Cache para equipe do jogador
+                this.battleCharactersCache.playerTeam = battleState.playerTeam.characters.map((char, index) => {
+                    const fullData = this.charactersData[char.id];
+                    console.log(`📋 [CACHE-INIT] Player ${index} (${char.id}):`, fullData ? fullData.name : 'DADOS NÃO ENCONTRADOS');
+                    
+                    const cachedChar = {
+                        ...char,
+                        name: fullData?.name || `Personagem ${char.id}`,
+                        level: fullData?.level || 1,
+                        sprite: fullData?.sprite || 'assets/sprites/character.webp',
+                        cultura: fullData?.cultura || 'Desconhecida',
+                        classe: fullData?.classe || 'Guerreiro',
+                        description: fullData?.description || 'Personagem misterioso'
+                    };
+                    
+                    console.log(`✅ [CACHE-INIT] Cache player ${index}:`, cachedChar.name, cachedChar.sprite);
+                    return cachedChar;
+                });
+                
+                // Cache para equipe inimiga
+                this.battleCharactersCache.enemyTeam = battleState.enemyTeam.characters.map((char, index) => {
+                    const fullData = this.charactersData[char.id];
+                    console.log(`📋 [CACHE-INIT] Enemy ${index} (${char.id}):`, fullData ? fullData.name : 'DADOS NÃO ENCONTRADOS');
+                    
+                    return {
+                        ...char,
+                        name: fullData?.name || `Inimigo ${char.id}`,
+                        level: fullData?.level || 1,
+                        sprite: fullData?.sprite || 'assets/sprites/character.webp',
+                        cultura: fullData?.cultura || 'Desconhecida',
+                        classe: fullData?.classe || 'Guerreiro',
+                        description: fullData?.description || 'Inimigo misterioso'
+                    };
+                });
+                
+                this.battleCharactersCache.initialized = true;
+                
+                console.log('✅ [CACHE-INIT] Cache inicializado com sucesso!');
+                console.log('👥 [CACHE-INIT] Player team:', this.battleCharactersCache.playerTeam.map(c => `${c.name} (${c.sprite})`));
+                console.log('👹 [CACHE-INIT] Enemy team:', this.battleCharactersCache.enemyTeam.map(c => `${c.name} (${c.sprite})`));
+                
+                // Atualizar interface imediatamente
+                console.log('🔄 [CACHE-INIT] Atualizando interface...');
+                await this.updateAllCharacterSlotsFromCache();
+                
+            } else {
+                console.error('❌ [CACHE-INIT] BattleState inválido ou sem personagens!');
+                console.log('❌ [CACHE-INIT] BattleState atual:', battleState);
+            }
+        } else {
+            console.warn('⚠️ [CACHE-INIT] Sistema seguro não disponível para inicializar cache');
+            console.log('⚠️ [CACHE-INIT] SecureBattleClient:', !!this.secureBattleClient);
+            console.log('⚠️ [CACHE-INIT] isBattleActive:', this.secureBattleClient?.isBattleActive());
+        }
+    }
+
+    async updateAllCharacterSlotsFromCache() {
+        if (!this.battleCharactersCache.initialized) {
+            console.warn('⚠️ Cache não inicializado, inicializando agora...');
+            await this.initializeBattleCharactersCache();
+            return;
+        }
+        
+        console.log('🔄 Atualizando todos os slots com dados do cache...');
+        
+        // Atualizar slots dos personagens do jogador
+        for (let i = 0; i < 3; i++) {
+            const character = this.battleCharactersCache.playerTeam[i];
+            if (character) {
+                this.updateSecureCharacterStats(i, character);
+                console.log(`✅ Slot ${i} atualizado:`, character.name);
+            }
+        }
+        
+        // Atualizar classes de active/reserve
+        const battleState = this.secureBattleClient?.battleState;
+        if (battleState) {
+            const activeIndex = battleState.playerTeam.activeIndex;
+            
+            for (let i = 0; i < 3; i++) {
+                const slot = document.getElementById(`player-slot-${i}`);
+                if (slot) {
+                    slot.classList.remove('active', 'reserve', 'fainted');
+                    
+                    if (i === activeIndex) {
+                        slot.classList.add('active');
+                    } else {
+                        slot.classList.add('reserve');
+                    }
+                    
+                    // Atualizar indicadores
+                    const activeIndicator = slot.querySelector('.active-indicator');
+                    const reserveIndicator = slot.querySelector('.reserve-indicator');
+                    if (activeIndicator) activeIndicator.style.display = i === activeIndex ? 'block' : 'none';
+                    if (reserveIndicator) reserveIndicator.style.display = i !== activeIndex ? 'block' : 'none';
+                }
+            }
+        }
+        
+        console.log('✅ Todos os slots atualizados com dados do cache');
+    }
+
+    getCharacterFromCache(team, index) {
+        if (!this.battleCharactersCache.initialized) {
+            console.warn('⚠️ Cache não inicializado');
+            return null;
+        }
+        
+        const teamCache = team === 'player' ? this.battleCharactersCache.playerTeam : this.battleCharactersCache.enemyTeam;
+        return teamCache[index] || null;
+    }
+
+    updateSecure3v3BattleField() {
+        // Versão específica para sistema seguro
+        if (!this.secureBattleClient || !this.secureBattleClient.isBattleActive()) return;
+        
+        const battleState = this.secureBattleClient.battleState;
+        if (!battleState) return;
+        
+        console.log('🔐 Atualizando interface 3v3 segura com estado do servidor');
+        console.log('📊 Estado do servidor - playerTeam activeIndex:', battleState.playerTeam.activeIndex);
+        console.log('📊 Estado do servidor - enemyTeam activeIndex:', battleState.enemyTeam.activeIndex);
+        
+        // Usar diretamente os índices do estado seguro (não os locais)
+        const playerActiveIndex = battleState.playerTeam.activeIndex;
+        const enemyActiveIndex = battleState.enemyTeam.activeIndex;
+        
+        // Atualizar personagens ativos no battle field usando índices do servidor
+        this.updateActiveBattleSlot('player', this.playerTeam.characters[playerActiveIndex]);
+        this.updateActiveBattleSlot('enemy', this.enemyTeam.characters[enemyActiveIndex]);
+        
+        // Criar arrays de reserva baseados no estado do servidor
+        const playerReserveIndices = [0, 1, 2].filter(i => i !== playerActiveIndex);
+        const enemyReserveIndices = [0, 1, 2].filter(i => i !== enemyActiveIndex);
+        
+        // Atualizar personagens na reserva
+        this.updateReserveSlots('player', { 
+            active: playerActiveIndex, 
+            reserve: playerReserveIndices,
+            characters: this.playerTeam.characters 
+        });
+        this.updateReserveSlots('enemy', { 
+            active: enemyActiveIndex, 
+            reserve: enemyReserveIndices,
+            characters: this.enemyTeam.characters 
+        });
+        
+        // Atualizar slots dos personagens (visual das trocas)
+        this.updateSecureCharacterSlots();
+        
+        console.log('🔐 Interface 3v3 segura atualizada com índices do servidor');
+    }
+
+    updateSecureCharacterSlots() {
+        // Versão específica para sistema seguro
+        if (!this.secureBattleClient || !this.secureBattleClient.isBattleActive()) return;
+        
+        const battleState = this.secureBattleClient.battleState;
+        const playerTeam = battleState.playerTeam;
+        
+        console.log('=== DEBUG updateSecureCharacterSlots ===');
+        console.log('playerTeam:', playerTeam);
+        console.log('activeIndex:', playerTeam.activeIndex);
+        console.log('characters:', playerTeam.characters);
+        
+        // Atualizar slots visuais
+        for (let i = 0; i < 3; i++) {
+            const slot = document.getElementById(`player-slot-${i}`);
+            const character = playerTeam.characters[i];
+            
+            console.log(`Slot ${i}:`, character);
+            
+            if (slot && character) {
+                // Remover classes antigas
+                slot.classList.remove('active', 'reserve', 'fainted');
+                
+                // Adicionar classe baseada no status
+                if (character.currentHP <= 0) {
+                    slot.classList.add('fainted');
+                } else if (i === playerTeam.activeIndex) {
+                    slot.classList.add('active');
+                } else {
+                    slot.classList.add('reserve');
+                }
+
+                // Atualizar indicadores
+                const activeIndicator = slot.querySelector('.active-indicator');
+                const reserveIndicator = slot.querySelector('.reserve-indicator');
+                const swapHint = slot.querySelector('.swap-hint');
+
+                if (activeIndicator) activeIndicator.style.display = i === playerTeam.activeIndex ? 'block' : 'none';
+                if (reserveIndicator) reserveIndicator.style.display = i !== playerTeam.activeIndex && character.currentHP > 0 ? 'block' : 'none';
+                if (swapHint) swapHint.style.display = i !== playerTeam.activeIndex && character.currentHP > 0 ? 'block' : 'none';
+
+                // Atualizar HP/Ânima
+                this.updateSecureCharacterStats(i, character);
+                
+                console.log(`🔄 Slot ${i} atualizado - Ativo: ${i === playerTeam.activeIndex}`);
+            }
+        }
+    }
+
+    updateSecureCharacterStats(index, character) {
+        console.log(`=== updateSecureCharacterStats slot ${index} ===`);
+        console.log('Character data recebido:', character);
+        
+        // PRIORIDADE 1: Usar dados do cache se disponível
+        let finalCharacter = character;
+        if (this.battleCharactersCache && this.battleCharactersCache.initialized && this.battleCharactersCache.playerTeam[index]) {
+            finalCharacter = this.battleCharactersCache.playerTeam[index];
+            console.log(`📋 Usando dados do cache para slot ${index}:`, finalCharacter.name);
+        } else {
+            console.log(`⚠️ Cache não disponível, usando dados recebidos para slot ${index}`);
+        }
+        
+        // Atualizar nome
+        const nameEl = document.getElementById(`playerName${index}`);
+        if (nameEl) {
+            const characterName = finalCharacter.name || `Personagem ${index + 1}`;
+            nameEl.textContent = characterName;
+            console.log(`✅ Nome atualizado para slot ${index}:`, characterName);
+        } else {
+            console.warn(`❌ Elemento playerName${index} não encontrado!`);
+        }
+        
+        // Atualizar nível
+        const levelEl = document.getElementById(`playerLevel${index}`);
+        if (levelEl) {
+            const level = finalCharacter.level || 1;
+            levelEl.textContent = level;
+            console.log(`✅ Nível atualizado para slot ${index}:`, level);
+        } else {
+            console.warn(`❌ Elemento playerLevel${index} não encontrado!`);
+        }
+        
+        // Atualizar imagem (priorizar sprite do cache)
+        const imgEl = document.getElementById(`playerImage${index}`);
+        if (imgEl) {
+            let spritePath;
+            
+            // PRIORIDADE 1: Usar sprite do cache/backend
+            if (finalCharacter.sprite) {
+                if (finalCharacter.sprite.startsWith('assets/')) {
+                    spritePath = `/${finalCharacter.sprite}`;
+                } else if (finalCharacter.sprite.startsWith('/assets/')) {
+                    spritePath = finalCharacter.sprite;
+                } else {
+                    spritePath = `/assets/sprites/${finalCharacter.sprite}`;
+                }
+            } else if (finalCharacter.name && finalCharacter.name !== `Personagem ${index + 1}`) {
+                // PRIORIDADE 2: Gerar path baseado no nome real
+                spritePath = `/assets/sprites/${finalCharacter.name.toLowerCase().replace(/\s+/g, '_')}.webp`;
+            } else {
+                // PRIORIDADE 3: Fallback para sprite padrão
+                spritePath = '/assets/sprites/character.webp';
+            }
+            
+            imgEl.src = spritePath;
+            imgEl.alt = finalCharacter.name || `Personagem ${index + 1}`;
+            
+            // Adicionar tratamento de erro da imagem
+            imgEl.onerror = () => {
+                console.warn(`⚠️ Sprite não encontrada: ${spritePath}, tentando fallback`);
+                if (spritePath !== '/assets/sprites/character.webp') {
+                    imgEl.src = '/assets/sprites/character.webp';
+                    console.log(`🔄 Usando sprite fallback para ${finalCharacter.name}`);
+                }
+            };
+            
+            console.log(`✅ Sprite atualizada para slot ${index} (${finalCharacter.name}):`, spritePath);
+        } else {
+            console.warn(`❌ Elemento playerImage${index} não encontrado!`);
+        }
+        
+        // Atualizar HP (usar dados atuais de batalha, não cache estático)
+        const hpEl = document.getElementById(`playerHP${index}`);
+        const maxHpEl = document.getElementById(`playerMaxHP${index}`);
+        const currentHP = character.currentHP || character.hp || finalCharacter.currentHP || 100;
+        const maxHP = character.maxHP || character.hp || finalCharacter.maxHP || 100;
+        
+        if (hpEl) hpEl.textContent = currentHP;
+        if (maxHpEl) maxHpEl.textContent = maxHP;
+        
+        // Atualizar Ânima (usar dados atuais de batalha, não cache estático)
+        const animaEl = document.getElementById(`playerAnima${index}`);
+        const maxAnimaEl = document.getElementById(`playerMaxAnima${index}`);
+        const currentAnima = character.currentAnima || character.anima || finalCharacter.currentAnima || 0;
+        const maxAnima = character.maxAnima || character.anima || finalCharacter.maxAnima || 100;
+        
+        if (animaEl) animaEl.textContent = currentAnima;
+        if (maxAnimaEl) maxAnimaEl.textContent = maxAnima;
+        
+        // Atualizar barras de HP e Ânima
+        const hpBar = document.getElementById(`playerHPBar${index}`);
+        const animaBar = document.getElementById(`playerAnimaBar${index}`);
+        
+        if (hpBar) {
+            const hpPercent = Math.max(0, (currentHP / maxHP) * 100);
+            hpBar.style.width = `${hpPercent}%`;
+            console.log(`✅ HP Bar atualizada para slot ${index}:`, `${currentHP}/${maxHP} (${hpPercent.toFixed(1)}%)`);
+        }
+        
+        if (animaBar) {
+            const animaPercent = Math.max(0, (currentAnima / maxAnima) * 100);
+            animaBar.style.width = `${animaPercent}%`;
+            console.log(`✅ Ânima Bar atualizada para slot ${index}:`, `${currentAnima}/${maxAnima} (${animaPercent.toFixed(1)}%)`);
+        }
+        
+        console.log(`✅ Stats FINAIS atualizados para slot ${index}: ${finalCharacter.name} [Cache: ${this.battleCharactersCache?.initialized ? 'SIM' : 'NÃO'}]`);
     }
 
     handleSwapResult3v3(swapResult) {
@@ -1994,15 +2754,17 @@ class VintageBattleDemo {
 
         // Verificar se o personagem está vivo
         if (character.hp <= 0) {
-            console.error(`${character.name} está desmaiado e não pode entrar em batalha`);
-            this.showMessage(`${character.name} está desmaiado e não pode entrar em batalha`);
+            const characterNameFainted = character.name || character.id || 'Personagem Desconhecido';
+            console.error(`${characterNameFainted} está desmaiado e não pode entrar em batalha`);
+            this.showMessage(`${characterNameFainted} está desmaiado e não pode entrar em batalha`);
             return;
         }
 
         // Verificar se já é o personagem ativo
         if (characterIndex === playerTeam.activeIndex) {
             console.info(`${character.name} já está ativo`);
-            this.showMessage(`${character.name} já está ativo`);
+            const characterNameActive = character.name || character.id || 'Personagem Desconhecido';
+            this.showMessage(`${characterNameActive} já está ativo`);
             return;
         }
 
@@ -2097,12 +2859,12 @@ class VintageBattleDemo {
                         swappedOutName = oldChar?.name || `Personagem ${fromIndex + 1}`;
                         swappedInName = newChar?.name || `Personagem ${toIndex + 1}`;
                     }
-                    this.updateSecureTeamDisplay();
+                    await this.updateSecureTeamDisplay();
                 } else {
                     // Sistema legacy
                     swappedOutName = result.swappedOut || `Personagem ${fromIndex + 1}`;
                     swappedInName = result.swappedIn || `Personagem ${toIndex + 1}`;
-                    this.syncPlayerDataWithActiveCharacter();
+                    await this.syncPlayerDataWithActiveCharacter();
                 }
                 
                 // Atualizar displays visuais
@@ -2124,7 +2886,7 @@ class VintageBattleDemo {
         }
     }
 
-    syncPlayerDataWithActiveCharacter() {
+    async syncPlayerDataWithActiveCharacter() {
         if (!this.battleMechanics || !this.battleMechanics.battleState.teams) return;
         
         const playerTeam = this.battleMechanics.battleState.teams.player;
@@ -2177,6 +2939,12 @@ class VintageBattleDemo {
             }
             
             console.log('Novo playerData após sync:', JSON.stringify(this.playerData, null, 2));
+            
+            // Carregar skills do personagem ativo
+            this.playerData.skills = []; // Limpar skills antigas
+            await this.loadPlayerSkills();
+            await this.populateSkills(); // Atualizar interface de skills
+            
         } else {
             console.error('activeCharacter é null/undefined!');
         }
@@ -2221,7 +2989,7 @@ class VintageBattleDemo {
                 if (reserveIndicator) reserveIndicator.style.display = i !== playerTeam.activeIndex && character.hp > 0 ? 'block' : 'none';
                 if (swapHint) swapHint.style.display = i !== playerTeam.activeIndex && character.hp > 0 ? 'block' : 'none';
 
-                // Atualizar HP/MP
+                // Atualizar HP/Ânima
                 this.updateCharacterStats(i, character);
             }
         }
@@ -2387,7 +3155,7 @@ class VintageBattleDemo {
 
     setupActionButtons() {
         // Conectar botões de ação com sistema de turnos
-        const attackBtn = document.querySelector('[data-action="attack"]');
+        const attackBtn = document.querySelector('[data-action="basicattack"]');
         if (attackBtn) {
             attackBtn.addEventListener('click', () => {
                 this.declareAction('attack');
@@ -3051,6 +3819,59 @@ class BattleAnimationManager {
      */
     wait(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    /**
+     * CORREÇÃO v4.9.6: Busca nome do personagem do cache por ID
+     * @param {string} characterId - ID do personagem
+     * @param {string} teamType - 'player' ou 'enemy'
+     * @returns {string|null} Nome do personagem ou null se não encontrado
+     */
+    getCharacterNameFromCache(characterId, teamType) {
+        if (this.battleCharactersCache && this.battleCharactersCache.initialized) {
+            const team = teamType === 'player' ? this.battleCharactersCache.playerTeam : this.battleCharactersCache.enemyTeam;
+            const cachedCharacter = team.find(c => c.id === characterId);
+            
+            if (cachedCharacter && cachedCharacter.name) {
+                return cachedCharacter.name;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * CORREÇÃO v4.9.6: Resolver nome de personagem usando cache
+     * @param {Object} character - Personagem do battleState (só tem ID)
+     * @param {string} teamType - 'player' ou 'enemy'
+     * @returns {string} Nome resolvido ou fallback
+     */
+    resolveCharacterName(character, teamType) {
+        // Primeiro: tentar usar o nome já presente (se houver)
+        if (character.name) {
+            return character.name;
+        }
+        
+        // Segundo: tentar resolver via cache de personagens
+        if (this.battleCharactersCache && this.battleCharactersCache.initialized) {
+            const team = teamType === 'player' ? this.battleCharactersCache.playerTeam : this.battleCharactersCache.enemyTeam;
+            const cachedCharacter = team.find(c => c.id === character.id);
+            
+            if (cachedCharacter && cachedCharacter.name) {
+                console.log(`✅ [NAME-RESOLVE] ${character.id} → ${cachedCharacter.name} (via cache)`);
+                return cachedCharacter.name;
+            }
+        }
+        
+        // Terceiro: tentar resolver via charactersData global
+        if (this.charactersData && this.charactersData[character.id]) {
+            const name = this.charactersData[character.id].name;
+            console.log(`✅ [NAME-RESOLVE] ${character.id} → ${name} (via global data)`);
+            return name;
+        }
+        
+        // Fallback: usar ID como nome
+        console.warn(`⚠️ [NAME-RESOLVE] Não foi possível resolver nome para ${character.id}, usando ID`);
+        return character.id;
     }
 }
 

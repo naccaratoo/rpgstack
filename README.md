@@ -88,7 +88,7 @@ O RPGStack é um sistema de RPG web moderno que combina mecânicas clássicas de
 
 ### **🎭 Sistema Cultural CHRONOS**
 - **15 Personagens Ancestrais** representando 15 culturas distintas
-- **8 Classes Civilizacionais**: Lutador, Armamentista, Arcano, Oráculo, Artífice, Guardião da Natureza, Mercador-Diplomata, Curandeiro Ritualista
+- **8 Classes Civilizacionais**: Lutador, Armamentista, Arcano, Oráculo, Artífice, Naturalista, Mercador-Diplomata, Curandeiro Ritualista
 - **Sistema de IDs Padronizado**: Todos os personagens com IDs hexadecimais únicos
 - **Artefatos Culturais** únicos para cada personagem
 - **Interface Art Nouveau** dedicada com filtros por cultura e classe

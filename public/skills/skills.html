@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Skills Modular - RPGStack v4.3</title>
+    
+    <link rel="stylesheet" href="skills.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 Sistema de Skills Modular</h1>
+            <p>RPGStack v4.3 - Teste de Carregamento Dinâmico de Habilidades Culturais</p>
+        </div>
+
+        <!-- Controles -->
+        <div class="test-section">
+            <h2>🎮 Controles de Teste</h2>
+            <div class="controls">
+                <button class="btn" onclick="loadAllSkills()">Carregar Todas as Skills</button>
+                <button class="btn" onclick="testRandomSkill()">Testar Skill Aleatória</button>
+                <button class="btn secondary" onclick="clearCache()">Limpar Cache</button>
+                <button class="btn secondary" onclick="clearLog()">Limpar Log</button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-value" id="loadedSkillsCount">0</span>
+                    <div class="stat-label">Skills Carregadas</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="availableCharactersCount">15</span>
+                    <div class="stat-label">Personagens Disponíveis</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="loadingTime">0ms</span>
+                    <div class="stat-label">Tempo de Carregamento</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="activeLoadingCount">0</span>
+                    <div class="stat-label">Carregamentos Ativos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Personagens -->
+        <div class="test-section">
+            <h2>👥 Personagens e Skills</h2>
+            <div class="character-grid" id="characterGrid">
+                <div class="loading">Carregando personagens...</div>
+            </div>
+        </div>
+
+        <!-- Habilidade Ancestral -->
+        <div class="test-section">
+            <h2>📜 Habilidade Ancestral</h2>
+            <p style="opacity: 0.8; margin-bottom: 20px;">
+                A Habilidade Ancestral é uma passiva única que define a essência cultural de cada personagem, 
+                ativando automaticamente durante o combate baseada na herança ancestral.
+            </p>
+            <div class="passives-grid" id="passivesGrid">
+                <div class="loading">Carregando habilidades ancestrais...</div>
+            </div>
+        </div>
+
+        <!-- Artes Combativas -->
+        <div class="test-section">
+            <h2>⚔️ Artes Combativas (<span id="skill-count">carregando...</span>)</h2>
+            
+            <!-- Sistema de Afinidades -->
+            <div class="affinity-legend">
+                <h3>🌟 Afinidades de Habilidades</h3>
+                <div class="affinity-badges">
+                    <div class="affinity-badge marcial" onclick="filterByAffinity('marcial')">
+                        <span class="affinity-icon">⚔️</span>
+                        <span class="affinity-name">Marcial</span>
+                        <div class="affinity-description">Artes de combate físico direto</div>
+                    </div>
+                    <div class="affinity-badge elemental" onclick="filterByAffinity('elemental')">
+                        <span class="affinity-icon">🌿</span>
+                        <span class="affinity-name">Elemental</span>
+                        <div class="affinity-description">Harmonia com forças naturais</div>
+                    </div>
+                    <div class="affinity-badge arcano" onclick="filterByAffinity('arcano')">
+                        <span class="affinity-icon">🔮</span>
+                        <span class="affinity-name">Arcano</span>
+                        <div class="affinity-description">Manipulação de energias místicas</div>
+                    </div>
+                    <div class="affinity-badge espiritual" onclick="filterByAffinity('espiritual')">
+                        <span class="affinity-icon">✨</span>
+                        <span class="affinity-name">Espiritual</span>
+                        <div class="affinity-description">Conexão com planos superiores</div>
+                    </div>
+                    <div class="affinity-badge tecnologia" onclick="filterByAffinity('tecnologia')">
+                        <span class="affinity-icon">⚙️</span>
+                        <span class="affinity-name">Tecnologia</span>
+                        <div class="affinity-description">Domínio de invenções e mecanismos</div>
+                    </div>
+                    <div class="affinity-badge comercial" onclick="filterByAffinity('comercial')">
+                        <span class="affinity-icon">💼</span>
+                        <span class="affinity-name">Comercial</span>
+                        <div class="affinity-description">Habilidades de negociação e influência social</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skills-container">
+                <div class="skills-filters">
+                    <button onclick="filterSkills('all')" class="filter-btn active">Todas</button>
+                    <button onclick="filterSkills('combat')" class="filter-btn">Combate</button>
+                    <button onclick="filterSkills('magic')" class="filter-btn">Magia</button>
+                    <button onclick="filterSkills('utility')" class="filter-btn">Utilitário</button>
+                    <button onclick="filterSkills('healing')" class="filter-btn">Cura</button>
+                    <button onclick="filterSkills('passive')" class="filter-btn">Passiva</button>
+                    
+                    <!-- Filtros por Afinidade -->
+                    <div class="filter-separator"></div>
+                    <button onclick="filterByAffinity('marcial')" class="filter-btn affinity-filter marcial">⚔️ Marcial</button>
+                    <button onclick="filterByAffinity('elemental')" class="filter-btn affinity-filter elemental">🌿 Elemental</button>
+                    <button onclick="filterByAffinity('arcano')" class="filter-btn affinity-filter arcano">🔮 Arcano</button>
+                    <button onclick="filterByAffinity('espiritual')" class="filter-btn affinity-filter espiritual">✨ Espiritual</button>
+                    <button onclick="filterByAffinity('tecnologia')" class="filter-btn affinity-filter tecnologia">⚙️ Tecnologia</button>
+                    <button onclick="filterByAffinity('comercial')" class="filter-btn affinity-filter comercial">💼 Comercial</button>
+                    
+                    <div class="filter-separator"></div>
+                    <button onclick="showShiWuxingSkills()" class="filter-btn" style="background: rgba(212, 175, 55, 0.3); border-color: #D4AF37;">👤 Shi Wuxing</button>
+                </div>
+                <div id="skills-grid" class="skills-grid">
+                    <div class="loading">🔄 Carregando artes combativas...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Edição de Skills -->
+        <div id="skillEditModal" class="modal" style="display: none;">
+            <div class="modal-content skill-edit-modal">
+                <div class="modal-header">
+                    <h2>⚙️ Editar Skill</h2>
+                    <span class="close" onclick="closeSkillEditModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="skillEditForm">
+                        <input type="hidden" id="editSkillId" />
+                        
+                        <div class="form-group">
+                            <label for="editSkillName">Nome:</label>
+                            <input type="text" id="editSkillName" required />
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editSkillDamage">Dano:</label>
+                                <input type="number" id="editSkillDamage" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label for="editSkillAnimaCost">Custo Ânima:</label>
+                                <input type="number" id="editSkillAnimaCost" min="0" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editSkillCooldown">Cooldown:</label>
+                                <input type="number" id="editSkillCooldown" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label for="editSkillDuration">Duração:</label>
+                                <input type="number" id="editSkillDuration" min="0" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editSkillType">Tipo:</label>
+                                <select id="editSkillType">
+                                    <option value="combat">Combate</option>
+                                    <option value="magic">Magia</option>
+                                    <option value="utility">Utilitário</option>
+                                    <option value="healing">Cura</option>
+                                    <option value="passive">Passiva</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editSkillAffinity1">Afinidade Principal:</label>
+                                <select id="editSkillAffinity1" onchange="validateAffinities()">
+                                    <option value="marcial">⚔️ Marcial</option>
+                                    <option value="elemental">🌿 Elemental</option>
+                                    <option value="arcano">🔮 Arcano</option>
+                                    <option value="espiritual">✨ Espiritual</option>
+                                    <option value="tecnologia">⚙️ Tecnologia</option>
+                                    <option value="comercial">🏪 Comercial</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editSkillAffinity2">Afinidade Secundária:</label>
+                                <select id="editSkillAffinity2" onchange="validateAffinities()">
+                                    <option value="">Nenhuma</option>
+                                    <option value="marcial">⚔️ Marcial</option>
+                                    <option value="elemental">🌿 Elemental</option>
+                                    <option value="arcano">🔮 Arcano</option>
+                                    <option value="espiritual">✨ Espiritual</option>
+                                    <option value="tecnologia">⚙️ Tecnologia</option>
+                                    <option value="comercial">🏪 Comercial</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSkillDescription">Descrição:</label>
+                            <textarea id="editSkillDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSkillEffects">Efeitos (separados por vírgula):</label>
+                            <input type="text" id="editSkillEffects" placeholder="multi_hit_5x, critical_boost_20%, critical_immunity" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSkillCulturalAuth">Autenticidade Cultural:</label>
+                            <textarea id="editSkillCulturalAuth" rows="2"></textarea>
+                        </div>
+                        
+                        <!-- Seção de Coeficientes de Efeitos -->
+                        <div class="form-section">
+                            <h3>⚙️ Coeficientes de Efeitos</h3>
+                            <div id="effectCoefficients">
+                                <!-- Coeficientes serão carregados dinamicamente -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn secondary" onclick="closeSkillEditModal()">Cancelar</button>
+                    <button type="button" class="btn" onclick="saveSkillEdit()">💾 Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log de Atividades -->
+        <div class="test-section">
+            <h2>📋 Log de Atividades</h2>
+            <div class="log" id="activityLog">
+                <div class="log-entry info">Sistema iniciado. Aguardando comandos...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../skill-loader.js"></script>
+    <script src="skills.js"></script>
+</body>
+</html>

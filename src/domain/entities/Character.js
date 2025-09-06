@@ -28,6 +28,7 @@ export class Character {
     'tank',
   ];
 
+
   static MIN_NAME_LENGTH = 3;
   static MAX_NAME_LENGTH = 50;
   static MIN_LEVEL = 1;
@@ -44,6 +45,8 @@ export class Character {
     experience = 0,
     skill_points = 0,
     classe = 'Lutador',
+    subclasse = null,
+    cultura = null,
     anima = 100,
     critico = 1.0,
     metadata = {},
@@ -66,6 +69,8 @@ export class Character {
     this._experience = parseInt(experience, 10) || 0;
     this._skillPoints = parseInt(skill_points, 10) || 0;
     this._classe = classe || 'Lutador';
+    this._subclasse = subclasse || null;
+    this._cultura = cultura || null;
     this._anima = parseInt(anima, 10) || 100;
     this._critico = parseFloat(critico) || 1.0;
     
@@ -179,9 +184,17 @@ export class Character {
     }
     
     // Classe validation
-    const validClasses = ['Lutador', 'Armamentista', 'Arcano', 'Oráculo', 'Artífice', 'Guardião da Natureza', 'Mercador-Diplomata', 'Curandeiro Ritualista'];
+    const validClasses = ['Lutador', 'Armamentista', 'Arcano', 'Oráculo', 'Artífice', 'Naturalista', 'Diplomata', 'Curandeiro', 'Ritualista', 'Mercador', 'Guardião'];
     if (!validClasses.includes(this._classe)) {
       throw new Error(`Invalid classe: "${this._classe}". Valid classes: ${validClasses.join(', ')}`);
+    }
+    
+    // Subclasse validation - classes and specialized subclasses
+    const validSubclasses = [...validClasses, 'Alquimista'];
+    if (this._subclasse) {
+      if (!validSubclasses.includes(this._subclasse)) {
+        throw new Error(`Invalid subclasse: "${this._subclasse}". Valid subclasses: ${validSubclasses.join(', ')}`);
+      }
     }
     
     // Anima validation
@@ -234,6 +247,14 @@ export class Character {
   
   get classe() {
     return this._classe;
+  }
+  
+  get subclasse() {
+    return this._subclasse;
+  }
+  
+  get cultura() {
+    return this._cultura;
   }
   
   get anima() {
